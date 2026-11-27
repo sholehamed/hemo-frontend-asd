@@ -1,6 +1,5 @@
 import {Component,OnInit,inject,signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
 import {AuthService} from '../../core/auth/auth.service';
 import {HemovigilanceService} from '../../core/api/hemovigilance.service';
@@ -10,7 +9,7 @@ import {BankPage} from '../blood-bank/bank-model';
 import {bankDateTime,toUtc,localFields} from '../blood-bank/bank-time';
 import {HvMetricsComponent} from './hv-metrics.component';
 import {ReportRow,ReportDetail,Summary,ReportInput,EXTERNAL} from './hv-model';
-@Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent,HvMetricsComponent],templateUrl:'./hv-reports.component.html'})
+@Component({standalone:true,imports:[FormsModule,MatButtonModule,RequestStateComponent,HvMetricsComponent],templateUrl:'./hv-reports.component.html'})
 export class HvReportsComponent implements OnInit{
  readonly auth=inject(AuthService);private api=inject(HemovigilanceService);readonly page=signal<BankPage<ReportRow>|null>(null);readonly detail=signal<ReportDetail|null>(null);readonly preview=signal<Summary|null>(null);
  readonly busy=signal(false);readonly error=signal<string|null>(null);readonly success=signal<string|null>(null);readonly date=bankDateTime;readonly fa=fa;readonly external=EXTERNAL;readonly options=Object.entries(EXTERNAL).filter(([k])=>k!=='NotRecorded');
