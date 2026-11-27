@@ -1,5 +1,7 @@
 import { AuthService } from './../../Services/AuthService';
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
+import { Subscription } from 'rxjs';
+import { MENU_ROLE_CONTEXT } from './menu-role-context';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MenuItem } from 'primeng/api';
@@ -38,7 +40,10 @@ import { environment } from '../../../../environments/environment';
         </ul>
     `
 })
-export class AppMenu {
+export class AppMenu implements OnDestroy {
+    private readonly roleContext = inject(MENU_ROLE_CONTEXT, {optional:true});
+    private menuRequest?: Subscription;
+    private menuGeneration = 0;
     expanded: boolean = false;
     searchQuery: string = '';
     model: MenuItem[] = [];
@@ -56,11 +61,28 @@ export class AppMenu {
         this.SetUserRole(this.UserRole);
     }
     DataChange(userrole:any){
-        sessionStorage.setItem('orgLocationName',userrole.orgLocationName);
+        if(this.roleContext && (!userrole || Number(userrole.gkey)!==this.AuthService.GetUserRole())) return;
+        sessionStorage.setItem('orgLocationName',userrole?.orgLocationName??'');
     }
 
     SetUserRole(UserRole: number) {
         if(UserRole>0){
+            if(this.roleContext) {
+                const previous = this.AuthService.GetUserRole();
+                if(previous!==UserRole) {
+                    this.roleContext.beforeChange(previous,UserRole);
+                    this.menuRequest?.unsubscribe();
+                    ++this.menuGeneration;
+                    this.model=[];
+                    this.originalModel='[]';
+                    sessionStorage.removeItem('orgLocationName');
+                }
+                this.AuthService.SetUserRole(UserRole);
+                this.UserRole=UserRole;
+                if(previous!==UserRole) this.roleContext.afterChange(previous,UserRole);
+                this.loadMenu();
+                return;
+            }
             this.AuthService.SetUserRole(UserRole);
             this.loadMenu();
         }
@@ -73,11 +95,28 @@ export class AppMenu {
 
     loadMenu() {
 
+        if(this.roleContext) {
+            this.menuRequest?.unsubscribe();
+            const generation=++this.menuGeneration;
+            const role=this.AuthService.GetUserRole();
+            const token=this.AuthService.GetAccessToken();
+            this.menuRequest=this.MenuClient.menuBindUserMenu(environment.SubPath).subscribe({next:data=>{
+                if(generation!==this.menuGeneration||role!==this.AuthService.GetUserRole()||!token||token!==this.AuthService.GetAccessToken())return;
+                this.originalModel=JSON.stringify(data);
+                this.model=[...data];
+            },error:()=>{if(generation===this.menuGeneration){this.model=[];this.originalModel='[]';}}});
+            return;
+        }
         this.MenuClient.menuBindUserMenu(environment.SubPath).subscribe(data => {
             this.originalModel = JSON.stringify(data);
             this.model = [...data];
         });
 
+    }
+
+    ngOnDestroy() {
+        ++this.menuGeneration;
+        this.menuRequest?.unsubscribe();
     }
 
     filterMenuItems(items: MenuItem[], query: string): MenuItem[] {
