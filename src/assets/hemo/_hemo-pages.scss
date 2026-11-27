@@ -79,7 +79,8 @@
   .layout-main-container:has(.router-outlet.hemo-page) { padding-inline: 12px; }
 }
 @media print {
-  body:has(.hemo-page .print-target) * { visibility: hidden !important; }
+  // Zero specificity for the blanket hide rule; explicit print targets must override it.
+  :where(body:has(.hemo-page .print-target)) * { visibility: hidden !important; }
   .hemo-page .print-target, .hemo-page .print-target * { visibility: visible !important; }
   .hemo-page .print-target { position: absolute; inset: 0 auto auto 0; background: white; color: #172235; }
   .hemo-page .no-print { display: none !important; }
