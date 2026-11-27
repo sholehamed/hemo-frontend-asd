@@ -19,7 +19,7 @@ export class TransferListComponent implements OnInit{
  readonly statuses=STATUSES;readonly options=[['Active','در گردش'],['ReturnQueue','صف مرجوعی و توقف'],...Object.entries(STATUSES)];readonly color=statusClass;readonly fa=fa;readonly date=bankDateTime;readonly product=productLabel;
  search='';ward='';status=this.mode==='returns'?'ReturnQueue':this.mode==='vitals'||this.mode==='monitoring'?'Active':'';fromDate='';toDate='';
  admissionGuid=this.route.snapshot.queryParamMap.get('admission')??'';requestGuid=this.route.snapshot.queryParamMap.get('request')??'';private filters:TransferFilters={};private seq=0;
- ngOnInit(){if(this.auth.transferCan('list'))void this.load();}
+ ngOnInit(){const status=this.route.snapshot.queryParamMap.get('status')??'';if(this.options.some(([value])=>value===status))this.status=status;if(this.auth.transferCan('list'))void this.load();}
  async load(pageNumber=1){if(!this.auth.transferCan('list'))return;const seq=++this.seq;this.busy.set(true);this.error.set(null);try{
  if(pageNumber===1)this.filters={search:this.search,ward:this.ward,status:this.status,admissionGuid:this.admissionGuid||undefined,requestGuid:this.requestGuid||undefined,...(this.fromDate?{from:toUtc(this.fromDate,'00:00')}:{}),...(this.toDate?{to:new Date(Date.parse(toUtc(this.toDate,'23:59'))+59999).toISOString()}: {})};
  const data=await this.api.list({...this.filters,pageNumber,pageSize:20});if(seq===this.seq)this.page.set(data);
