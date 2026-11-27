@@ -23,6 +23,7 @@ export const routes:Routes=[
  {path:'hemo/bank/inventory',canActivate:[authGuard],data:{mode:'inventory'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
  {path:'hemo/bank/crossmatch',canActivate:[authGuard],data:{mode:'lab'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
  {path:'hemo/bank/thaw',canActivate:[authGuard],data:{mode:'thaw'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
+ {path:'hemo/bank/lab-history',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-lab-history.component').then(m=>m.BankLabHistoryComponent)},
  {path:'hemo/bank/unit/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-unit.component').then(m=>m.BankUnitComponent)},
  {path:'hemo/bank/receive',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-receive.component').then(m=>m.BankReceiveComponent)},
  {path:'hemo/bank/temperature',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-temperature.component').then(m=>m.BankTemperatureComponent)},

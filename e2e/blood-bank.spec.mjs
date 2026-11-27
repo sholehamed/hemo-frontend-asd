@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 const unitGuid='33330000-1111-4111-8111-000000000003',requestGuid='44440000-1111-4111-8111-000000000004',admissionGuid='55550000-1111-4111-8111-000000000005';
-const bankCaps={inventory:true,unit:true,stats:true,temperatureHistory:true,receive:true,inspect:false,test:true,reserve:true,thaw:true,ready:true,hold:true,unreserve:true,discard:false,temperature:true,returnRequest:false};
+const bankCaps={inventory:true,unit:true,stats:true,temperatureHistory:true,receive:true,inspect:false,test:true,reserve:true,thaw:true,ready:true,hold:true,unreserve:true,discard:false,temperature:true,returnRequest:false,labHistory:true};
 const admissionCaps={stats:false,list:false,detail:false,find:false,history:false,reviews:false,create:false,update:false,review:false,identity:false};
 const requestCaps={list:false,detail:false,stats:false,nurseCreate:false,doctorCreate:false,edit:false,submit:false,cancel:false,decide:false,bankQueue:true,bankDetail:true};
 const clinical={diagnosis:'آزمون',clinicalIndication:'آزمون',hemoglobin:null,hematocrit:null,plateletCount:null,recentTransfusion:null,recentPregnancy:null,priorReaction:null,unexpectedAntibody:null,premedication:null,sampleStatus:'Unknown',notes:null,formDetails:{}};
@@ -25,8 +25,9 @@ test('bank roles receive, inspect, record laboratory evidence, reserve, thaw, pr
   if(path==='/Identity/BloodBank/Capabilities')return ok(caps());
   if(path.endsWith('/BankQueue'))return ok(pageData(returned?[]:[request.request]));
   if(path.endsWith('/Bank/'+requestGuid))return returned?ok({detail:'returned'},400):ok(request);
-  if(path.endsWith('/BloodBank/Stats'))return ok({total:unit?1:0,available:unit?.status==='Available'?1:0,reserved:unit?.status==='Reserved'?1:0,thawing:unit?.status==='Thawing'?1:0,ready:unit?.status==='Ready'?1:0,hold:unit&&['Quarantined','ReceivedHold'].includes(unit.status)?1:0,expired:0,expiringSoon:unit?1:0,discarded:unit?.status==='Discarded'?1:0,approvedRequests:returned?0:1,temperatureConcerns:temps.filter(x=>x.assessment!=='Acceptable').length});
-  if(path.endsWith('/Inventory'))return ok(pageData(unit&&(!body.status||body.status===unit.status||body.status==='ExpiringSoon')&&(!body.requestGuid||body.requestGuid===unit.requestGuid)?[unit]:[]));
+  if(path.endsWith('/BloodBank/Stats'))return ok({total:unit?1:0,available:unit?.status==='Available'?1:0,reserved:unit?.status==='Reserved'?1:0,thawing:unit?.status==='Thawing'?1:0,ready:unit?.status==='Ready'?1:0,hold:unit&&['Quarantined','ReceivedHold'].includes(unit.status)?1:0,expired:0,expiringSoon:unit?1:0,discarded:unit?.status==='Discarded'?1:0,approvedRequests:returned?0:1,temperatureConcerns:temps.filter(x=>x.assessment!=='Acceptable').length,stock:unit?.status==='Available'?[{productCode:unit.productCode,bloodGroup:unit.bloodGroup,available:1}]:[]});
+  if(path.endsWith('/Inventory'))return ok(pageData(unit&&(!body.status||body.status===unit.status||body.status==='ExpiringSoon'||body.status==='ThawQueue'&&['Reserved','Thawing'].includes(unit.status)&&!unit.thawCompletedAt)&&(!body.requestGuid||body.requestGuid===unit.requestGuid)?[unit]:[]));
+  if(path.endsWith('/LabHistory'))return ok(pageData(tests.map(t=>({unitCode:unit.unitCode,productCode:unit.productCode,bloodGroup:unit.bloodGroup,requestNumber:request.request.requestNumber,test:t}))));
   if(path.endsWith('/TemperatureHistory'))return ok(pageData(temps));
   if(path.endsWith('/BloodBank/Temperature')){
    temps.unshift({guid:'temp-'+temps.length,equipmentCode:body.equipmentCode,measuredAt:body.measuredAt,recordedAt:now(),temperature:body.temperature,assessment:body.assessment,notes:body.notes,actorUserGuid:unitGuid});
@@ -80,6 +81,7 @@ test('bank roles receive, inspect, record laboratory evidence, reserve, thaw, pr
  const shortExpiry=new Date(Date.now()+3600000).toISOString();
  await action('ثبت پایان ذوب',async()=>{await page.getByLabel('روش ذوب ثبت‌شده *').fill('Fixture procedure');await page.getByLabel('دمای اندازه‌گیری‌شده (°C) *').fill('35');await page.getByLabel('تاریخ انقضای مستند پس از ذوب (شمسی) *').fill(dateInput(shortExpiry));await page.getByLabel('ساعت محلی انقضای مستند *').fill(timeInput(shortExpiry));});
  await action('آماده‌سازی تحویل');await expect(page.getByText('آماده بررسی تحویل',{exact:true}).first()).toBeVisible();
+ await page.goto('/hemo/bank/lab-history');await expect(page.getByText('FIX-REPORT',{exact:false})).toBeVisible();
  await page.goto('/hemo/bank/temperature');await page.getByLabel('کد تجهیز *',{exact:true}).fill('FIX-FREEZER');await page.getByLabel('دمای اندازه‌گیری‌شده (°C) *').fill('9');await page.getByLabel('ارزیابی مستند *',{exact:true}).selectOption('Concern');await page.getByLabel('توضیحات و اقدام انجام‌شده').fill('Fixture concern');await page.getByRole('button',{name:'ثبت دما',exact:true}).click();await expect(page.getByText('اندازه‌گیری ثبت شد.',{exact:true})).toBeVisible();
  await page.goto('/hemo/bank/unit/'+unitGuid);await expect(page.getByText('قرنطینه',{exact:true}).first()).toBeVisible();await expect(page.getByRole('button',{name:'آماده‌سازی تحویل',exact:true})).toHaveCount(0);
  await action('لغو رزرو');role='supervisor';await page.goto('/hemo/bank/unit/'+unitGuid);await expect(page.getByRole('button',{name:'تأیید بازرسی',exact:true})).toHaveCount(0);await action('ثبت امحا');

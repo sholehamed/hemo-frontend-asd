@@ -12,6 +12,7 @@ export class AppComponent implements OnInit{
   readonly bankNav:{label:string;path:string;icon:string;cap:keyof BankCapabilities}[]=[
     {label:'داشبورد بانک خون',path:'/hemo/bank',icon:'▦',cap:'stats'},{label:'مدیریت موجودی',path:'/hemo/bank/inventory',icon:'☷',cap:'inventory'},
     {label:'دریافت فرآورده',path:'/hemo/bank/receive',icon:'＋',cap:'receive'},{label:'آزمایش و Crossmatch',path:'/hemo/bank/crossmatch',icon:'✓',cap:'inventory'},
+    {label:'تاریخچه آزمایش‌ها',path:'/hemo/bank/lab-history',icon:'◷',cap:'labHistory'},
     {label:'ذوب فرآورده‌ها',path:'/hemo/bank/thaw',icon:'◷',cap:'inventory'},{label:'پایش دمای تجهیزات',path:'/hemo/bank/temperature',icon:'↔',cap:'temperatureHistory'},
     {label:'گزارش‌های بانک خون',path:'/hemo/bank/reports',icon:'▥',cap:'stats'}
   ];
