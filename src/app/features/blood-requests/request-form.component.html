@@ -1,9 +1,10 @@
+@if(scope.isCurrent()){
 <section class="heading"><p class="eyebrow">درخواست خون / ثبت</p><h1>{{editGuid?'ویرایش پیش‌نویس یا درخواست برگشتی':source()==='Doctor'?'ثبت درخواست خون و فرآورده‌ها — پزشک':'ثبت درخواست خون — پرستار'}}</h1><p class="muted">ابتدا پذیرش بیمار را انتخاب کنید؛ درخواست پس از ثبت و ارسال، نیازمند تصمیم صریح پزشک است.</p></section>
-<app-request-state [loading]="busy()" [error]="error()"/>
-@if(!allowed()){<section class="panel"><h2>مجوز ثبت یا ویرایش درخواست ندارید.</h2></section>}@else if(ready()){
-<div class="wizard-steps">@for(s of steps;track s;let i=$index){<div [class.current]="step()===i+1" [class.done]="step()>i+1"><span>{{i+1}}</span>{{s}}</div>}</div>
+<app-request-state [loading]="busy()||auth.loading()||admissionAccess.loading()" [error]="error()"/>
+@if(auth.loading()||admissionAccess.loading()){}@else if(!allowed()){<section class="panel"><h2>مجوز ثبت یا ویرایش درخواست ندارید.</h2></section>}@else if(persistedGuid();as guid){<section class="panel">@if(saved()){<p role="status">{{saved()}}</p>}@else{<p>درخواست ذخیره شد؛ وضعیت فعلی را در جزئیات بررسی کنید.</p>}<a mat-button [routerLink]="['/hemo/requests/detail',guid]">مشاهده جزئیات</a></section>}@else if(ready()){
+<fieldset [disabled]="busy()" style="border:0;padding:0;margin:0;min-width:0"><div class="wizard-steps">@for(s of steps;track s;let i=$index){<div [class.current]="step()===i+1" [class.done]="step()>i+1"><span>{{i+1}}</span>{{s}}</div>}</div>
 @if(step()===1){
-@if(!editGuid&&!existing()){<app-admission-picker (selected)="selectPatient($event)"/>}
+@if(!editGuid&&!existing()){<app-admission-picker [disabled]="busy()" (selected)="selectPatient($event)"/>}
 @if(patient();as p){<section class="panel"><div class="patient-title"><h2>{{p.firstName}} {{p.lastName}}</h2><span class="status-pill" [class]="p.identityStatus">{{label(p.identityStatus)}}</span></div><div class="detail-grid"><div><small>شماره پرونده</small>{{p.hisNumber}}</div><div><small>شناسه هویتی</small>{{p.identificationNumber}}</div><div><small>بخش / تخت</small>{{p.ward}} / {{p.bedNumber}}</div><div><small>گروه خونی ثبت‌شده</small>{{p.bloodGroup||'نامشخص'}}</div><div><small>تولد</small>{{date(p.birthDate)||'نامشخص'}}</div></div>@if(p.identityStatus!=='Verified'){<div class="notice warn">پذیرش قابل انتخاب برای پیش‌نویس است؛ ارسال نیازمند تطبیق ثبت‌شده هویت است.</div>}@if(p.allergy||p.alloantibody||p.transfusionHistory==='Reaction'){<div class="notice warn">هشدار سابقه ثبت‌شده؛ بررسی بالینی لازم است.</div>}</section>}
 <section class="panel"><h2>نوع درخواست را انتخاب کنید</h2><div class="form-types">@for(form of forms();track form.code){<button type="button" class="form-type" [class.selected]="draft.formType===form.code" (click)="chooseForm(form.code)"><strong>{{form.label}}</strong><small>{{form.description}}</small></button>}</div></section>
 }
@@ -38,5 +39,7 @@
 <div class="actions wizard-actions">
 @if(step()>1){<button mat-stroked-button [disabled]="busy()" (click)="back()">مرحله قبل</button>}
 @if(step()<3){<button mat-flat-button class="primary-button" [disabled]="busy()||!patient()" (click)="next()">مرحله بعد</button>}@else{<button mat-stroked-button [disabled]="busy()" (click)="save(false)">ذخیره پیش‌نویس</button>@if(auth.requestCan('submit')){<button mat-flat-button class="primary-button" [disabled]="busy()" (click)="save(true)">ثبت و ارسال برای پزشک</button>}}
-<a mat-button routerLink="/hemo/requests">بازگشت به فهرست</a></div>
+<a mat-button routerLink="/hemo/requests">بازگشت به فهرست</a></div></fieldset>
 }
+
+} @else {<p role="alert">نقش یا نشست تغییر کرده است. <a routerLink="/">بازگشت به صفحه اصلی</a></p>}
