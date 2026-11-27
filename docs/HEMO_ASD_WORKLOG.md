@@ -116,3 +116,6 @@ Open gaps:
 - تکمیل فرم Raw با حجم تزریق‌شده ثبت‌شده، سرعت مشاهده‌شده، مراحل تکمیلی پایش و زمان واقعی واقعه. تست fixture چک‌لیست فقط پنج checkbox را انتخاب می‌کند. CI pending.
 
 - Run 46027240081: build/unit/regression passed, ST05 fixture failed to select the five checkboxes after changing selector to native name. Restored accessible role-based selection with exact count and dispatch diagnostic; added assertions for volume/rate payloads. Re-run final CI.
+
+## ST-06 | پوسته، گزارش اولیه و کارتابل‌ها
+- سرویس، تایپ قرارداد، capability و navigation، انتخاب حواله و گزارش مشاهده، فیلتر کارتابل پزشک/بانک/RCA/CAPA، داشبورد و نمودار شمارش. جزئیات و آرشیو در کامیت بعد؛ CI pending.

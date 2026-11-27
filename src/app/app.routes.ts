@@ -37,6 +37,15 @@ export const routes:Routes=[
  {path:'hemo/transfusion/returns',canActivate:[authGuard],data:{mode:'returns'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
  {path:'hemo/transfusion/records',canActivate:[authGuard],data:{mode:'records'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
  {path:'hemo/transfusion',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/transfusion/transfer-dashboard.component').then(m=>m.TransferDashboardComponent)},
+ {path:'hemo/hv/new',canActivate:[authGuard],loadComponent:()=>import('./features/hemovigilance/hv-create.component').then(m=>m.HvCreateComponent)},
+ {path:'hemo/hv/detail/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/hemovigilance/hv-detail.component').then(m=>m.HvDetailComponent)},
+ {path:'hemo/hv/reports',canActivate:[authGuard],loadComponent:()=>import('./features/hemovigilance/hv-reports.component').then(m=>m.HvReportsComponent)},
+ {path:'hemo/hv/cases',canActivate:[authGuard],data:{mode:'cases'},loadComponent:()=>import('./features/hemovigilance/hv-list.component').then(m=>m.HvListComponent)},
+ {path:'hemo/hv/doctor',canActivate:[authGuard],data:{mode:'doctor'},loadComponent:()=>import('./features/hemovigilance/hv-list.component').then(m=>m.HvListComponent)},
+ {path:'hemo/hv/bank',canActivate:[authGuard],data:{mode:'bank'},loadComponent:()=>import('./features/hemovigilance/hv-list.component').then(m=>m.HvListComponent)},
+ {path:'hemo/hv/rca',canActivate:[authGuard],data:{mode:'rca'},loadComponent:()=>import('./features/hemovigilance/hv-list.component').then(m=>m.HvListComponent)},
+ {path:'hemo/hv/capa',canActivate:[authGuard],data:{mode:'capa'},loadComponent:()=>import('./features/hemovigilance/hv-list.component').then(m=>m.HvListComponent)},
+ {path:'hemo/hv',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/hemovigilance/hv-dashboard.component').then(m=>m.HvDashboardComponent)},
  {path:'home',canActivate:[authGuard],loadComponent:()=>import('./features/home/home.component').then(m=>m.HomeComponent)},
  {path:'',pathMatch:'full',redirectTo:'home'},{path:'**',redirectTo:'home'}
 ];

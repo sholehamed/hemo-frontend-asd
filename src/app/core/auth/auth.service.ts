@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { HvCapabilities,HvCapability } from '../../features/hemovigilance/hv-model';
 import { TransferCapabilities,CapabilityKey } from '../../features/transfusion/transfer-model';
 import { BankCapabilities } from '../../features/blood-bank/bank-model';
 import { RequestCapabilities } from '../../features/blood-requests/blood-request-model';
@@ -21,10 +22,12 @@ export class AuthService {
   readonly requestCapabilities=signal<RequestCapabilities|null>(null);
   readonly bankCapabilities=signal<BankCapabilities|null>(null);
   readonly transferCapabilities=signal<TransferCapabilities|null>(null);
+  readonly hvCapabilities=signal<HvCapabilities|null>(null);
+  hvCan(key:HvCapability){return this.hvCapabilities()?.[key]===true;}
   transferCan(key:CapabilityKey){return this.transferCapabilities()?.[key]===true;}
   bankCan(key:keyof BankCapabilities){return this.bankCapabilities()?.[key]===true;}
   requestCan(key:keyof RequestCapabilities){return this.requestCapabilities()?.[key]===true;}
-  homePath(){return this.can('stats')&&this.can('list')?'/admission':this.requestCan('list')?'/hemo/requests':this.bankCan('stats')?'/hemo/bank':this.bankCan('inventory')?'/hemo/bank/inventory':this.bankCan('temperatureHistory')?'/hemo/bank/temperature':this.requestCan('bankQueue')?'/hemo/requests/bank':this.transferCan('stats')?'/hemo/transfusion':this.transferCan('list')?'/hemo/transfusion/tasks':this.transferCan('candidates')?'/hemo/transfusion/dispatch':this.can('list')?'/admission/list':'/admission';}
+  homePath(){return this.can('stats')&&this.can('list')?'/admission':this.requestCan('list')?'/hemo/requests':this.bankCan('stats')?'/hemo/bank':this.bankCan('inventory')?'/hemo/bank/inventory':this.bankCan('temperatureHistory')?'/hemo/bank/temperature':this.requestCan('bankQueue')?'/hemo/requests/bank':this.transferCan('stats')?'/hemo/transfusion':this.transferCan('list')?'/hemo/transfusion/tasks':this.transferCan('candidates')?'/hemo/transfusion/dispatch':this.hvCan('stats')?'/hemo/hv':this.hvCan('list')?'/hemo/hv/cases':this.hvCan('candidates')?'/hemo/hv/new':this.hvCan('reports')?'/hemo/hv/reports':this.can('list')?'/admission/list':'/admission';}
   can(key:keyof AdmissionCapabilities){return this.capabilities()?.[key]===true;}
   readonly checking=signal(false);
   async login(req:LoginRequest):Promise<'otp'|'password'|'ok'>{
@@ -37,7 +40,7 @@ export class AuthService {
   private setSession(token:Token){this.session.set(token);sessionStorage.setItem(KEY,JSON.stringify(token));}
   async refreshContext(){
     if(!this.loggedIn())return;
-    this.checking.set(true);this.allowed.set(false);this.capabilities.set(null);this.requestCapabilities.set(null);this.bankCapabilities.set(null);this.transferCapabilities.set(null);
+    this.checking.set(true);this.allowed.set(false);this.capabilities.set(null);this.requestCapabilities.set(null);this.bankCapabilities.set(null);this.transferCapabilities.set(null);this.hvCapabilities.set(null);
     try{
       const roles=await firstValueFrom(this.http.get<CurrentRole[]>('/Identity/UserRole/GetCurrentUserRoles'));
       this.roles.set(roles??[]);
@@ -45,14 +48,14 @@ export class AuthService {
       if(!current||!roles.length)return;
       if(!roles.some(r=>r.gkey===current.userRole))this.setSession({...current,userRole:roles[0].gkey});
       // Ask the real, scoped endpoint rather than trusting a client-side role label.
-      const [admission,requests,bank,transfer]=await Promise.allSettled([firstValueFrom(this.http.get<AdmissionCapabilities>('/Identity/PatientAdmission/Capabilities')),firstValueFrom(this.http.get<RequestCapabilities>('/Identity/BloodRequest/Capabilities')),firstValueFrom(this.http.get<BankCapabilities>('/Identity/BloodBank/Capabilities')),firstValueFrom(this.http.get<TransferCapabilities>('/Identity/Transfusion/Capabilities'))]);
+      const [admission,requests,bank,transfer,hv]=await Promise.allSettled([firstValueFrom(this.http.get<AdmissionCapabilities>('/Identity/PatientAdmission/Capabilities')),firstValueFrom(this.http.get<RequestCapabilities>('/Identity/BloodRequest/Capabilities')),firstValueFrom(this.http.get<BankCapabilities>('/Identity/BloodBank/Capabilities')),firstValueFrom(this.http.get<TransferCapabilities>('/Identity/Transfusion/Capabilities')),firstValueFrom(this.http.get<HvCapabilities>('/Identity/Hemovigilance/Capabilities'))]);
       if(!this.session())return;
       const caps=admission.status==='fulfilled'?admission.value:null;
       const req=requests.status==='fulfilled'?requests.value:null;
       const bankCaps=bank.status==='fulfilled'?bank.value:null;
       const txCaps=transfer.status==='fulfilled'?transfer.value:null;
-      this.capabilities.set(caps);this.requestCapabilities.set(req);this.bankCapabilities.set(bankCaps);this.transferCapabilities.set(txCaps);
-      this.allowed.set(Object.values(caps??{}).some(Boolean)||Object.values(req??{}).some(Boolean)||Object.values(bankCaps??{}).some(Boolean)||Object.values(txCaps??{}).some(v=>v===true));
+      this.capabilities.set(caps);this.requestCapabilities.set(req);this.bankCapabilities.set(bankCaps);this.transferCapabilities.set(txCaps);const hvCaps=hv.status==='fulfilled'?hv.value:null;this.hvCapabilities.set(hvCaps);
+      this.allowed.set(Object.values(caps??{}).some(Boolean)||Object.values(req??{}).some(Boolean)||Object.values(bankCaps??{}).some(Boolean)||Object.values(txCaps??{}).some(v=>v===true)||Object.values(hvCaps??{}).some(v=>v===true));
     }catch{this.allowed.set(false);}
     finally{this.checking.set(false);}
   }
@@ -61,5 +64,5 @@ export class AuthService {
     try{if(this.session())await firstValueFrom(this.http.get('/Identity/User/UserLogout'));}catch{/* clear local session regardless */}
     this.clear();
   }
-  clear(){this.session.set(null);this.roles.set([]);this.capabilities.set(null);this.requestCapabilities.set(null);this.bankCapabilities.set(null);this.transferCapabilities.set(null);this.allowed.set(false);sessionStorage.removeItem(KEY);}
+  clear(){this.session.set(null);this.roles.set([]);this.capabilities.set(null);this.requestCapabilities.set(null);this.bankCapabilities.set(null);this.transferCapabilities.set(null);this.hvCapabilities.set(null);this.allowed.set(false);sessionStorage.removeItem(KEY);}
 }

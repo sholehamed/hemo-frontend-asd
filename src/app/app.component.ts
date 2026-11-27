@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { HvCapability } from './features/hemovigilance/hv-model';
 import { CapabilityKey } from './features/transfusion/transfer-model';
 import { BankCapabilities } from './features/blood-bank/bank-model';
 import { AuthService } from './core/auth/auth.service';
@@ -25,6 +26,16 @@ export class AppComponent implements OnInit{
     {label:'پایش پزشک',path:'/hemo/transfusion/monitoring',icon:'✓',cap:'doctorNote'},
     {label:'مرجوعی فرآورده',path:'/hemo/transfusion/returns',icon:'↶',cap:'list'},
     {label:'پرونده و گزارش تزریق',path:'/hemo/transfusion/records',icon:'▥',cap:'list'}
+  ];
+  readonly hvNav:{label:string;path:string;icon:string;cap:HvCapability}[]=[
+    {label:'داشبورد هموویژیلانس',path:'/hemo/hv',icon:'▦',cap:'stats'},
+    {label:'گزارش واکنش جدید',path:'/hemo/hv/new',icon:'＋',cap:'report'},
+    {label:'پرونده واکنش‌ها',path:'/hemo/hv/cases',icon:'☷',cap:'list'},
+    {label:'بررسی پزشک',path:'/hemo/hv/doctor',icon:'✓',cap:'doctorReview'},
+    {label:'بررسی بانک خون',path:'/hemo/hv/bank',icon:'✓',cap:'bankReview'},
+    {label:'تحلیل ریشه‌ای RCA',path:'/hemo/hv/rca',icon:'◉',cap:'investigate'},
+    {label:'پیگیری اقدامات CAPA',path:'/hemo/hv/capa',icon:'↔',cap:'list'},
+    {label:'گزارش و آرشیو',path:'/hemo/hv/reports',icon:'▥',cap:'reports'}
   ];
   visible(path:string){
     if(path==='/admission')return this.auth.can('stats')&&this.auth.can('list');
