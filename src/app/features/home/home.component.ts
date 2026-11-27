@@ -1,12 +1,110 @@
-import { Component,OnInit,inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../core/auth/auth.service';
-import { RequestStateComponent } from '../../shared/components/request-state.component';
+import {Component,OnInit,inject,signal} from '@angular/core';
+import {RouterLink} from '@angular/router';
+import {MatButtonModule} from '@angular/material/button';
+import {AuthService} from '../../core/auth/auth.service';
+import {AdmissionsService} from '../../core/api/admissions.service';
+import {BloodRequestsService} from '../../core/api/blood-requests.service';
+import {BloodBankService} from '../../core/api/blood-bank.service';
+import {TransfusionService} from '../../core/api/transfusion.service';
+import {HemovigilanceService} from '../../core/api/hemovigilance.service';
+import {QualityService} from '../../core/api/quality.service';
+import {RequestStateComponent} from '../../shared/components/request-state.component';
+import {fa,downloadCsv} from '../../shared/admission-utils';
+import {isoToJalali} from '../../shared/jalali-date';
+import {DashboardLink,DashboardSection,Metric,Trend,metric,link,loadSection,fullWeeks,bar} from './dashboard-model';
 
-// The shell mounts this route only after capability discovery. Never redirect
-// from shell initialization, because a deep link may still be navigating.
-@Component({standalone:true,imports:[RequestStateComponent],template:'<app-request-state [loading]="true"/>'})
-export class HomeComponent implements OnInit {
- private auth=inject(AuthService);private router=inject(Router);
- ngOnInit(){void this.router.navigateByUrl(this.auth.homePath(),{replaceUrl:true});}
+@Component({standalone:true,imports:[RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./home.component.html',styleUrl:'./home.component.css'})
+export class HomeComponent implements OnInit{
+ readonly auth=inject(AuthService);
+ private admission=inject(AdmissionsService);private requests=inject(BloodRequestsService);private bank=inject(BloodBankService);
+ private tx=inject(TransfusionService);private hv=inject(HemovigilanceService);private quality=inject(QualityService);
+ readonly sections=signal<DashboardSection[]>([]);readonly busy=signal(false);readonly updated=signal<Date|null>(null);
+ readonly trends=signal<Trend[]>([]);readonly trendErrors=signal<string[]>([]);readonly trendBusy=signal(false);readonly trendRange=signal('');
+ readonly fa=fa;readonly bar=bar;
+ currentRole(){return this.auth.roles().find(r=>r.gkey===this.auth.session()?.userRole);}
+ ngOnInit(){void this.load();}
+ quickLinks():DashboardLink[]{
+  const a=this.auth, links:DashboardLink[]=[];
+  const add=(allowed:boolean,label:string,path:string,query?:Record<string,string>)=>{if(allowed)links.push(link(label,path,query));};
+  add(a.can('create'),'پذیرش جدید','/admission/new');
+  add(a.can('review')&&a.can('detail')&&a.can('list'),'تطبیق هویت','/admission/identity');
+  add(a.can('review')&&a.can('detail')&&a.can('list'),'کنترل ترخیص','/admission/discharge');
+  add(a.requestCan('nurseCreate'),'درخواست پرستاری','/hemo/requests/new');
+  add(a.requestCan('doctorCreate'),'ثبت دستور پزشک','/hemo/requests/orders');
+  add(a.requestCan('decide')&&a.requestCan('list'),'کارتابل تأیید پزشک','/hemo/requests/approval');
+  add(a.requestCan('bankQueue'),'صف بانک خون','/hemo/requests/bank');
+  add(a.bankCan('receive'),'دریافت فرآورده','/hemo/bank/receive');
+  add(a.bankCan('inventory')&&a.bankCan('test'),'آزمایش سازگاری','/hemo/bank/crossmatch');
+  add(a.transferCan('candidates')&&a.transferCan('dispatch'),'صدور حواله','/hemo/transfusion/dispatch');
+  add(a.transferCan('list')&&a.transferCan('receive'),'دریافت و تطبیق','/hemo/transfusion/tasks',{status:'Dispatched'});
+  add(a.transferCan('list')&&a.transferCan('witness'),'صف تطبیق دوم','/hemo/transfusion/tasks',{status:'Verified'});
+  add(a.transferCan('list')&&a.transferCan('vital'),'پایش علائم حیاتی','/hemo/transfusion/vitals');
+  add(a.transferCan('list')&&a.transferCan('doctorNote'),'پایش پزشک','/hemo/transfusion/monitoring');
+  add(a.hvCan('report')&&a.hvCan('candidates'),'گزارش واکنش','/hemo/hv/new');
+  add(a.hvCan('doctorReview')&&a.hvCan('list'),'بررسی واکنش پزشک','/hemo/hv/doctor');
+  add(a.hvCan('bankReview')&&a.hvCan('list'),'بررسی واکنش بانک','/hemo/hv/bank');
+  add(a.hvCan('investigate')&&a.hvCan('list'),'تحلیل RCA','/hemo/hv/rca');
+  add(a.hvCan('close')&&a.hvCan('list'),'بازبینی نهایی واکنش','/hemo/hv/cases',{status:'ReadyToClose'});
+  add(a.hvCan('list')&&(a.hvCan('capaProgress')||a.hvCan('capaVerify')),'اقدامات CAPA','/hemo/hv/capa');
+  add(a.qualityCan('equipmentList'),'سرویس و کالیبراسیون','/hemo/quality/maintenance');
+  add(a.qualityCan('incidents'),'حوادث تجهیزات','/hemo/quality/incidents');
+  add(a.qualityCan('qcList'),'کنترل کیفیت','/hemo/quality/qc');
+  add(a.qualityCan('committeeList'),'کمیته و مصوبات','/hemo/quality/committee');
+  add(a.qualityCan('auditList'),'ممیزی','/hemo/quality/audit');
+  add(a.qualityCan('trainingList'),'آموزش','/hemo/quality/training');
+  add(a.can('stats'),'گزارش پذیرش','/admission/stats');
+  add(a.bankCan('stats'),'گزارش بانک خون','/hemo/bank/reports');
+  add(a.hvCan('reports'),'آرشیو گزارش واکنش','/hemo/hv/reports');
+  add(a.qualityCan('stats'),'گزارش مدیریتی','/hemo/quality');
+  return links;
+ }
+ async load(){
+  if(this.busy())return;this.busy.set(true);this.sections.set([]);this.updated.set(null);
+  const a=this.auth, tasks:Promise<DashboardSection>[]=[];
+  const add=(id:string,title:string,description:string,links:DashboardLink[],read:()=>Promise<Metric[]>)=>tasks.push(loadSection(id,title,description,links,read));
+  const go=(allowed:boolean,path:string,query?:Record<string,string>)=>allowed?link('مشاهده رکوردها',path,query):undefined;
+  const links=(...items:(DashboardLink|undefined)[])=>items.filter((x):x is DashboardLink=>!!x);
+  if(a.can('stats'))add('admission','پذیرش و ایمنی هویت','کل پرونده‌های قابل مشاهده در مرکز جاری',links(go(true,'/admission/stats'),go(a.can('list'),'/admission/list')),async()=>{
+   const s=await this.admission.stats(),l=a.can('list');
+   return [metric('کل پذیرش‌ها',s.total,go(l,'/admission/list')),metric('بستری فعال',s.active,go(l,'/admission/list',{status:'Active'})),metric('هویت تأیید شده',s.verified,go(l,'/admission/list',{identity:'Verified'})),metric('مغایرت هویت',s.mismatch,go(l,'/admission/list',{identity:'Mismatch'}),true),metric('آماده بررسی ترخیص',s.ready,go(l,'/admission/list',{status:'ReadyForDischarge'}))];
+  });
+  const mine=a.requestCan('nurseCreate')&&!a.requestCan('decide');
+  if(a.requestCan('stats'))add('requests',mine?'درخواست‌های ثبت‌شده توسط من':'درخواست‌های فرآورده',mine?'محدود به درخواست‌های خود کاربر':'شمارش در محدوده مجاز نقش',links(go(a.requestCan('list'),'/hemo/requests',mine?{mine:'true'}:undefined)),async()=>{
+   const s=await this.requests.stats(mine);const r=(status:string)=>go(a.requestCan('list'),'/hemo/requests',{status,...(mine?{mine:'true'}:{})});
+   return [metric('کل درخواست‌ها',s.total),metric('پیش‌نویس',s.draft,r('Draft')),metric('در انتظار پزشک',s.awaitingDoctor,r('AwaitingDoctor'),true),metric('برگشت برای اصلاح',s.returned,r('Returned'),true),metric('تأیید و ارجاع بانک',s.awaitingBank,r('AwaitingBank')),metric('ردشده',s.rejected,r('Rejected')),metric('لغوشده',s.cancelled,r('Cancelled'))];
+  });
+  if(a.bankCan('stats'))add('bank','موجودی بانک خون','وضعیت ثبت‌شده واحدها؛ بدون پیش‌بینی یا توصیه بالینی',links(go(true,'/hemo/bank/reports')),async()=>{
+   const s=await this.bank.stats(),r=(status:string)=>go(a.bankCan('inventory'),'/hemo/bank/inventory',{status});
+   return [metric('آزاد',s.available,r('Available')),metric('رزروشده',s.reserved,r('Reserved')),metric('آماده بررسی تحویل',s.ready,r('Ready')),metric('نزدیک انقضا',s.expiringSoon,r('ExpiringSoon'),true),metric('منقضی',s.expired,r('Expired'),true),metric('نگرانی دما در ۲۴ ساعت',s.temperatureConcerns,go(a.bankCan('temperatureHistory'),'/hemo/bank/temperature'),true),metric('قرنطینه / انتظار بازرسی',s.hold,undefined,true),metric('مسدود فنی تجهیز',s.equipmentBlocked??0,undefined,true)];
+  });
+  if(a.transferCan('stats'))add('transfer','تحویل و تزریق','شمارش وضعیت حواله‌های قابل مشاهده؛ نه وظایف شخصی',links(go(true,'/hemo/transfusion')),async()=>{
+   const s=await this.tx.stats(),r=(status:string)=>go(a.transferCan('list'),'/hemo/transfusion/tasks',{status});
+   return [metric('در مسیر بخش',s.dispatched,r('Dispatched')),metric('دریافت شده',s.received,r('Received')),metric('در انتظار تطبیق دوم',s.verified,r('Verified')),metric('در حال تزریق',s.inProgress,r('InProgress')),metric('پایان ثبت‌شده',s.completed,r('Completed')),metric('مغایرت دریافت',s.receiptHold,r('ReceiptHold'),true),metric('توقف ثبت‌شده',s.stopped,r('Stopped'),true),metric('در مسیر برگشت',s.returning,r('Returning'),true)];
+  });
+  if(a.hvCan('stats'))add('hv','واکنش و هموویژیلانس','پرونده‌ها و پیگیری ثبت‌شده؛ بدون استنباط نرخ واکنش',links(go(true,'/hemo/hv')),async()=>{
+   const s=await this.hv.stats(),r=(status:string)=>go(a.hvCan('list'),'/hemo/hv/cases',{status});
+   return [metric('پرونده باز',s.open,r('Open'),true),metric('در انتظار پزشک',s.pendingDoctor,r('Reported'),true),metric('در انتظار بانک',s.pendingBank,r('DoctorReviewed'),true),metric('RCA باز',s.rcaOpen,r('RcaOpen'),true),metric('CAPA باز',s.capaOpen,undefined,true),metric('CAPA سررسید گذشته',s.capaOverdue,undefined,true),metric('گزارش بیرونی موردنیاز',s.externalPending,undefined,true)];
+  });
+  if(a.qualityCan('equipmentStats'))add('equipment','تجهیزات و زنجیره سرما','وضعیت ثبت‌شده تجهیزات؛ پایش زنده حسگر نیست',links(go(true,'/hemo/quality/equipment-dashboard')),async()=>{
+   const s=await this.quality.equipmentStats(),r=(status:string)=>go(a.qualityCan('equipmentList'),'/hemo/quality/equipment',{status});
+   return [metric('کل تجهیزات',s.total),metric('عملیاتی',s.operational,r('Operational')),metric('توقف فنی',s.hold,r('Hold'),true),metric('سررسید گذشته',s.serviceDue,go(a.qualityCan('equipmentList'),'/hemo/quality/maintenance'),true),metric('حادثه باز',s.openIncidents,undefined,true),metric('کد فاقد شناسنامه',s.legacyCodes,undefined,true)];
+  });
+  if(a.qualityCan('stats'))add('quality','مدیریت کیفیت','۳۰ روز اخیر (UTC)؛ شمارش رویدادهای ثبت‌شده، نه نرخ انطباق',links(go(true,'/hemo/quality')),async()=>{
+   const to=new Date(),from=new Date(to.getTime()-30*86400000),s=await this.quality.stats({from:from.toISOString(),to:to.toISOString()});
+   return [metric('کنترل کیفیت',s.qcRecords),metric('QC در انتظار بازبینی',s.qcAwaitingReview,go(a.qualityCan('qcList'),'/hemo/quality/qc'),true),metric('جلسه کمیته',s.committeeMeetings),metric('مصوبه باز',s.openResolutions,undefined,true),metric('مصوبه معوق',s.overdueResolutions,undefined,true),metric('ممیزی',s.audits),metric('دوره آموزش',s.trainingCourses),metric('پایان تزریق ثبت‌شده',s.products.reduce((n,p)=>n+p.completed,0))];
+  });
+  try{this.sections.set(await Promise.all(tasks));this.updated.set(new Date());}finally{this.busy.set(false);}
+ }
+ canCompare(){return this.auth.can('stats')||this.auth.hvCan('stats')||this.auth.qualityCan('stats');}
+ async compare(){
+  if(this.trendBusy())return;this.trendBusy.set(true);this.trends.set([]);this.trendErrors.set([]);
+  const {current:c,previous:p}=fullWeeks(new Date()), tasks:Promise<Trend[]>[]=[];
+  this.trendRange.set(isoToJalali(c.fromDate)+' تا '+isoToJalali(c.toDate)+' / '+isoToJalali(p.fromDate)+' تا '+isoToJalali(p.toDate));
+  const add=async(name:string,read:()=>Promise<Trend[]>)=>{try{return await read();}catch{this.trendErrors.update(x=>[...x,name]);return [];}};
+  if(this.auth.can('stats'))tasks.push(add('پذیرش',async()=>{const [x,y]=await Promise.all([this.admission.stats({from:c.fromDate,to:c.toDate}),this.admission.stats({from:p.fromDate,to:p.toDate})]);return [{label:'پذیرش‌ها',current:x.total,previous:y.total}];}));
+  if(this.auth.hvCan('stats'))tasks.push(add('هموویژیلانس',async()=>{const [x,y]=await Promise.all([this.hv.stats({from:c.from,to:c.to}),this.hv.stats({from:p.from,to:p.to})]);return [{label:'واکنش ثبت‌شده بر اساس بروز',current:x.total,previous:y.total},{label:'تزریق شروع‌شده',current:x.startedTransfers,previous:y.startedTransfers}];}));
+  if(this.auth.qualityCan('stats'))tasks.push(add('کیفیت',async()=>{const [x,y]=await Promise.all([this.quality.stats({from:c.from,to:c.to}),this.quality.stats({from:p.from,to:p.to})]);return [{label:'QC ثبت‌شده',current:x.qcRecords,previous:y.qcRecords},{label:'پایان تزریق ثبت‌شده',current:x.products.reduce((n,r)=>n+r.completed,0),previous:y.products.reduce((n,r)=>n+r.completed,0)}];}));
+  try{this.trends.set((await Promise.all(tasks)).flat());}finally{this.trendBusy.set(false);}
+ }
+ export(){downloadCsv('hemo-role-dashboard.csv',[['ماژول','بازه / محدوده','شاخص','تعداد'],...this.sections().flatMap(s=>s.error?[[s.title,s.description,'آمار در دسترس نیست','']]:s.metrics.map(m=>[s.title,s.description,m.label,m.value])),['مقایسه',this.trendRange(),'شاخص','هفته اخیر کامل','هفته قبل'],...this.trends().map(t=>['مقایسه',this.trendRange(),t.label,t.current,t.previous])]);}
 }
