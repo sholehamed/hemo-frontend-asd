@@ -97,5 +97,8 @@ test('ST08: administrative clearance surfaces server rejection without changing 
  await page.getByRole('button',{name:'ثبت بررسی و آماده‌سازی پرونده ترخیص'}).click();
  await expect(page.getByText('گردش خون باز است؛ ابتدا وضعیت واحد را تعیین تکلیف کنید.')).toBeVisible();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toHaveCount(0);
- await expect(page.getByText('بستری فعال',{exact:true})).toBeVisible();
+ const admissionStatus=page.locator('.detail-grid > div').filter({has:page.getByText('وضعیت بستری',{exact:true})});
+ await expect(admissionStatus).toHaveCount(1);
+ await expect(admissionStatus).toContainText('بستری فعال');
+ await expect(admissionStatus).not.toContainText('آماده بررسی ترخیص');
 });
