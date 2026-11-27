@@ -51,7 +51,9 @@ test('bank roles receive, inspect, record laboratory evidence, reserve, thaw, pr
   return ok({detail:'Unexpected '+path},404);
  });
  const action=async(name,extra)=>{await page.getByRole('button',{name,exact:true}).click();await page.getByLabel('شرح اقدام مستند *').fill('ثبت آزمایشی');if(extra)await extra();await page.getByRole('button',{name:'ثبت اقدام',exact:true}).click();await expect(page.getByText('عملیات ثبت شد: '+name,{exact:true})).toBeVisible();};
- await page.goto('/');await expect(page).toHaveURL(/\/hemo\/bank$/);await expect(page.getByRole('heading',{name:'داشبورد کارشناس بانک خون'})).toBeVisible();
+ await page.goto('/');await expect(page).toHaveURL(/\/home$/);await expect(page.getByRole('heading',{name:'داشبورد نقش سازمانی'})).toBeVisible();
+ await expect(page.locator('[data-module="bank"]')).toBeVisible();
+ await page.getByRole('link',{name:'داشبورد بانک خون',exact:true}).click();await expect(page).toHaveURL(/\/hemo\/bank$/);await expect(page.getByRole('heading',{name:'داشبورد کارشناس بانک خون'})).toBeVisible();
  await page.goto('/hemo/bank/temperature');
  await page.getByLabel('کد تجهیز *',{exact:true}).fill('FIX-FREEZER');
  await page.getByLabel('دمای اندازه‌گیری‌شده (°C) *',{exact:true}).fill('-25');
