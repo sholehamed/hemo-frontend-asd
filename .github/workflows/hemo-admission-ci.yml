@@ -46,17 +46,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: st09-baseline/.node-version
-      - name: Resolve or restore isolated ST09 lockfile
+      - name: Install verified ST09 dependency lock
         shell: bash
         run: |
           set -euo pipefail
-          lock=../integration/docs/legacy/st09-browser-package-lock.json
-          if [ -f "$lock" ]; then
-            cp "$lock" package-lock.json
-          else
-            # One-time bootstrap only. Keep the verified lock for future runs.
-            npm install --package-lock-only --ignore-scripts --no-audit --no-fund --prefer-online
-          fi
+          cp ../integration/docs/legacy/st09-browser-package-lock.json package-lock.json
           npm ci --no-audit --no-fund --prefer-online --fetch-retries=3
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
@@ -67,10 +61,3 @@ jobs:
           name: st09-browser-package-lock
           path: st09-baseline/package-lock.json
           if-no-files-found: error
-      - name: Emit verified lockfile for repository import
-        shell: bash
-        run: |
-          if [ ! -f ../integration/docs/legacy/st09-browser-package-lock.json ]; then
-            # Only public npm package metadata, no environment or credential data.
-            base64 -w 120 package-lock.json | sed 's/^/ST09_LOCK_CHUNK:/'
-          fi

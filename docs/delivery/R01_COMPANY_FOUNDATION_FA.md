@@ -24,3 +24,6 @@
 - Build/test کد جاری Angular19 موفق، اما npm install مربوط به Snapshot Angular22 در دریافت @babel/helpers 8.1.4 با E404 متوقف شد. Snapshot هیچ lockfile ندارد. خطا پیش از اجرای Playwright است.
 - Job Snapshot در workspace مستقل، با lockfile اختصاصی docs/legacy/st09-browser-package-lock.json و npm ci اجرا می‌شود. تا زمانی که lockfile ثبت نشده است، یک بار resolve از registry و npm ci با prefer-online انجام می‌شود. پس از موفقیت E2E، lock به شکل artifact و metadata قابل import ثبت می‌شود؛ این مرحله هیچ دسترسی نوشتن به ریپو ندارد. Lock اصلی Angular19 دست نخورده است.
 - در صورت شکست مجدد دریافت tarball، خطای واقعی registry بررسی شود؛ نه حذف/skip کردن تست و نه override حدسی. نتیجه CI و ثبت lock نهایی هنوز تایید نشده است.
+
+### تثبیت Lockfile اختصاصی ST09
+اجرای 46058990082 موفق: 36 Node + 41 Karma و Build نسخه جاری؛ 11 Playwright روی snapshot ثابت. Lockfile دقیق همین اجرای موفق (374 package entries، Angular 22.2.6، Playwright 1.52.0) پس از تطبیق manifest و بررسی registry در docs/legacy/st09-browser-package-lock.json ثبت شد. اکنون job فقط npm ci روی lock اختصاصی انجام می‌دهد؛ مرحله resolve و خروجی base64 حذف شد. Lockfile اصلی Angular19 تغییر نکرد. صحت اجرای مجدد با lock ثبت‌شده هنوز باید توسط CI تأیید شود.
