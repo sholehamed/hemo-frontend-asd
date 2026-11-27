@@ -21,7 +21,12 @@ import { isoToJalali } from '../../shared/jalali-date';
 <section class="panel"><div class="patient-title"><h2>{{p.firstName}} {{p.lastName}} <span class="status-pill" [class]="p.identityStatus">{{label(p.identityStatus)}}</span></h2><span class="mono">{{p.hisNumber}}</span></div>
 <div class="detail-grid" style="margin-top:12px"><div><small>نوع شناسه</small>{{label(p.identificationType)}}</div><div><small>شناسه هویتی</small><span class="mono">{{p.identificationNumber}}</span></div><div><small>تاریخ تولد</small>{{date(p.birthDate)||'نامشخص'}}</div><div><small>جنسیت</small>{{label(p.gender)}}</div><div><small>تاریخ پذیرش</small>{{date(p.admittedAt)}}</div><div><small>گروه خونی ثبت‌شده</small>{{p.bloodGroup||'نامشخص'}}</div><div><small>بخش / تخت</small>{{p.ward}} / {{p.bedNumber}}</div><div><small>پزشک معالج</small>{{p.physician}}</div><div><small>وضعیت</small>{{label(p.status)}}</div></div>
 @if(p.allergy||p.alloantibody||p.transfusionHistory==='Reaction'){<div class="notice warn">هشدار سابقه: اطلاعات ثبت‌شده را پیش از اقدام بررسی کنید.</div>}
-<!-- Other clinical destinations will be reconnected as their routes become active. -->
+@if(auth.can('list')&&auth.can('detail')&&auth.can('reviews')){
+<div class="actions"><a mat-stroked-button routerLink="/admission/identity" [queryParams]="{guid:p.guid}">تطبیق هویت</a>
+@if(auth.can('history')){<a mat-stroked-button routerLink="/admission/history" [queryParams]="{guid:p.guid}">بررسی سوابق</a>}
+<a mat-stroked-button routerLink="/admission/discharge" [queryParams]="{guid:p.guid}">کنترل ترخیص</a></div>
+}
+<!-- Other module destinations remain dormant until their routes are connected. -->
 </section>
 <app-wristband [patient]="p"/>
 @if(auth.can('identity')){<app-patient-identity-edit [patient]="p" (saved)="identitySaved()"/>}
