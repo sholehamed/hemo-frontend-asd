@@ -1,0 +1,27 @@
+name: R01 Company foundation verification
+on:
+  pull_request:
+    branches: [feature/st-09-dashboards]
+permissions:
+  contents: read
+jobs:
+  company-build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: npm ci --no-audit --no-fund
+      - run: npm ls @angular/core @angular/cli primeng typescript
+      - run: npm run test:hemo
+      - run: npm run build
+  company-tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: npm ci --no-audit --no-fund
+      - run: npm test -- --watch=false --browsers=ChromeHeadless
