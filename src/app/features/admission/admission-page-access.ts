@@ -12,16 +12,18 @@ export class AdmissionPageAccess {
   private readonly transport=inject(HemoCompanyHttp);
   private readonly caps=signal<AdmissionCapabilities|null>(null);
   readonly loading=signal(false);
+  private generation=0;
   can(key:keyof AdmissionCapabilities):boolean {
     return this.scope.isCurrent()&&this.caps()?.[key]===true;
   }
   async load():Promise<void>{
     if(!this.scope.isCurrent())return;
+    const generation=++this.generation;
     this.caps.set(null);this.loading.set(true);
     try{
       const caps=await firstValueFrom(this.transport.get<AdmissionCapabilities>('/Identity/PatientAdmission/Capabilities'));
-      if(this.scope.isCurrent())this.caps.set(caps??null);
+      if(this.scope.isCurrent()&&generation===this.generation)this.caps.set(caps??null);
     }catch{/* fail closed */}
-    finally{if(this.scope.isCurrent())this.loading.set(false);}
+    finally{if(this.scope.isCurrent()&&generation===this.generation)this.loading.set(false);}
   }
 }
