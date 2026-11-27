@@ -1,0 +1,8 @@
+# R02 — ورود با فرم اصلی شرکت و context تخصصی
+بک‌اند: PR12 merged 467fab5e، 120/120 تست (107 + 13 SQL)، منوی /Hemo خصوصی و پایلوت فعال.
+- فرم Login، CAPTCHA، InputString، InputPassword، AuthService، AuthInterceptor و ساختار Session شرکت مجدداً استفاده شده‌اند. فقط در route auth/login یک provider اختیاری برای context HEMO تعریف شد؛ مسیر پیش‌فرض UserClient.login در نبود provider بدون تغییر است.
+- HemoLoginClient از HemoCompanyHttp و DTO تولیدشده شرکت استفاده می‌کند و همان endpoint موجود /Identity/HemoSession/Login را صدا می‌زند. این endpoint همان UserLoginCommand را با ForHemo اجرا می‌کند؛ captcha/password/OTP/issue token در backend موجود است. ساخت احراز هویت مستقل، token store یا login UI دوم انجام نشده.
+- صفحه موجود برای context اختیاری OTP را با captcha جدید دریافت می‌کند، marker otp و force-change-password یا role نامعتبر را ذخیره نمی‌کند، دوباره‌ارسال را محدود می‌کند و روی موفقیت SetUserRole سپس SetToken اصلی را صدا می‌زند. force-change-password صرفاً مسدود و پیام داده می‌شود؛ مسیر تغییر رمز واقعی در این پروژه هنوز تایید نشده است.
+- RefreshToken اصلی از UserRoleهای فعال موجود در claims استفاده می‌کند. GetToken عادی بدون package فقط نقش عمومی مدیریتی را می‌پذیرد؛ به همین دلیل از HemoSession موجود استفاده شد، نه اعطای نقش عمومی یا پکیج فرضی. SSO/Package واقعی و تست کامل refresh/login با backend واقعی باقی مانده‌اند.
+- شش تست جدید برای ورود اختیاری، default، OTP، password، role، late response و adapter. این تست‌ها mock هستند؛ CI جدید هنوز تأیید نشده. ورود واقعی با captcha/SMS/seed و route تغییر رمز، lifecycle تغییر نقش و حذف auth موازی، بقیه routeها در ادامه R02.
+- هیچ تغییر backend، schema، environment، AuthService، AuthInterceptor یا shared CAPTCHA انجام نشده. تغییرات Shared محدود به extension اختیاری همان فرم و route موجود است.
