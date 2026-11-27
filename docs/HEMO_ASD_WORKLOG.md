@@ -72,3 +72,7 @@ Open gaps:
 - GitHub Actions run 46013829530: npm install PASS, npm test 9/9 PASS, Angular build PASS (initial budget warning 24.80 kB); browser installation FAIL because ubuntu-latest resolves to Ubuntu 26.04, unsupported by Playwright 1.52. E2E not run in that attempt. Pin CI runner to Ubuntu 24.04 for compatibility, without changing application libraries.
 - Independently executed 5 utility tests using exact SHA-verified source/test blobs in Node 22.16: PASS 5/5.
 - PR #2 remains draft pending successful browser checks and real environment verification.
+
+## ST-03 | آغاز توسعه
+- ST-01/ST-02 Merge شدند؛ 9/9 unit + 3/3 browser fixtures و Build PASS (PR #2). شاخه feature/st-03-blood-requests از main ساخته شد.
+- استخراج مسیرها و فرم‌ها از Raw؛ مدل تایپ‌شده اقلام، وضعیت‌ها و قواعد ساختاری به همراه دو تست جدید و برنامه reuse کامپوننت‌های پذیرش. هنوز Route، API یا رفتار نمایشی ناقص به main اضافه نشده است.
