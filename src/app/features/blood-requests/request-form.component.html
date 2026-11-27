@@ -1,7 +1,7 @@
 @if(scope.isCurrent()){
 <section class="heading"><p class="eyebrow">درخواست خون / ثبت</p><h1>{{editGuid?'ویرایش پیش‌نویس یا درخواست برگشتی':source()==='Doctor'?'ثبت درخواست خون و فرآورده‌ها — پزشک':'ثبت درخواست خون — پرستار'}}</h1><p class="muted">ابتدا پذیرش بیمار را انتخاب کنید؛ درخواست پس از ثبت و ارسال، نیازمند تصمیم صریح پزشک است.</p></section>
 <app-request-state [loading]="busy()||auth.loading()||admissionAccess.loading()" [error]="error()"/>
-@if(auth.loading()||admissionAccess.loading()){}@else if(!allowed()){<section class="panel"><h2>مجوز ثبت یا ویرایش درخواست ندارید.</h2></section>}@else if(persistedGuid();as guid){<section class="panel">@if(saved()){<p role="status">{{saved()}}</p>}@else{<p>درخواست ذخیره شد؛ وضعیت فعلی را در جزئیات بررسی کنید.</p>}<a mat-button [routerLink]="['/hemo/requests/detail',guid]">مشاهده جزئیات</a></section>}@else if(ready()){
+@if(auth.loading()||admissionAccess.loading()){}@else if(!allowed()){<section class="panel"><h2>مجوز ثبت یا ویرایش درخواست ندارید.</h2></section>}@else if(persistedGuid()){<section class="panel">@if(saved()){<p role="status">{{saved()}}</p>}@else{<p>درخواست ذخیره شد؛ وضعیت فعلی را در جزئیات بررسی کنید.</p>}<a mat-button [routerLink]="['/hemo/requests/detail',persistedGuid()]">مشاهده جزئیات</a></section>}@else if(ready()){
 <fieldset [disabled]="busy()" style="border:0;padding:0;margin:0;min-width:0"><div class="wizard-steps">@for(s of steps;track s;let i=$index){<div [class.current]="step()===i+1" [class.done]="step()>i+1"><span>{{i+1}}</span>{{s}}</div>}</div>
 @if(step()===1){
 @if(!editGuid&&!existing()){<app-admission-picker [disabled]="busy()" (selected)="selectPatient($event)"/>}
