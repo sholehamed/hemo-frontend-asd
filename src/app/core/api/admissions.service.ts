@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpParams } from '@angular/common/http';
+import { HemoCompanyHttp } from './hemo-company-http';
 import { firstValueFrom } from 'rxjs';
 export interface PatientIdentity {guid:string;firstName:string;lastName:string;fatherName:string|null;birthDate:string|null;gender:string;mobile:string|null}
 export interface CreateAdmission {
@@ -18,7 +19,7 @@ export interface UpdateAdmission {guid:string;ward:string;bedNumber:string;physi
 export interface UpdatePatientIdentity {guid:string;identificationType:string;identificationNumber:string;firstName:string;lastName:string;fatherName:string|null;birthDate:string|null;gender:string;mobile:string|null;reason:string;version:string}
 @Injectable({providedIn:'root'})
 export class AdmissionsService {
-  private readonly http=inject(HttpClient);private readonly url='/Identity/PatientAdmission';
+  private readonly http=inject(HemoCompanyHttp);private readonly url='/Identity/PatientAdmission';
   list(filters:AdmissionFilters={}){return firstValueFrom(this.http.post<AdmissionPage>(this.url+'/BindPaging',filters));}
   get(guid:string){return firstValueFrom(this.http.get<AdmissionView>(this.url+'/'+encodeURIComponent(guid)));}
   find(identificationType:string,identificationNumber:string){return firstValueFrom(this.http.get<PatientIdentity|null>(this.url+'/FindPatient',{params:new HttpParams().set('identificationType',identificationType).set('identificationNumber',identificationNumber)}));}
