@@ -38,10 +38,6 @@ export class DropdownComponent implements OnInit {
 
     SelectedData: any = null;
     ViewInit = false;
-    ngAfterViewInit() {
-        this.ViewInit = true;
-
-    }
     constructor(private http: HttpClient) {
     }
     ngModelChange(value: any) {
@@ -52,6 +48,7 @@ export class DropdownComponent implements OnInit {
 
     ngOnInit(): void {
         this.Name = StaticFunctions.GetUUID();
+        this.ViewInit = true;
        
     }
 

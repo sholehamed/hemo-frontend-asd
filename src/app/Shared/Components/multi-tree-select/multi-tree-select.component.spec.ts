@@ -9,7 +9,7 @@ import { MultiTreeSelectComponent } from './multi-tree-select.component';
 @Component({
   standalone: true,
   imports: [FormsModule, MultiTreeSelectComponent],
-  template: '<form><app-multi-tree-select></app-multi-tree-select></form>'
+  template: '<form><app-multi-tree-select Name="fixtureTree"></app-multi-tree-select></form>'
 })
 class HostComponent {}
 
@@ -30,5 +30,14 @@ describe('MultiTreeSelectComponent', () => {
   afterEach(() => TestBed.inject(HttpTestingController).verify());
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('p-treeSelect'))).not.toBeNull();
+  });
+  it('emits identifiers for multiple selected nodes', () => {
+    const nodes = [{ GUID: 'a', Name: 'اول' }, { GUID: 'b', Name: 'دوم' }];
+    spyOn(component.DataValueChange, 'emit');
+    spyOn(component.DataChange, 'emit');
+    component.ngModelChange(nodes);
+    expect(component.DataValueChange.emit).toHaveBeenCalledWith(['a', 'b']);
+    expect(component.DataChange.emit).toHaveBeenCalledWith(nodes);
   });
 });

@@ -30,5 +30,14 @@ describe('DropdownComponent', () => {
   afterEach(() => TestBed.inject(HttpTestingController).verify());
   it('should create', () => {
     expect(component).toBeTruthy();
+    expect(fixture.debugElement.query(By.css('p-dropdown'))).not.toBeNull();
+  });
+  it('emits the configured identifier and selected object', () => {
+    const option = { guid: 'fixture-option', name: 'گزینه آزمون' };
+    spyOn(component.DataValueChange, 'emit');
+    spyOn(component.DataChange, 'emit');
+    component.ngModelChange(option);
+    expect(component.DataValueChange.emit).toHaveBeenCalledWith(option.guid);
+    expect(component.DataChange.emit).toHaveBeenCalledWith(option);
   });
 });

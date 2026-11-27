@@ -7,3 +7,9 @@
 - CI مستقل PR به ST09: npm ci، npm ls، HEMO unit/model/static tests، build شرکت؛ job مستقل Karma شرکت. دو تست جدید قرارداد bootstrap/lock/scripts/assets. وضعیت نتیجه CI هنگام ثبت: pending.
 - R02: افزودن lazy routes HEMO به layout شرکت، HemoContextService به جای AuthService دوم، قرارداد نقش/Url/SystemGUID/menu و API host، سازگاری خطاها، تست واقعی و browser. تا R07 merge به main یا انتشار ممنوع.
 - محدودیت: هیچ آزمون اتصال واقعی به API شرکت در R01 انجام نشده. تنظیمات محیط یا امنیتی تغییر داده نشده؛ اصلاح مشکلات احتمالی baseline فقط با مستندات و محدوده روشن.
+
+## نتیجه بازبینی تست‌های قدیمی شرکت
+- CI 46044951398: Build و 35 تست HEMO/R01 موفق؛ Karma در Typeهای Jasmine شکست خورد. اصلاح فقط tsconfig.spec.json.
+- CI 46045110119: Karma اجرا شد؛ 18 شکست از 22 مورد به علت Standalone declarations و Providerهای غایب. تست‌ها در Host واقعی NgForm و با HttpTestingController و وابستگی‌های آزمایشی اصلاح شدند؛ هیچ تست حذف یا skip نشد.
+- CI 46046102901: Build موفق؛ 20/22 تست Karma موفق. دو خطای واقعی در Dropdown (تغییر ViewInit بعد از بررسی View، NG0100) و MultiTreeSelect (imports غایب، NG0301) باقی ماندند.
+- اصلاح محدود در دو کامپوننت موجود: انتقال ViewInit به ngOnInit بدون تغییر interface، افزودن FormsModule/NgIf/TreeSelectModule، حذف binding تکراری در قالب MultiTreeSelect. دو تست قرارداد انتخاب و بررسی render اضافه شد. تغییر به Shared صرفاً رفع خطای اثبات‌شده است؛ Auth/Menu/Identity/Backend تغییر نکرده. CI جدید هنوز تایید نشده است.
