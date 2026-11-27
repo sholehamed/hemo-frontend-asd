@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { CapabilityKey } from './features/transfusion/transfer-model';
 import { BankCapabilities } from './features/blood-bank/bank-model';
 import { AuthService } from './core/auth/auth.service';
 import { RequestStateComponent } from './shared/components/request-state.component';
@@ -15,6 +16,15 @@ export class AppComponent implements OnInit{
     {label:'تاریخچه آزمایش‌ها',path:'/hemo/bank/lab-history',icon:'◷',cap:'labHistory'},
     {label:'ذوب فرآورده‌ها',path:'/hemo/bank/thaw',icon:'◷',cap:'inventory'},{label:'پایش دمای تجهیزات',path:'/hemo/bank/temperature',icon:'↔',cap:'temperatureHistory'},
     {label:'گزارش‌های بانک خون',path:'/hemo/bank/reports',icon:'▥',cap:'stats'}
+  ];
+  readonly transferNav:{label:string;path:string;icon:string;cap:CapabilityKey}[]=[
+    {label:'داشبورد تحویل و تزریق',path:'/hemo/transfusion',icon:'▦',cap:'stats'},
+    {label:'صدور و ارسال به بخش',path:'/hemo/transfusion/dispatch',icon:'⇥',cap:'candidates'},
+    {label:'کارتابل تحویل و تزریق',path:'/hemo/transfusion/tasks',icon:'☷',cap:'list'},
+    {label:'پایش علائم حیاتی',path:'/hemo/transfusion/vitals',icon:'♡',cap:'vital'},
+    {label:'پایش پزشک',path:'/hemo/transfusion/monitoring',icon:'✓',cap:'doctorNote'},
+    {label:'مرجوعی فرآورده',path:'/hemo/transfusion/returns',icon:'↶',cap:'list'},
+    {label:'پرونده و گزارش تزریق',path:'/hemo/transfusion/records',icon:'▥',cap:'list'}
   ];
   visible(path:string){
     if(path==='/admission')return this.auth.can('stats')&&this.auth.can('list');

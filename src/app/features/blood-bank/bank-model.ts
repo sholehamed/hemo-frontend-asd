@@ -1,7 +1,7 @@
-export type UnitStatus='ReceivedHold'|'Available'|'Reserved'|'Thawing'|'Ready'|'Quarantined'|'Discarded';
+export type UnitStatus='ReceivedHold'|'Available'|'Reserved'|'Thawing'|'Ready'|'Quarantined'|'Discarded'|'Issued'|'Transfused'|'TransfusionStopped'|'Returning'|'ReturnedHold'|'ReturnedDisposed';
 export type BankAction='Inspect'|'Reserve'|'StartThaw'|'FinishThaw'|'Ready'|'Hold'|'Unreserve'|'Discard';
-export const UNIT_STATUS:Record<UnitStatus,string>={ReceivedHold:'در انتظار بازرسی',Available:'موجودی آزاد',Reserved:'رزرو شده',Thawing:'در حال ذوب',Ready:'آماده بررسی تحویل',Quarantined:'قرنطینه',Discarded:'امحا ثبت شده'};
-export const BANK_ACTION:Record<string,string>={Receive:'دریافت',Inspect:'تأیید بازرسی',Reserve:'رزرو',StartThaw:'شروع ذوب',FinishThaw:'ثبت پایان ذوب',Ready:'آماده‌سازی تحویل',Hold:'قرنطینه',Unreserve:'لغو رزرو',Discard:'ثبت امحا',Test:'ثبت آزمایش',TemperatureHold:'توقف دمایی'};
+export const UNIT_STATUS:Record<UnitStatus,string>={ReceivedHold:'در انتظار بازرسی',Available:'موجودی آزاد',Reserved:'رزرو شده',Thawing:'در حال ذوب',Ready:'آماده بررسی تحویل',Quarantined:'قرنطینه',Discarded:'امحا ثبت شده',Issued:'ارسال به بخش',Transfused:'تزریق ثبت‌شده',TransfusionStopped:'توقف تزریق',Returning:'در مسیر برگشت',ReturnedHold:'قرنطینه مرجوعی',ReturnedDisposed:'امحای مرجوعی ثبت‌شده'};
+export const BANK_ACTION:Record<string,string>={Receive:'دریافت',Inspect:'تأیید بازرسی',Reserve:'رزرو',StartThaw:'شروع ذوب',FinishThaw:'ثبت پایان ذوب',Ready:'آماده‌سازی تحویل',Hold:'قرنطینه',Unreserve:'لغو رزرو',Discard:'ثبت امحا',Test:'ثبت آزمایش',TemperatureHold:'توقف دمایی',Dispatch:'صدور و ارسال',Complete:'پایان تزریق',Stop:'توقف تزریق',Return:'ارسال مرجوعی',AcceptReturn:'دریافت مرجوعی',Dispose:'ثبت امحای مرجوعی'};
 export const LAB_RESULTS:Record<string,string>={NonReactive:'بدون واکنش',Reactive:'واکنش‌دار',NotPerformed:'انجام نشده / نامرتبط',Indeterminate:'نامشخص'};
 export const ASSESSMENTS:Record<string,string>={Acceptable:'قابل قبول طبق ارزیابی',Concern:'نگرانی / انحراف',Unknown:'نامشخص'};
 export const CONCLUSIONS:Record<string,string>={Accepted:'پذیرفته‌شده توسط کارشناس',Rejected:'مردود',Pending:'نیازمند بررسی'};
@@ -39,4 +39,4 @@ export function availableActions(unit:UnitRow,caps:BankCapabilities|null):BankAc
  if(caps.discard&&!unit.requestGuid&&['ReceivedHold','Quarantined'].includes(s))out.push('Discard');
  return out;
 }
-export function statusLabel(unit:UnitRow){return unit.expired&&unit.status!=='Discarded'?'منقضی (مسدود)':UNIT_STATUS[unit.status];}
+export function statusLabel(unit:UnitRow){return unit.expired&&['ReceivedHold','Available','Reserved','Thawing','Ready','Quarantined'].includes(unit.status)?'منقضی (مسدود)':UNIT_STATUS[unit.status];}

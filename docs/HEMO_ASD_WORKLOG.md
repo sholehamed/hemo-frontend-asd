@@ -103,3 +103,16 @@ Open gaps:
 - ماتریس واقعی موجودی، تاریخچه آزمایش با فیلتر و خروجی، صف رزروهای نیازمند ذوب و تست مرورگر گزارش تکمیل شد. منتظر CI نهایی.
 
 - Browser run 46023312020: 16 unit tests and build passed; four regression browser tests passed, bank scenario timed out at the temperature assessment select accessible name. Added explicit accessible names to new select controls including dynamic laboratory phases; retain all workflow assertions, re-run.
+
+## ST-05 | پوسته و کارتابل
+- تایپ قرارداد، service، قابلیت‌های نقش، داشبورد و لیست‌های فیلترشده کارتابل/پایش/مرجوعی/سوابق و فرم صدور مستند تک‌واحد. صفحه جزئیات و پایش در کامیت بعد. CI pending.
+
+### ST05 | فرم گردش و پایش
+- فرم واحد مشترک برای دریافت/مغایرت، تطبیق دو حساب، T0، شروع، ثبت مشاهده، پایان/توقف، مرجوعی، امحا و یادداشت پزشک. پیوند از ST02/03/04، جدول علائم، تایم‌لاین، چاپ و CSV. ۵ تست قواعد UI و راهنمای کامل تمرین و محدودیت‌ها. CI pending.
+
+### ST05 | browser regression
+- افزودن Playwright fixture صدور سه واحد، دریافت، شاهد مستقل، ثبت پایش و پایان، مغایرت و مرجوعی/امحا، پزشک و توقف؛ در انتظار CI. Backend 84/84 در کامیت 69cb5358 سبز.
+
+- تکمیل فرم Raw با حجم تزریق‌شده ثبت‌شده، سرعت مشاهده‌شده، مراحل تکمیلی پایش و زمان واقعی واقعه. تست fixture چک‌لیست فقط پنج checkbox را انتخاب می‌کند. CI pending.
+
+- Run 46027240081: build/unit/regression passed, ST05 fixture failed to select the five checkboxes after changing selector to native name. Restored accessible role-based selection with exact count and dispatch diagnostic; added assertions for volume/rate payloads. Re-run final CI.
