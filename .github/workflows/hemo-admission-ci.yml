@@ -27,19 +27,50 @@ jobs:
   st09-browser-baseline:
     name: ST09 browser regression (pre-R01 snapshot only)
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: st09-baseline
     steps:
-      # R01 reactivates the company bootstrap; current HEMO routes are not wired yet.
-      # Preserve the previously green ST09 browser regression on its immutable source.
-      # This job is NOT an integration test of the current Angular 19 app.
+      # Keep baseline dependencies separate from the current Angular 19 lock.
+      - uses: actions/checkout@v4
+        with:
+          path: integration
+          sparse-checkout: docs/legacy
+          persist-credentials: false
       - uses: actions/checkout@v4
         with:
           ref: c4a792aaa7f6fe9c541b66ab73f32d076df71f82
+          path: st09-baseline
           persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
-      - run: npm install --no-audit --no-fund
+          node-version-file: st09-baseline/.node-version
+      - name: Resolve or restore isolated ST09 lockfile
+        shell: bash
+        run: |
+          set -euo pipefail
+          lock=../integration/docs/legacy/st09-browser-package-lock.json
+          if [ -f "$lock" ]; then
+            cp "$lock" package-lock.json
+          else
+            # One-time bootstrap only. Keep the verified lock for future runs.
+            npm install --package-lock-only --ignore-scripts --no-audit --no-fund --prefer-online
+          fi
+          npm ci --no-audit --no-fund --prefer-online --fetch-retries=3
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
         timeout-minutes: 10
+      - name: Retain verified ST09 lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: st09-browser-package-lock
+          path: st09-baseline/package-lock.json
+          if-no-files-found: error
+      - name: Emit verified lockfile for repository import
+        shell: bash
+        run: |
+          if [ ! -f ../integration/docs/legacy/st09-browser-package-lock.json ]; then
+            # Only public npm package metadata, no environment or credential data.
+            base64 -w 120 package-lock.json | sed 's/^/ST09_LOCK_CHUNK:/'
+          fi

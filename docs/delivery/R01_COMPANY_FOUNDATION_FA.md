@@ -19,3 +19,8 @@
 - اجرای 46047844611 پس از merge در دستور npm test قدیمی گیر کرد، زیرا manifest اصلی شرکت آن را به ng test (watch پیش‌فرض) برگردانده است. Playwright نیز در manifest فعلی R01 نصب نیست و routeهای HEMO هنوز فعال نیستند.
 - Workflow قدیمی اکنون برای کد جاری از npm ci، test:hemo، Karma در ChromeHeadless با watch=false و build استفاده می‌کند. Timeout و concurrency اضافه شدند. Browser regression قبلی ST09 در job مستقل روی commit ثابت c4a792aaa7f6fe9c541b66ab73f32d076df71f82 اجرا می‌شود، نه روی کد جدید. هیچ تست E2E حذف نشده است، اما این job جایگزین اعتبارسنجی یکپارچگی نسخه جدید نیست.
 - R02/R07 باید E2E روی Angular19 و Layout/Auth واقعی را بازگردانند؛ قبل از آن این شاخه آماده تحویل یا merge به main نیست. اجرای گیرکرده قبلی ممکن است نیاز به Cancel دستی داشته باشد؛ concurrency برای اجراهای جدید اعمال می‌شود.
+
+## خطای دریافت وابستگی Snapshot در CI (46057981231)
+- Build/test کد جاری Angular19 موفق، اما npm install مربوط به Snapshot Angular22 در دریافت @babel/helpers 8.1.4 با E404 متوقف شد. Snapshot هیچ lockfile ندارد. خطا پیش از اجرای Playwright است.
+- Job Snapshot در workspace مستقل، با lockfile اختصاصی docs/legacy/st09-browser-package-lock.json و npm ci اجرا می‌شود. تا زمانی که lockfile ثبت نشده است، یک بار resolve از registry و npm ci با prefer-online انجام می‌شود. پس از موفقیت E2E، lock به شکل artifact و metadata قابل import ثبت می‌شود؛ این مرحله هیچ دسترسی نوشتن به ریپو ندارد. Lock اصلی Angular19 دست نخورده است.
+- در صورت شکست مجدد دریافت tarball، خطای واقعی registry بررسی شود؛ نه حذف/skip کردن تست و نه override حدسی. نتیجه CI و ثبت lock نهایی هنوز تایید نشده است.
