@@ -28,7 +28,7 @@ test('dispatch, distinct witness, observation, completion and return worklists',
    expect(role).toBe('supervisor');const c=candidates.find(x=>x.unitGuid===body.unitGuid);
    expect(body.unitCode).toBe(c.unitCode);expect(body.wristbandCode).toBe(c.wristbandCode);expect(body.checks).toBe(31);
    const id=transferGuid.slice(0,-1)+c.unitCode.at(-1);
-   const d={transfer:{guid:id,transferNumber:'TX-'+c.unitCode,unitGuid:c.unitGuid,requestGuid:c.requestGuid,admissionGuid,patientName:c.patientName,hisNumber:c.hisNumber,ward:c.ward,unitCode:c.unitCode,productCode:c.productCode,bloodGroup:c.bloodGroup,status:'Dispatched',dispatchedAt:now(),receivedAt:null,startedAt:null,endedAt:null,suspectedReaction:false,version:String(++serial)},wristbandCode:c.wristbandCode,requestNumber:c.requestNumber,labReportReference:'DEMO-REPORT',labRecordedAt:now(),expiresAt:c.expiresAt,carrierName:body.carrierName,carrierCode:body.carrierCode,containerCode:body.containerCode,dispatchTemperature:body.temperature,transportIndicator:body.transportIndicator,packCount:body.packCount,verifiedBy:null,witnessedBy:null,startedBy:null,admissionChanged:false,canProceed:true,demo:true,events:[],vitals:[]};
+   const d={transfer:{guid:id,transferNumber:'TX-'+c.unitCode,unitGuid:c.unitGuid,requestGuid:c.requestGuid,admissionGuid,patientName:c.patientName,hisNumber:c.hisNumber,ward:c.ward,unitCode:c.unitCode,productCode:c.productCode,bloodGroup:c.bloodGroup,status:'Dispatched',dispatchedAt:now(),receivedAt:null,startedAt:null,endedAt:null,suspectedReaction:false,volumeMl:null,version:String(++serial)},wristbandCode:c.wristbandCode,requestNumber:c.requestNumber,labReportReference:'DEMO-REPORT',labRecordedAt:now(),expiresAt:c.expiresAt,carrierName:body.carrierName,carrierCode:body.carrierCode,containerCode:body.containerCode,dispatchTemperature:body.temperature,transportIndicator:body.transportIndicator,packCount:body.packCount,verifiedBy:null,witnessedBy:null,startedBy:null,admissionChanged:false,canProceed:true,demo:true,events:[],vitals:[]};
    d.events.push({action:'Dispatch',previousStatus:'',newStatus:'Dispatched',occurredAt:now(),actorUserGuid:role,actorRoleGuid:role,notes:body.notes,evidenceJson:JSON.stringify({UnitCode:body.unitCode})});
    transfers.set(id,d);return ok(id,201);
   }
@@ -44,7 +44,7 @@ test('dispatch, distinct witness, observation, completion and return worklists',
    if(action==='Witness'){expect(role).not.toBe(d.verifiedBy);d.witnessedBy=role;}
    if(action==='Start'){expect(role).toBe(d.verifiedBy);expect(d.witnessedBy).not.toBe(role);expect(d.vitals.some(x=>x.phase==='T0')).toBe(true);d.startedBy=role;d.transfer.startedAt=now();}
    if(action==='Receive'||action==='ReceiptHold')d.transfer.receivedAt=now();
-   if(action==='Complete'){expect(d.vitals.some(x=>x.phase==='End')).toBe(true);d.transfer.endedAt=now();d.canProceed=false;}
+   if(action==='Complete'){expect(d.vitals.some(x=>x.phase==='End')).toBe(true);d.transfer.endedAt=now();d.transfer.volumeMl=body.volumeMl??null;d.canProceed=false;}
    if(action==='Stop'){d.transfer.endedAt=now();d.canProceed=false;}
    if(body.suspectedReaction)d.transfer.suspectedReaction=true;
    if(action==='Return')d.canProceed=false;
@@ -53,7 +53,7 @@ test('dispatch, distinct witness, observation, completion and return worklists',
   d.transfer.version=String(++serial);d.events.push({action,previousStatus:before,newStatus:d.transfer.status,occurredAt:now(),actorUserGuid:role,actorRoleGuid:role,notes:body.notes,evidenceJson:null});
   return action==='Vital'?ok('vital-'+serial):route.fulfill({status:204});
  });
- const fillChecks=async()=>{for(const box of await page.getByRole('checkbox').all())await box.check();};
+ const fillChecks=async()=>{for(const box of await page.locator('input[name^=check]').all())await box.check();};
  const dispatch=async(i)=>{
   await page.goto('/hemo/transfusion/dispatch');await page.getByRole('row').filter({hasText:'DEMO-UNIT-0'+i}).getByRole('button',{name:'انتخاب برای صدور'}).click();
   await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);
@@ -67,7 +67,7 @@ test('dispatch, distinct witness, observation, completion and return worklists',
  };
  const action=async(name,i,opts={})=>{
   await page.getByRole('button',{name,exact:true}).click();
-  if(opts.codes){await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);await page.getByLabel('کد مشاهده‌شده مچ‌بند *',{exact:true}).fill('DEMO-WRIST-0'+i);for(const box of await page.locator('form').filter({has:page.getByRole('button',{name:'ثبت عملیات',exact:true})}).getByRole('checkbox').all())await box.check();}
+  if(opts.codes){await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);await page.getByLabel('کد مشاهده‌شده مچ‌بند *',{exact:true}).fill('DEMO-WRIST-0'+i);for(const box of await page.locator('form').filter({has:page.getByRole('button',{name:'ثبت عملیات',exact:true})}).locator('input[name^=check]').all())await box.check();}
   if(opts.unit)await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill(opts.mismatch?'WRONG':'DEMO-UNIT-0'+i);
   if(opts.person)await page.getByLabel('نام فرد مرتبط / دریافت‌کننده *').fill('Fixture');
   if(opts.receive){await page.getByLabel('ارزیابی شرایط دریافت *',{exact:true}).selectOption('Acceptable');await page.getByLabel('دمای ثبت‌شده (°C) *',{exact:true}).fill('0');}
