@@ -46,6 +46,7 @@ test('dashboard, real form flow against contract fixture and saved wristband',as
 test('identity, history, clearance, stats and unconfigured external integrations',async({page})=>{
  await page.goto('/admission/identity?guid='+guid);
  await expect(page.getByRole('button',{name:'ثبت تأیید نهایی تطبیق هویت'})).toBeDisabled();
+ await expect(page.locator('.checklist input[type=checkbox]')).toHaveCount(5);
  for(const box of await page.locator('.checklist input[type=checkbox]').all())await box.check();
  await page.getByRole('button',{name:'ثبت تأیید نهایی تطبیق هویت'}).click();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toBeVisible();
@@ -55,6 +56,7 @@ test('identity, history, clearance, stats and unconfigured external integrations
  await page.getByRole('button',{name:'ثبت تأییدیه بررسی سوابق'}).click();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toBeVisible();
  await page.goto('/admission/discharge?guid='+guid);
+ await expect(page.locator('.checklist input[type=checkbox]')).toHaveCount(5);
  for(const box of await page.locator('.checklist input[type=checkbox]').all())await box.check();
  await page.getByRole('button',{name:'ثبت بررسی و آماده‌سازی پرونده ترخیص'}).click();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toBeVisible();
