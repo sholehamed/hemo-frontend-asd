@@ -1,0 +1,13 @@
+
+<div class="flex flex-col gap-2">
+    <label [class]="(Submitted&&Input.invalid)?'error':''">{{Label}} <span *ngIf="Required==true&&ReadOnly==false" class="RequiredStar">*</span></label>
+    <input (keypress)="_filterInput($event)" [placeholder]="Placeholder" [maxlength]="maxlength" [minlength]="minlength" [disabled]="ReadOnly" [dir]="Direction" [id]="Name" [name]="Name" [type]="Type"   #Input="ngModel" ngModel pInputText [required]="Required" [class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''"   (ngModelChange)="OnDataValueChange($event)"
+           [(ngModel)]="Data" >
+
+    <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['required']">{{Label}} اجباری می باشد.</span>
+    <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['maxlength']">{{Label}} حداکثر {{maxlength}} کاراکتر می تواند باشد</span>
+    <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['minlength']">{{Label}} حداقل {{minlength}} کاراکتر باید باشد</span>
+</div>
+
+
+

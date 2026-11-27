@@ -1,0 +1,18 @@
+
+<app-base
+    [Name]="'مدیریت لیست کد تخفیف ها'" 
+    [DataUrl]="'Identity/Discount/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Package/CreateDiscount']" label="ثبت جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+           <p-button [routerLink]="['/Identity/Package/ChangeDiscount/'+Item.guid]" pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+        </td>
+
+    </ng-template>
+</app-base>
+
+

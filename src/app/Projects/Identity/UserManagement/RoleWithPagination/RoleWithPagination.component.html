@@ -1,0 +1,44 @@
+<app-tree-base [TableConfig]="TableConfig" [DataUrl]="'Identity/Role/BindPaging'">
+    <ng-template #Actions>
+        <p-button
+            [routerLink]="[(AdminPage?'/Identity/UserManagement/Role/CreateRole/1':'/Identity/UserManagement/OrglocationRole/CreateOrglocationRole/1')]"
+            label="ثبت سرشاخه جدید" [raised]="true" severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+            <p-button
+                [routerLink]="[(AdminPage?'/Identity/UserManagement/Role/CreateRole/':'/Identity/UserManagement/OrglocationRole/CreateOrglocationRole/')+Item.node.data.guid]"
+                pTooltip="ثبت سرشاخه" icon="pi pi-plus" [rounded]="true" severity="success" />
+            <p-button
+                [routerLink]="[(AdminPage?'/Identity/UserManagement/Role/ChangeRole/':'/Identity/UserManagement/OrglocationRole/ChangeOrglocationRole/')+Item.node.data.guid]"
+                pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+            <p-button
+                [routerLink]="[((AdminPage)?'/Identity/UserManagement/Role/RoleAccess/':'/Identity/UserManagement/OrglocationRole/OrglocationRoleAccess/')+Item.node.data.guid]"
+                pTooltip="مدیریت دسترسی ها" icon="pi pi-list" [rounded]="true" severity="help" />
+       
+                <p-button (onClick)="RoleAccessCopyRoleAccessCommand.srcRoleGUID=Item.node.data.guid;srcRoleName=Item.node.data.name;visible=true;test(Item)" label="کپی سطح دسترسی" icon="pi pi-copy" variant="text" [raised]="true" severity="help" />
+
+        </td>
+
+    </ng-template>
+</app-tree-base>
+
+<p-dialog  [header]="'کپی سطح دسترسی برای ('+srcRoleName+')'" [modal]="true" [(visible)]="visible"
+    [style]="{ width: '40rem' }">
+    <form #Form="ngForm">
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-input-tree-select [Label]="'نقش'" [ReadOnly]="false" [Required]="true" [Options]="[]"
+                [OptionsUrl]="'Identity/role/RoleFindAllTree'" [appendTo]="'body'"
+                (DataValueChange)="RoleAccessCopyRoleAccessCommand.destRoleGUID=$event"
+                [Data]="RoleAccessCopyRoleAccessCommand.destRoleGUID" [DataIdName]="'guid'" [OptionName]="'name'"
+                [Submitted]="Form.submitted"></app-input-tree-select>
+        </div>
+        <br>
+        <div class="flex justify-end gap-2">
+            <p-button (onClick)="CopyRoleAccess()" label="کپی کردن" variant="text" [raised]="true" severity="success"
+                class="w-full" styleClass="w-full" />
+        </div>
+    </form>
+
+</p-dialog>

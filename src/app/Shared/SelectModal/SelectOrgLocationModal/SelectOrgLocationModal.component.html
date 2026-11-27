@@ -1,0 +1,14 @@
+
+<app-base
+    [Name]="'انتخاب سازمان'" 
+    [DataUrl]="'Identity/OrgLocation/SimpleBindPaging'"
+    [Params]="params"
+    [TableConfig]="TableConfig">
+   
+    <ng-template #RowActions let-Item>
+            <td [style.maxWidth]="'10px'">
+            <p-button  (onClick)="select(Item)"  pTooltip="انتخاب" icon="pi pi-plus" [rounded]="true" severity="success" />
+        </td>
+
+    </ng-template>
+</app-base>

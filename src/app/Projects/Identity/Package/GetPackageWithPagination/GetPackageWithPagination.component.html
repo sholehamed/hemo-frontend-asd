@@ -1,0 +1,20 @@
+
+<app-base
+    [Name]="'مدیریت لیست پکیج های نرم افزاری دسته بندی '+Title" 
+    [DataUrl]="'Identity/Package/BindPaging'"
+    [Params]="Params"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Package/Package/CreatePackage/'+PackageCategoryGUID+'/'+Title]" label="ثبت جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+           <p-button [routerLink]="['/Identity/Package/Package/ChangePackage/'+Item.guid+'/'+PackageCategoryGUID+'/'+Title]" pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+           <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+        </td>
+
+    </ng-template>
+</app-base>
+
+

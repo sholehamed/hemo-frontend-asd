@@ -1,0 +1,16 @@
+<app-base [Name]="'مدیریت لیست دسته بندی پکیج ها'" [DataUrl]="'Identity/PackageCategory/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Package/PackageCategory/CreatePackageCategory']" label="ثبت جدید"
+            [raised]="true" severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+            <p-button [routerLink]="['/Identity/Package/PackageCategory/ChangePackageCategory/'+Item.guid]"
+                pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+            <p-button label="لیست پکیج ها" [routerLink]="'/Identity/Package/Package/'+Item.guid+'/'+Item.name" variant="outlined" severity="info" />
+        </td>
+
+    </ng-template>
+</app-base>

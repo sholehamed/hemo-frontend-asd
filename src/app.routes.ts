@@ -1,0 +1,23 @@
+import { Routes } from '@angular/router';
+import { AppLayout } from './app/Shared/layout/component/app.layout';
+import { Dashboard } from './app/Shared/pages/dashboard/dashboard';
+import { Notfound } from './app/Shared/pages/notfound/notfound';
+import { authGuardGuard } from './app/Shared/AuthGuard/auth-guard.guard';
+
+export const appRoutes: Routes = [
+    {
+        path: '',
+        component: AppLayout,
+
+        children: [
+            { path: '', component: Dashboard, canActivate: [authGuardGuard], },
+            { path: 'Identity', loadChildren: () => import('./app/Projects/Identity/Identity.routes') },
+            { path: 'pages', loadChildren: () => import('./app/Shared/pages/pages.routes') },
+
+        ]
+    },
+
+    { path: 'auth', loadChildren: () => import('./app/Shared/pages/auth/auth.routes') },
+    { path: 'notfound', component: Notfound },
+    { path: '**', redirectTo: '/notfound' }
+];

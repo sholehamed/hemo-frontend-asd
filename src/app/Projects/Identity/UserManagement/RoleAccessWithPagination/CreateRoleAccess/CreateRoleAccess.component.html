@@ -1,0 +1,46 @@
+<p-panel [header]="'ثبت دسترسی نقش جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-tree-select
+                    [Label]="'منو'"
+                    [ReadOnly]="false"
+                    [Required]="true"
+                    [Options]="[]"
+                    [OptionsUrl]="'/Identity/Menu/MenuBindTreeMenu'"
+                    (DataValueChange)="CreateRoleAccessCommand.menuGUID=$event"
+                    [DataIdName]="'guid'"
+                    [OptionName]="'label'"
+                    [Submitted]="Form.submitted"
+                ></app-input-tree-select>
+            </div>
+
+            <div class="col-span-12">
+                <app-multi-select-input
+                    [Label]="'سرویس'"
+
+                    [Required]="true"
+                    [Options]="[]"
+                    [OptionsUrl]="(CreateRoleAccessCommand.menuGUID!='')?'/Identity/MenuApi/BindByMenu/'+CreateRoleAccessCommand.menuGUID:''"
+                    (DataValueChange)="CreateRoleAccessCommand.apiGUID=$event"
+                    [DataIdName]="'apiGUID'"
+                    [OptionName]="'apiName'"
+                    [Submitted]="Form.submitted"
+                ></app-multi-select-input>
+            </div>
+
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

@@ -1,0 +1,43 @@
+<app-base [Name]="'مدیریت لیست پکیج های شرکت ها'" [DataUrl]="'Identity/OrglocationPackage/BindPaging'"
+    [TableConfig]="TableConfig" [Params]="params">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Organization/OrgLocation/CreateOrglocationPackage/'+ OrglocationGuid ]"
+            label="ثبت جدید" [raised]="true" severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+
+            <p-button (onClick)="OpenModal(Item)" pTooltip="ویرایش اعتبار پکیج" icon="pi pi-pencil" [rounded]="true"
+                severity="warn" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+
+        </td>
+
+    </ng-template>
+</app-base>
+
+
+<p-dialog *ngIf="Visible==true" [header]="'ویرایش زمان پکیج'" [modal]="true" [(visible)]="Visible"
+    [style]="{ width: '100rem' }">
+    <form #Form="ngForm" *ngIf="Visible==true">
+
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-date-input [Label]="'تاریخ اعتبار'" [ReadOnly]="false" [Required]="true"
+                    [Data]="SelectedData.expiryDate" (DataValueChange)="expiryDate=$event"
+                    [Submitted]="Form.submitted" [MinDate]="_dateNow"></app-date-input>
+            </div>
+        </div>
+        <hr>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && UpdateDate() " label="ذخیره" severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Visible=false" routerLinkActive="router-link-active" label="انصراف"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-dialog>

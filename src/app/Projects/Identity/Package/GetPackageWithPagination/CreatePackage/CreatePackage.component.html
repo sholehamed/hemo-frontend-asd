@@ -1,0 +1,64 @@
+<p-panel [header]="'ثبت پکیج های نرم افزاری جدید برای دسته بندی '+Title">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-dropdown [Label]="'دسته بندی پکیج'" [ReadOnly]="false" [Required]="false" [Options]="[]" [OptionsUrl]="'/Identity/PackageCategory/FindAll'" (DataValueChange)="CreatePackageCommand.packageCategoryGUID=$event" [Data]="CreatePackageCommand.packageCategoryGUID"
+                    [DataIdName]="'guid'" [OptionName]="'name'" [Submitted]="Form.submitted"></app-dropdown>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'عنوان'" [Placeholder]="'عنوان'" [ReadOnly]="false" [Required]="true" [Data]="CreatePackageCommand.name" (DataValueChange)="CreatePackageCommand.name=$event;CreatePackageCommand.subtitle=$event" [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'عنوان فرعی'" [Placeholder]="'عنوان فرعی'" [ReadOnly]="false" [Required]="true" [Data]="CreatePackageCommand.subtitle" (DataValueChange)="CreatePackageCommand.subtitle=$event" [Submitted]="Form.submitted"></app-input-string>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'مبلغ (ریال)'" [Placeholder]="'مبلغ'" [ReadOnly]="false" [Required]="true" [useGrouping]="false" [Data]="CreatePackageCommand.price" (DataValueChange)="CreatePackageCommand.price=$event" [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'لینک'" [Placeholder]="'لینک'" [ReadOnly]="false" [Required]="true" [Direction]="'ltr'" [Data]="CreatePackageCommand.link" (DataValueChange)="CreatePackageCommand.link=$event" [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-tree-select [Label]="'سطح دسترسی'" [ReadOnly]="false" [Required]="true" [Options]="[]" [OptionsUrl]="'Identity/role/RoleFindAllTree'" (DataValueChange)="CreatePackageCommand.roleGUID=$event" [Data]="CreatePackageCommand.roleGUID" [DataIdName]="'guid'"
+                    [OptionName]="'name'" [Submitted]="Form.submitted"></app-input-tree-select>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-tree-select [Label]="'منو اصلی'" [ReadOnly]="false" [Required]="true" [Options]="[]" [OptionsUrl]="'/Identity/Menu/MenuBindTreeMenu'" (DataValueChange)="CreatePackageCommand.mainMenuGuid=$event" [Data]="CreatePackageCommand.mainMenuGuid" [DataIdName]="'guid'"
+                    [OptionName]="'label'" [Submitted]="Form.submitted"></app-input-tree-select>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'ترتیب نمایش'" [Placeholder]="'ترتیب نمایش'" [ReadOnly]="false" [Required]="true" [Data]="CreatePackageCommand.gorder" (DataValueChange)="CreatePackageCommand.gorder=$event" [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'تعداد روز اعتبار'" [Placeholder]="'تعداد روز اعتبار'" [ReadOnly]="false" [Required]="true" [Data]="CreatePackageCommand.expireDays" (DataValueChange)="CreatePackageCommand.expireDays=$event" [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-single-file-upload [Label]="'آیکون'" [Placeholder]="'فایل'" [ReadOnly]="false" [Required]="true" [PublicFile]="true" [DownloadLink]="CreatePackageCommand.icon" (DataValueChange)="CreatePackageCommand.icon=$event" [Data]="CreatePackageCommand.icon"
+                    [ShowDonlowd]="true" [Submitted]="Form.submitted"></app-single-file-upload>
+            </div>
+         
+             <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'درصد تخفیف در تمدید'" [Placeholder]="'درصد تخفیف در تمدید'" [ReadOnly]="false"
+                    [Required]="true" [Data]="CreatePackageCommand.renewDiscount"
+                    (DataValueChange)="CreatePackageCommand.renewDiscount=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+         
+
+
+            <div class="col-span-12">
+                <app-input-textarea [Label]="'توضیحات'" [Rows]="5" [ReadOnly]="false" [Required]="true" [Data]="CreatePackageCommand.description" (DataValueChange)="CreatePackageCommand.description=$event" [Submitted]="Form.submitted"></app-input-textarea>
+            </div>
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره" severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت" severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

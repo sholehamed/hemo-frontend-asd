@@ -1,0 +1,342 @@
+
+
+.body {
+
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    /* جلوگیری از اسکرول کل صفحه */
+}
+
+/* کانتینر اصلی چت */
+.chat-wrapper {
+    background: #f5f5f9;
+    width: 100%;
+    max-width: 900px;
+
+   
+}
+
+/* هدر چت */
+.chat-header {
+    
+    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 10;
+}
+
+.chat-header-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.back-btn {
+    display: none;
+    /* در دسکتاپ مخفی است */
+    background: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.ticket-details h2 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    margin-bottom: 4px;
+}
+
+.ticket-status {
+    font-size: 0.8rem;
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+}
+
+/* محوطه پیام‌ها */
+.chat-body {
+    flex: 1;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* اسکرول‌بار سفارشی */
+.chat-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* حباب پیام‌ها */
+.msg-row {
+    display: flex;
+    width: 100%;
+}
+
+.msg-row.user {
+    justify-content: flex-start;
+}
+
+.msg-row.support {
+    justify-content: flex-end;
+}
+
+.msg-bubble {
+    max-width: 70%;
+    padding: 16px 20px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0.5rem;
+    position: relative;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* پیام کاربر */
+.msg-row.user .msg-bubble {
+    background: var(--msg-user);
+    color: white;
+    border-radius: 24px 24px 0 24px;
+    /* لبه تیز پایین راست برای فارسی */
+    box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);
+}
+
+/* پیام پشتیبانی */
+.msg-row.support .msg-bubble {
+    background: var(--msg-support);
+    color: var(--text-main);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 24px 24px 24px 0;
+    /* لبه تیز پایین چپ */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.msg-time {
+    display: block;
+    font-size: 0.75rem;
+    margin-top: 8px;
+    opacity: 0.8;
+    text-align: left;
+}
+
+.msg-row.support .msg-time {
+    color: var(--text-muted);
+}
+
+/* بخش ورودی پیام */
+.chat-footer {
+    padding: 20px 25px;
+    background: rgba(255, 255, 255, 0.5);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(20px);
+    z-index: 10;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    background: white;
+    border-radius: 25px;
+    padding: 8px 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.02);
+}
+
+.attach-btn {
+    background: transparent;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.attach-btn:hover {
+    background: #f1f5f9;
+    color: #6366f1;
+}
+
+.chat-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    background: transparent;
+    color: var(--text-main);
+}
+
+.chat-input::placeholder {
+    color: #94a3b8;
+}
+
+.send-btn {
+    background: var(--primary-gradient);
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+    transition: 0.3s;
+}
+
+.send-btn:hover {
+    transform: scale(1.05);
+}
+
+/* =========================================
+           تنظیمات ریسپانسیو (برای موبایل) 
+           ========================================= */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+        /* حذف حاشیه بدنه */
+    }
+
+    .chat-wrapper {
+   
+        /* پشتیبانی از نوار آدرس داینامیک در iOS/Android */
+        max-width: 100%;
+        border-radius: 0;
+        /* حذف انحنای لبه‌ها در موبایل */
+        border: none;
+    }
+
+    .chat-header {
+        padding: 15px 20px;
+    }
+
+    .back-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .chat-body {
+        padding: 20px 15px;
+    }
+
+    .msg-bubble {
+        max-width: 85%;
+        /* استفاده بیشتر از عرض صفحه در موبایل */
+        font-size: 0.9rem;
+    }
+
+    .chat-footer {
+        padding: 15px;
+        padding-bottom: calc(15px + env(safe-area-inset-bottom));
+        /* سازگاری با خط پایین آیفون */
+    }
+
+    /* جلوگیری از زوم خودکار کیبورد در iOS */
+    .chat-input {
+        font-size: 16px;
+    }
+}
+
+/* =========================================
+   طراحی فایل هماهنگ با حباب پیام‌ها
+========================================= */
+.native-file-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: inherit; /* این باعث میشه رنگ متن در پیام کاربر سفید و در پیام پشتیبان تیره بمونه */
+    margin-bottom: 5px;
+}
+
+.native-file-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    transition: transform 0.2s ease;
+}
+
+/* استایل آیکون برای پیام کاربر */
+.msg-row.user .native-file-icon {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* استایل آیکون برای پیام پشتیبانی */
+.msg-row.support .native-file-icon {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.native-file-wrapper:hover .native-file-icon {
+    transform: translateY(-2px);
+}
+
+.native-file-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.native-file-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px; /* جلوگیری از بهم ریختگی در نام‌های طولانی */
+}
+
+.native-file-size {
+    font-size: 0.75rem;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+.native-file-wrapper{
+    cursor: pointer !important;
+}
+
+.input{
+    width: 100%;
+}

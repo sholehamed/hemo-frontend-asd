@@ -1,0 +1,16 @@
+
+<app-base
+    [Name]="'مدیریت لیست دعوت نامه های دریافتی'"
+    [DataUrl]="'Identity/UserInvite/BindCurrentUserInvites'"
+    [TableConfig]="TableConfig">
+
+    <ng-template #RowActions let-Item>
+        <td>
+           <p-button *ngIf="Item.userAccepted==null||Item.userAccepted==false" (onClick)="updateStatusUserInvite(Item,true)" pTooltip="قبول می کنم" icon="pi pi-check" [rounded]="true" severity="success" />
+           <p-button *ngIf="Item.userAccepted==null||Item.userAccepted==true" (onClick)="updateStatusUserInvite(Item,false)" pTooltip="رد می کنم" icon="pi pi-times" [rounded]="true" severity="danger" />
+        </td>
+
+    </ng-template>
+</app-base>
+
+

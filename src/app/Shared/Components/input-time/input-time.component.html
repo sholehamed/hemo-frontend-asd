@@ -1,0 +1,15 @@
+<div class="flex flex-col gap-2">
+    <label [class]="(Submitted&&Input.invalid)?'error':''">{{Label}} <i class="pi pi-trash" (click)="Clear()"></i> <span *ngIf="Required==true" class="RequiredStar">*</span></label>
+    <div [dir]="'ltr'">
+
+        <p-calendar  [placeholder]="Placeholder" [disabled]="ReadOnly"  [id]="Name" [name]="Name"
+                     #Input="ngModel" ngModel  [required]="Required" [class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''" [showSeconds]="showSeconds"  (ngModelChange)="OnDataValueChange($event)"
+                     [ngModel]="TimeData" [timeOnly]="true">
+        </p-calendar>
+
+        <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['required']">{{Label}} اجباری می باشد.</span>
+        <span class="error" *ngIf="Submitted==true&&Input.invalid &&!Input.errors!['required']">{{Label}} معتبر نمی باشد</span>
+
+    </div>
+</div>
+

@@ -1,0 +1,9 @@
+
+
+<div class="flex items-center gap-2">
+    <p-checkbox
+        [disabled]="Readonly" #Input="ngModel" ngModel
+        (ngModelChange)="OnDataValueChange($event)"
+        [(ngModel)]="Data"  [inputId]="Name"  [name]="Name"   [binary]="true"  size="large" />
+    <label  [for]="Name" class="text-lg">{{Label}}</label>
+</div>

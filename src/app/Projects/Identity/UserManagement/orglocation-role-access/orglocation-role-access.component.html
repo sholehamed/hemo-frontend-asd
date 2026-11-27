@@ -1,0 +1,21 @@
+
+<p-card header="مدیریت سطح دسترسی نقش">
+
+    <br>
+
+    <p-accordion [value]="0" (valueChange)="LoadData($event)" >
+        <ng-container *ngFor="let Pack of Packs;let i=index">
+            <p-accordion-panel [value]="i">
+                <p-accordion-header>{{Pack.packageName}}</p-accordion-header>
+                <p-accordion-content>
+                    <p-tree [filter]="true" filterPlaceholder="جستجو" [value]="items" selectionMode="checkbox" styleClass="w-full md:w-[30rem]" [(selection)]="selectedFiles"(selectionChange)="Changed=true" />
+                    <div class="text-center" *ngIf="Changed">
+                        <p-button label="ثبت تغییرات" severity="success" (onClick)="UpdateList()" />
+
+                    </div>
+                </p-accordion-content>
+            </p-accordion-panel>
+        </ng-container>
+
+    </p-accordion>
+</p-card>

@@ -1,0 +1,19 @@
+<app-tree-base [Name]="'مدیریت لیست شرکت ها'" [DataUrl]="'Identity/OrgLocation/BindPaging'" [TableConfig]="TableConfig">
+
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Organization/OrgLocation/CreateOrgLocation']" label="ثبت سرشاخه جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+            <p-button [routerLink]="['/Identity/Organization/OrgLocation/CreateChildOrgLocation/'+Item.node.data.guid]"
+                pTooltip="ثبت سرشاخه" icon="pi pi-plus" [rounded]="true" severity="success" />
+            <p-button [routerLink]="['/Identity/Organization/OrgLocation/ChangeOrgLocation/'+Item.node.data.guid]" pTooltip="ویرایش"
+                icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button [routerLink]="['/Identity/Organization/OrgLocation/OrglocationPackage/'+Item.node.data.guid]" pTooltip="پکیج ها"
+                icon="pi pi-box" [rounded]="true" severity="help" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+        </td>
+
+    </ng-template>
+</app-tree-base>

@@ -1,0 +1,15 @@
+<label for="" [class]="(Submitted&&Input.invalid)?'error':''">{{PersianName}} <span *ngIf="Required==true" class="RequiredStar">*</span></label>
+
+
+
+<p-treeSelect
+
+appendTo="body" [id]="Name" [name]="Name" selectionMode="multiple" display="chip" [metaKeySelection]="false"   #Input="ngModel" ngModel [required]="Required" (ngModelChange)="ngModelChange($event)"
+[class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''"
+
+ [options]="Data" [(ngModel)]="SelectedData"  [filter]="true" [filterBy]="DataLabelName" [showClear]="false" [placeholder]="PersianName +' را انتخاب کنید'"
+
+class="md:w-20rem w-full" containerStyleClass="w-full"  [options]="Data" placeholder="Select Item"></p-treeSelect>
+
+
+<span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['required']">{{PersianName}} اجباری می باشد.</span>

@@ -1,0 +1,15 @@
+<app-base [Name]="'مدیریت لیست زیر سیستم ها'" [DataUrl]="'Identity/SubSystem/BindPaging'" [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/SystemSetting/SubSystem/CreateSubSystem']" label="ثبت جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td><i (click)="updateIsActive(Item)" class="pi"
+            [ngClass]="{'text-green-500 pi-check-circle': Item.active,'text-red-500 pi-times-circle': !Item.active}"></i>
+    </td>
+        <td><p-button pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn"
+                [routerLink]="['/Identity/SystemSetting/SubSystem/ChangeSubSystem',Item.guid]" /></td>
+        <td><p-button pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" (onClick)="Delete(Item)" />
+        </td>
+    </ng-template>
+</app-base>

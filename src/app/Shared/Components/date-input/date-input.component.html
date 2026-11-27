@@ -1,0 +1,14 @@
+
+<div class="flex flex-col gap-2">
+    <label *ngIf="ShowLable" [class]="(Submitted&&Input.invalid)?'error':''">{{Label}} <span *ngIf="Required==true&&ReadOnly==false" class="RequiredStar">*</span></label>
+    <input [disabled]="Disabled" readonly [placeholder]="placeholder" [matDatepicker]="picker"
+           (click)="!ReadOnly&& picker.open();" [id]="Name" [name]="Name" type="text" #Input="ngModel" ngModel pInputText
+           [required]="Required" [class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''"
+           (ngModelChange)="OnDataValueChange($event)" [(ngModel)]="Data" [max]="MaxDate" [min]="MinDate">
+
+    <mat-datepicker appendTo="body" #picker></mat-datepicker>
+
+    <span class="error" *ngIf="Submitted==true&&Input.invalid ">{{Label}} اجباری می باشد.</span>
+</div>
+
+
