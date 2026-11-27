@@ -1,0 +1,434 @@
+{
+  "status": "inventory-only-not-a-permission-grant",
+  "source": "df1f954a331f80daa4d970e928b8499cb25b5de8",
+  "note": "Home proposed as company root '/' (existing root guard behavior); all other guardMenu values are exact Angular route patterns. existingSeedMenu denotes current HemoDemoSeed grouping, not proof of access. Each route needs review of actual API calls, endpoint grants and display policy before activation.",
+  "routes": [
+    {
+      "path": "/admission/new",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/new",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/list",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/list",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/detail/:guid",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/detail/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/identity",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/identity",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/history",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/history",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/discharge",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/discharge",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/his",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/his",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission/stats",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission/stats",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/admission",
+      "existingSeedMenu": "/admission",
+      "guardMenu": "/admission",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/hemo/requests/new",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/new",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/orders",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/orders",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/edit/:guid",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/edit/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/detail/:guid",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/detail/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/bank/:guid",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/bank/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/bank",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/bank",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/approval",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/approval",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests/doctor",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests/doctor",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/requests",
+      "existingSeedMenu": "/hemo/requests",
+      "guardMenu": "/hemo/requests",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/hemo/bank/inventory",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/inventory",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/crossmatch",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/crossmatch",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/thaw",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/thaw",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/lab-history",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/lab-history",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/unit/:guid",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/unit/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/receive",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/receive",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/temperature",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/temperature",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank/reports",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank/reports",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/bank",
+      "existingSeedMenu": "/hemo/bank",
+      "guardMenu": "/hemo/bank",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/hemo/transfusion/dispatch",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/dispatch",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/detail/:guid",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/detail/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/tasks",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/tasks",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/vitals",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/vitals",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/monitoring",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/monitoring",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/returns",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/returns",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion/records",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion/records",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/transfusion",
+      "existingSeedMenu": "/hemo/transfusion",
+      "guardMenu": "/hemo/transfusion",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/hemo/hv/new",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/new",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/detail/:guid",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/detail/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/reports",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/reports",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/cases",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/cases",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/doctor",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/doctor",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/bank",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/bank",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/rca",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/rca",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv/capa",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv/capa",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/hv",
+      "existingSeedMenu": "/hemo/hv",
+      "guardMenu": "/hemo/hv",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/hemo/quality/equipment-dashboard",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/equipment-dashboard",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/equipment/:guid",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/equipment/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/equipment",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/equipment",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/maintenance",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/maintenance",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/temperature",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/temperature",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/incidents",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/incidents",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/qc/:guid",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/qc/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/qc",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/qc",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/committee/:guid",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/committee/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/committee",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/committee",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/audit/:guid",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/audit/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/audit",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/audit",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/training/:guid",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/training/:guid",
+      "parameterized": true,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/training",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/training",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality/settings",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality/settings",
+      "parameterized": false,
+      "requiresReview": true
+    },
+    {
+      "path": "/hemo/quality",
+      "existingSeedMenu": "/hemo/quality",
+      "guardMenu": "/hemo/quality",
+      "parameterized": false,
+      "requiresReview": false
+    },
+    {
+      "path": "/home",
+      "existingSeedMenu": null,
+      "guardMenu": "/",
+      "parameterized": false,
+      "requiresReview": false
+    }
+  ]
+}
