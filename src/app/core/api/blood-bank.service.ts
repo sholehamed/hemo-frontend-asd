@@ -1,10 +1,11 @@
 import { Injectable,inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HemoCompanyHttp } from './hemo-company-http';
 import { firstValueFrom } from 'rxjs';
-import { BankPage,BankStats,UnitRow,UnitDetail,InventoryFilters,TemperatureView,TemperatureFilters,ReceiveInput,UnitActionInput,LabInput,TemperatureInput,LabReportRow,LabHistoryFilters } from '../../features/blood-bank/bank-model';
+import { BankCapabilities,BankPage,BankStats,UnitRow,UnitDetail,InventoryFilters,TemperatureView,TemperatureFilters,ReceiveInput,UnitActionInput,LabInput,TemperatureInput,LabReportRow,LabHistoryFilters } from '../../features/blood-bank/bank-model';
 @Injectable({providedIn:'root'})
 export class BloodBankService{
- private http=inject(HttpClient);private url='/Identity/BloodBank';
+ private http=inject(HemoCompanyHttp);private url='/Identity/BloodBank';
+ capabilities(){return firstValueFrom(this.http.get<BankCapabilities>(this.url+'/Capabilities'));}
  inventory(input:InventoryFilters={}){return firstValueFrom(this.http.post<BankPage<UnitRow>>(this.url+'/Inventory',input));}
  unit(guid:string){return firstValueFrom(this.http.get<UnitDetail>(this.url+'/Unit/'+encodeURIComponent(guid)));}
  stats(){return firstValueFrom(this.http.post<BankStats>(this.url+'/Stats',{}));}
