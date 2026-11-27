@@ -15,7 +15,7 @@ export class RequestDetailComponent implements OnInit{
  readonly detail=signal<RequestDetail|null>(null);readonly busy=signal(false);readonly error=signal<string|null>(null);readonly success=signal<string|null>(null);
  readonly editable=computed(()=>!this.bank&&this.auth.requestCan('edit')&&!!this.detail()?.request.owned&&canEditRequest(this.detail()!.request.status));
  readonly status=REQUEST_STATUS_LABEL;readonly priorities=PRIORITIES;readonly productLabel=productLabel;readonly formLabel=formLabel;readonly date=isoToJalali;readonly label=label;readonly fa=fa;
- readonly actionLabels:Record<string,string>={Submit:'ارسال',Approve:'تأیید پزشک',Return:'برگشت برای اصلاح',Reject:'رد درخواست',Cancel:'لغو'};
+ readonly actionLabels:Record<string,string>={Submit:'ارسال',Approve:'تأیید پزشک',Return:'برگشت برای اصلاح',BankReturn:'برگشت از بانک خون',Reject:'رد درخواست',Cancel:'لغو'};
  readonly tri=(v:boolean|null)=>v===null?'نامشخص':v?'بله':'خیر';
  readonly special=computed(()=>Object.entries(this.detail()?.clinical.formDetails??{}).filter(([,v])=>v!==null&&v!==undefined&&v!=='').map(([k,v])=>({label:SPECIAL_LABELS[k]??k,value:typeof v==='boolean'?this.tri(v):typeof v==='string'&&['sampleAt','neededAt','surgeryAt'].includes(k)?isoToJalali(v)+(v.length>10?' '+v.slice(11,16):''):String(v)})));
  reason='';physician:PhysicianCompletion={diagnosis:'',indication:'',medicalCouncilNumber:'',notes:null,confirmed:false};
