@@ -25,7 +25,7 @@ import { animate, style, transition, trigger } from '@angular/animations';
         <app-sidebar></app-sidebar>
         <div class="layout-main-container">
             <div class="layout-main">
-            <div [@routeAnimation]="prepareRoute(outlet)" class="router-outlet">
+            <div [@routeAnimation]="prepareRoute(outlet)" class="router-outlet" [class.hemo-page]="isHemoPage(outlet)">
   <router-outlet #outlet="outlet"></router-outlet>
 </div>
             </div>
@@ -118,6 +118,12 @@ export class AppLayout {
         if (this.menuOutsideClickListener) {
             this.menuOutsideClickListener();
         }
+    }
+    // Presentation only: scope HEMO CSS to the active HEMO route, not company pages.
+    isHemoPage(outlet: RouterOutlet): boolean {
+        if (!outlet?.isActivated) return false;
+        const path = outlet.activatedRoute.snapshot.routeConfig?.path ?? "";
+        return path === "admission" || path.startsWith("admission/") || path === "hemo" || path.startsWith("hemo/");
     }
     prepareRoute(outlet: RouterOutlet) {
         return outlet && outlet.activatedRouteData && outlet.activatedRouteData['animation'];
