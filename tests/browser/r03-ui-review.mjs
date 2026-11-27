@@ -83,10 +83,17 @@ try{
   scenario='print-wristband';
   const detail=admission.locator('app-admission-table a[href^="/admission/detail/"]').first();
   await detail.click();
+  scenario='print-wristband-barcode-ready';
   await visible(admission,'app-wristband .wristband svg rect');
   await admission.emulateMedia({media:'print'});
+  scenario='print-wristband-hide-company-layout';
   assert.equal(await admission.locator('.layout-topbar').evaluate(e=>getComputedStyle(e).visibility),'hidden');
+  scenario='print-wristband-visible-target';
   assert.equal(await admission.locator('.wristband').evaluate(e=>getComputedStyle(e).visibility),'visible');
+  scenario='print-wristband-visible-barcode';
+  assert.equal(await admission.locator('app-wristband .wristband svg rect').first().evaluate(e=>getComputedStyle(e).visibility),'visible');
+  scenario='print-wristband-hide-other-patient-data';
+  assert.equal(await admission.locator('.hemo-page .heading').first().evaluate(e=>getComputedStyle(e).visibility),'hidden');
   await admission.emulateMedia({media:'screen'});
   console.log('PASS wristband print isolation');
   scenario='company-route-scope';
