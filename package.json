@@ -9,8 +9,9 @@
     "start": "ng serve",
     "build": "ng build",
     "check": "ng build --configuration production",
-    "test:smoke": "node --test tests/*.test.mjs",
-    "test": "node --test tests/*.test.mjs"
+    "test:smoke": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@angular/animations": "22.2.6",
@@ -32,6 +33,7 @@
     "@angular/build": "22.2.6",
     "@angular/cli": "22.2.6",
     "@angular/compiler-cli": "22.2.6",
-    "typescript": "~6.0.0"
+    "typescript": "~6.0.0",
+    "@playwright/test": "1.52.0"
   }
 }

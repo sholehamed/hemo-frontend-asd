@@ -15,6 +15,7 @@ export interface AdmissionStats {total:number;active:number;verified:number;mism
 export interface AdmissionReview {kind:string;outcome:string;checklist:number;notes:string|null;reviewedAt:string}
 export interface ReviewRequest {guid:string;kind:'Identity'|'History'|'Clearance';outcome:string;checklist:number;notes:string|null;version:string}
 export interface UpdateAdmission {guid:string;ward:string;bedNumber:string;physician:string;diagnosis:string|null;insurance:string|null;notes:string|null;version:string}
+export interface UpdatePatientIdentity {guid:string;identificationType:string;identificationNumber:string;firstName:string;lastName:string;fatherName:string|null;birthDate:string|null;gender:string;mobile:string|null;reason:string;version:string}
 @Injectable({providedIn:'root'})
 export class AdmissionsService {
   private readonly http=inject(HttpClient);private readonly url='/Identity/PatientAdmission';
@@ -23,6 +24,7 @@ export class AdmissionsService {
   find(identificationType:string,identificationNumber:string){return firstValueFrom(this.http.get<PatientIdentity|null>(this.url+'/FindPatient',{params:new HttpParams().set('identificationType',identificationType).set('identificationNumber',identificationNumber)}));}
   create(request:CreateAdmission){return firstValueFrom(this.http.post<string>(this.url,request));}
   update(request:UpdateAdmission){return firstValueFrom(this.http.put<void>(this.url,request));}
+  updateIdentity(request:UpdatePatientIdentity){return firstValueFrom(this.http.put<void>(this.url+'/PatientIdentity',request));}
   history(guid:string){return firstValueFrom(this.http.get<AdmissionView[]>(this.url+'/'+encodeURIComponent(guid)+'/History'));}
   reviews(guid:string){return firstValueFrom(this.http.get<AdmissionReview[]>(this.url+'/'+encodeURIComponent(guid)+'/Reviews'));}
   stats(filters:{ward?:string;from?:string|null;to?:string|null}={}){return firstValueFrom(this.http.post<AdmissionStats>(this.url+'/Stats',filters));}

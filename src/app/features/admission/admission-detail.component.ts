@@ -4,10 +4,11 @@ import { FormBuilder,ReactiveFormsModule,Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { AdmissionView,AdmissionsService } from '../../core/api/admissions.service';
 import { RequestStateComponent } from '../../shared/components/request-state.component';
+import { PatientIdentityEditComponent } from './patient-identity-edit.component';
 import { WristbandComponent } from './wristband.component';
 import { label,message } from '../../shared/admission-utils';
 import { isoToJalali } from '../../shared/jalali-date';
-@Component({standalone:true,imports:[RouterLink,ReactiveFormsModule,MatButtonModule,RequestStateComponent,WristbandComponent],template:`
+@Component({standalone:true,imports:[RouterLink,ReactiveFormsModule,MatButtonModule,RequestStateComponent,WristbandComponent,PatientIdentityEditComponent],template:`
 <section class="heading"><p class="eyebrow">پذیرش / جزئیات</p><h1>پرونده پذیرش و مچ‌بند</h1><a mat-button routerLink="/admission/list">بازگشت به فهرست</a></section>
 <app-request-state [loading]="busy()" [error]="error()"/>
 @if(success()){<div class="notice success">{{success()}}</div>}
@@ -18,6 +19,7 @@ import { isoToJalali } from '../../shared/jalali-date';
 <div class="actions"><a mat-stroked-button routerLink="/admission/identity" [queryParams]="{guid:p.guid}">تطبیق هویت</a><a mat-stroked-button routerLink="/admission/history" [queryParams]="{guid:p.guid}">بررسی سوابق</a><a mat-stroked-button routerLink="/admission/discharge" [queryParams]="{guid:p.guid}">کنترل ترخیص</a></div>
 </section>
 <app-wristband [patient]="p"/>
+<app-patient-identity-edit [patient]="p" (saved)="identitySaved()"/>
 <section class="panel"><h2>ویرایش اطلاعات بستری</h2><form [formGroup]="form" (ngSubmit)="save()"><div class="form-grid"><label>بخش *<input formControlName="ward"></label><label>شماره تخت *<input formControlName="bedNumber"></label><label>پزشک *<input formControlName="physician"></label><label>بیمه<input formControlName="insurance"></label><label class="wide">تشخیص<textarea formControlName="diagnosis" rows="2"></textarea></label><label class="wide">توضیحات<textarea formControlName="notes" rows="2"></textarea></label></div><div class="actions"><button mat-flat-button class="primary-button" [disabled]="busy()||form.invalid">ذخیره تغییرات</button><button mat-stroked-button type="button" (click)="load()">دریافت مجدد</button></div></form><p class="muted">ویرایش اطلاعات بستری، بررسی آمادگی ترخیص را نیازمند بازبینی می‌کند.</p></section>
 }
 `})
@@ -27,5 +29,6 @@ export class AdmissionDetailComponent implements OnInit{
  readonly form=this.fb.nonNullable.group({ward:['',Validators.required],bedNumber:['',Validators.required],physician:['',Validators.required],insurance:[''],diagnosis:[''],notes:['']});
  ngOnInit(){if(this.route.snapshot.queryParamMap.get('created'))this.success.set('پرونده در سامانه ثبت شد. مچ‌بند آماده چاپ است.');void this.load();}
  async load(){this.busy.set(true);this.error.set(null);try{const p=await this.api.get(this.route.snapshot.paramMap.get('guid')??'');this.patient.set(p);this.form.patchValue({ward:p.ward,bedNumber:p.bedNumber,physician:p.physician,insurance:p.insurance??'',diagnosis:p.diagnosis??'',notes:p.notes??''});}catch(e){this.error.set(message(e));}finally{this.busy.set(false);}}
+ async identitySaved(){this.success.set('اصلاح هویت ثبت شد. بررسی هویت و سوابق را مجدداً انجام دهید.');await this.load();}
  async save(){const p=this.patient();if(!p||this.busy()||this.form.invalid)return;this.busy.set(true);this.error.set(null);this.success.set(null);try{const v=this.form.getRawValue();await this.api.update({...v,guid:p.guid,version:p.version,insurance:v.insurance||null,diagnosis:v.diagnosis||null,notes:v.notes||null});this.success.set('تغییرات ثبت شد.');await this.load();}catch(e){this.error.set(message(e));}finally{this.busy.set(false);}}
 }

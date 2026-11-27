@@ -12,7 +12,7 @@
     <div class="side-footer"><strong>{{auth.session()?.firstName}} {{auth.session()?.lastName}}</strong><span>حساب سازمانی</span><button mat-stroked-button (click)="logout()">خروج از سامانه</button></div>
   </aside>
   <section class="workspace">
-    <header class="topbar"><button class="mobile-toggle" type="button" (click)="drawer.set(!drawer())" aria-label="منو">☰</button><div><strong>سامانه پایش ایمنی انتقال خون</strong><small>پذیرش بیمارستان</small></div><div class="role-picker"><label for="role">نقش جاری</label><select id="role" [value]="auth.session()?.userRole" (change)="roleChange($event)">@for(role of auth.roles();track role.gkey){<option [value]="role.gkey">{{role.name}}</option>}</select></div></header>
+    <header class="topbar"><button class="mobile-toggle" type="button" (click)="drawer.set(!drawer())" aria-label="منو">☰</button><div><strong>سامانه پایش ایمنی انتقال خون</strong><small>پذیرش بیمارستان</small></div><div class="role-picker"><label for="role">نقش جاری</label><select id="role" [value]="auth.session()?.userRole?.toString() ?? ''" (change)="roleChange($event)">@for(role of auth.roles();track role.gkey){<option [value]="role.gkey.toString()">{{role.name}}</option>}</select></div></header>
     <main class="workspace-content">
       @if(auth.checking()){<app-request-state [loading]="true"/>}
       @else if(!auth.allowed()){<div class="panel"><h2>دسترسی به پذیرش در این نقش فراهم نیست</h2><p>نقش سازمانی مجاز را انتخاب کنید یا از مدیر سامانه بخواهید منوی پذیرش را تخصیص دهد. در صورت قطع ارتباط با سرور، مجدداً تلاش کنید.</p><button mat-flat-button class="primary-button" (click)="auth.refreshContext()">تلاش مجدد</button></div>}

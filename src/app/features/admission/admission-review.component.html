@@ -9,7 +9,7 @@
 <div class="actions no-print"><a mat-stroked-button [routerLink]="['/admission/detail',p.guid]">جزئیات و چاپ مچ‌بند</a><button mat-stroked-button (click)="print()">چاپ خلاصه بررسی</button></div>
 </section>
 @if(kind==='Identity'){
-<section class="panel"><h2><span class="section-no">۱</span>تطبیق مدرک فیزیکی و پرونده</h2><p>بارکد صادرشده: <span class="mono">{{p.wristbandCode}}</span></p><div class="notice warn">تأیید باید توسط کارشناس پس از بررسی واقعی مدارک و مچ‌بند انجام شود؛ سامانه صرفاً نتیجه بررسی را ثبت می‌کند.</div></section>
+<section class="panel"><h2><span class="section-no">۱</span>تطبیق مدرک فیزیکی و پرونده</h2><p>بارکد صادرشده: <span class="mono">{{p.wristbandCode}}</span></p><div class="notice warn">تأیید باید توسط کارشناس پس از بررسی واقعی مدارک و مچ‌بند انجام شود؛ سامانه صرفاً نتیجه بررسی را ثبت می‌کند. در بیمار مجهول‌الهویه، بررسی شناسه موقت به معنای احراز هویت قطعی نیست.</div></section>
 }
 @if(kind==='History'){
 <section class="panel"><h2>سوابق ثبت‌شده در همین مرکز</h2><div class="detail-grid"><div><small>گروه خونی ثبت‌شده</small>{{p.bloodGroup||'ثبت نشده'}}</div><div><small>سابقه انتقال خون</small>{{label(p.transfusionHistory)}}</div><div><small>آخرین بررسی</small>{{date(p.historyReviewedAt)||'بررسی نشده'}}</div></div>
