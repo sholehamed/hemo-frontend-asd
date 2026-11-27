@@ -8,6 +8,7 @@ import { API_BASE_URL } from '../../Services/api-client';
 import { HemoRoleLifecycle } from '../../core/hemo/hemo-role-lifecycle';
 import { RequestDetailComponent } from './request-detail.component';
 import { RequestPageAccess } from './request-page-access';
+import { BloodRequestsService } from '../../core/api/blood-requests.service';
 import { blankClinical,RequestDetail } from './blood-request-model';
 
 describe('R02 company request detail',()=>{
@@ -53,11 +54,11 @@ describe('R02 company request detail',()=>{
    const c=f.componentInstance;const confirm=spyOn(window,'confirm').and.returnValue(true);
    await c.act('Approve');expect(confirm).not.toHaveBeenCalled();
    c.physician={diagnosis:'fixture',indication:'fixture',medicalCouncilNumber:'TEST',notes:null,confirmed:true};
+   const transition=spyOn(f.debugElement.injector.get(BloodRequestsService),'transition').and.callThrough();
    const action=c.act('Approve');const req=http.expectOne(base+'/Decide');
    expect(req.request.body).toEqual({guid:'request-a',version:'AQID',action:'Approve',reason:null,physician:c.physician});
    req.flush(null,{status:204,statusText:'No Content'});
-   // Wait for the promise continuation of the Blob transport, without a real timer.
-   await Promise.resolve();await Promise.resolve();await Promise.resolve();
+   await transition.calls.mostRecent().returnValue;
    http.expectOne(base+'/request-a').flush(blob({...fixture('request-a'),request:{...fixture('request-a').request,status:'AwaitingBank'}}));
    await action;expect(c.detail()?.request.status).toBe('AwaitingBank');expect(c.success()).not.toBeNull();f.destroy();
  });
