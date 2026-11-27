@@ -10,7 +10,8 @@ export class BankPageAccess {
  private readonly caps=signal<BankCapabilities|null>(null);
  readonly loading=signal(false);
  private generation=0;
- bankCan(key:keyof BankCapabilities):boolean{return this.scope.isCurrent()&&this.caps()?.[key]===true;}
+ bankCapabilities():BankCapabilities|null{return this.scope.isCurrent()?this.caps():null;}
+ bankCan(key:keyof BankCapabilities):boolean{return this.bankCapabilities()?.[key]===true;}
  async load():Promise<void>{
    if(!this.scope.isCurrent())return;
    const generation=++this.generation;this.caps.set(null);this.loading.set(true);

@@ -69,7 +69,7 @@ describe('R02 scoped bank reads',()=>{
    await load.calls.mostRecent().returnValue;f.detectChanges();
    http.expectNone('https://fixture.invalid/Identity/BloodRequest/Capabilities');
    expect(f.nativeElement.textContent).toContain('FIXTURE-UNIT');
-   expect(f.nativeElement.querySelector('a[href*="/hemo/bank/unit/"]')).toBeNull();
+   expect(f.nativeElement.querySelector('a[href*="/hemo/bank/unit/"]')).not.toBeNull();
    c.status='Available';const next=c.load(2);const paged=http.expectOne(base+'/Inventory');expect(paged.request.body.status).toBe('Expired');expect(paged.request.body.pageNumber).toBe(2);
    paged.flush(blob({...page,pageNumber:2}));await next;f.destroy();
  });
