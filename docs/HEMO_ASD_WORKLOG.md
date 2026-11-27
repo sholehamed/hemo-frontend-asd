@@ -88,3 +88,18 @@ Open gaps:
 
 ### ST-03 | final review
 - Run 46020137756: production build PASS, 12/12 unit tests PASS, 3/4 Playwright PASS; new request lifecycle timed out at the admission picker on a direct deep link. Removed shell-level default navigation during asynchronous bootstrap; explicit home route resolves the permitted landing page after capabilities are known. Role changes use /home. Added direct URL assertion, root bank landing assertion and diagnostic output. Rechecking all tests; no merge yet.
+
+## ST-04 | رابط بانک خون
+- مدل تایپ‌شده API، قابلیت‌های نقش، داشبورد و گزارش، موجودی و فیلتر درخواست/فرآورده، دریافت مستقل واحد، تاریخ/ساعت شمسی محلی و پایش دما. صفحه جزئیات و گردش واحد در کامیت بعد تکمیل می‌شود. CI هنوز بررسی نشده.
+
+### ST04 | فرم آزمایش و گردش واحد
+- صفحه جزئیات با انتخاب درخواست تأییدشده، فرم مستند آزمایش، تاریخچه، عملیات براساس نقش/وضعیت، رزرو، ذوب، قرنطینه، آماده‌سازی، امحا؛ پیوند از کارتابل ST-03. تست‌های قواعد UI و راهنمای کاربری ثبت شد. Build و E2E باید بررسی شوند.
+
+### ST04 | آزمون مرورگر
+- سناریوی مرورگری fixture: ورود بانک، ثبت دما، دریافت، بازرسی مسئول، اتصال درخواست ST-03، آزمایش، رزرو، ذوب، آماده‌سازی، نگرانی دمایی و توقف، لغو رزرو، امحا و برگشت درخواست. چهار تست قواعد UI. نتیجه اجرای نهایی CI هنوز بررسی نشده است.
+
+- Frontend initial production compile failed on redundant closing block in inventory template; fixed and re-running CI.
+
+- ماتریس واقعی موجودی، تاریخچه آزمایش با فیلتر و خروجی، صف رزروهای نیازمند ذوب و تست مرورگر گزارش تکمیل شد. منتظر CI نهایی.
+
+- Browser run 46023312020: 16 unit tests and build passed; four regression browser tests passed, bank scenario timed out at the temperature assessment select accessible name. Added explicit accessible names to new select controls including dynamic laboratory phases; retain all workflow assertions, re-run.

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
+import { BankCapabilities } from './features/blood-bank/bank-model';
 import { AuthService } from './core/auth/auth.service';
 import { RequestStateComponent } from './shared/components/request-state.component';
 @Component({selector:'app-root',standalone:true,imports:[RouterOutlet,RouterLink,RouterLinkActive,MatButtonModule,RequestStateComponent],templateUrl:'./app.component.html',styleUrl:'./app.component.css'})
@@ -8,6 +9,13 @@ export class AppComponent implements OnInit{
   readonly auth=inject(AuthService);private router=inject(Router);readonly drawer=signal(false);
   readonly nav=[{label:'داشبورد پذیرش',path:'/admission',icon:'▦',exact:true},{label:'پذیرش بیمار جدید',path:'/admission/new',icon:'＋',exact:false},{label:'فهرست بیماران بستری',path:'/admission/list',icon:'☷',exact:false},{label:'تطبیق هویت و مچ‌بند',path:'/admission/identity',icon:'✓',exact:false},{label:'سوابق انتقال خون',path:'/admission/history',icon:'◷',exact:false},{label:'کنترل ترخیص',path:'/admission/discharge',icon:'⇥',exact:false},{label:'همگام‌سازی HIS',path:'/admission/his',icon:'↔',exact:false},{label:'گزارش‌های پذیرش',path:'/admission/stats',icon:'▥',exact:false}];
   readonly requestNav=[{label:'درخواست‌های خون',path:'/hemo/requests',icon:'☷'},{label:'ثبت درخواست پرستاری',path:'/hemo/requests/new',icon:'＋'},{label:'ثبت دستور پزشک',path:'/hemo/requests/orders',icon:'＋'},{label:'کارتابل تأیید پزشک',path:'/hemo/requests/approval',icon:'✓'},{label:'صف بانک خون',path:'/hemo/requests/bank',icon:'▦'}];
+  readonly bankNav:{label:string;path:string;icon:string;cap:keyof BankCapabilities}[]=[
+    {label:'داشبورد بانک خون',path:'/hemo/bank',icon:'▦',cap:'stats'},{label:'مدیریت موجودی',path:'/hemo/bank/inventory',icon:'☷',cap:'inventory'},
+    {label:'دریافت فرآورده',path:'/hemo/bank/receive',icon:'＋',cap:'receive'},{label:'آزمایش و Crossmatch',path:'/hemo/bank/crossmatch',icon:'✓',cap:'inventory'},
+    {label:'تاریخچه آزمایش‌ها',path:'/hemo/bank/lab-history',icon:'◷',cap:'labHistory'},
+    {label:'ذوب فرآورده‌ها',path:'/hemo/bank/thaw',icon:'◷',cap:'inventory'},{label:'پایش دمای تجهیزات',path:'/hemo/bank/temperature',icon:'↔',cap:'temperatureHistory'},
+    {label:'گزارش‌های بانک خون',path:'/hemo/bank/reports',icon:'▥',cap:'stats'}
+  ];
   visible(path:string){
     if(path==='/admission')return this.auth.can('stats')&&this.auth.can('list');
     if(path==='/admission/new')return this.auth.can('create');
