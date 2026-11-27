@@ -1,3 +1,4 @@
+import { HemoRelatedLinksComponent,RelatedLink } from '../../shared/components/hemo-related-links.component';
 import { Component,OnInit,OnDestroy,inject,signal,computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute,RouterLink } from '@angular/router';
@@ -15,7 +16,7 @@ import { TransferDetail,TransferAction,VitalPhase,STATUSES,ACTIONS,PHASES,CHECKS
 import {measuredFields,measuredUtc} from './transfer-time';
 const emptyAction=()=>({unitCode:'',wristbandCode:'',notes:'',temperature:null as number|null,condition:'',receiverName:'',needleReference:'',suspectedReaction:false,volumeMl:null as number|null});
 const emptyVital=()=>({phase:'' as VitalPhase|'',systolic:null as number|null,diastolic:null as number|null,pulse:null as number|null,temperature:null as number|null,spo2:null as number|null,respiration:null as number|null,urineMl:null as number|null,rateMlPerHour:null as number|null,notes:''});
-@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,TransfusionService,TransferPageAccess],imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./transfer-detail.component.html',styleUrl:'./transfer-detail.component.css'})
+@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,TransfusionService,TransferPageAccess],imports:[HemoRelatedLinksComponent,FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./transfer-detail.component.html',styleUrl:'./transfer-detail.component.css'})
 export class TransferDetailComponent implements OnInit,OnDestroy{
  readonly scope=inject(HemoPageScope);readonly auth=inject(TransferPageAccess);private api=inject(TransfusionService);private route=inject(ActivatedRoute);
  private guid='';readonly detail=signal<TransferDetail|null>(null);readonly busy=signal(false);readonly saving=signal(false);readonly error=signal<string|null>(null);readonly success=signal<string|null>(null);
@@ -78,4 +79,15 @@ export class TransferDetailComponent implements OnInit,OnDestroy{
  exportVitals(){const d=this.detail();if(d&&this.auth.transferCan('detail')&&!this.busy()&&!this.saving())downloadCsv('hemo-vitals-'+d.transfer.unitCode+'.csv',[['حواله','نوبت','زمان','سیستولیک','دیاستولیک','نبض','دما','SpO2','تنفس','دیورز','سرعت ثبت‌شده','یادداشت'],...d.vitals.map(v=>[d.transfer.transferNumber,PHASES[v.phase],bankDateTime(v.measuredAt),v.systolic,v.diastolic,v.pulse,v.temperature,v.spo2,v.respiration,v.urineMl,v.rateMlPerHour,v.notes])]);}
  exportEvents(){const d=this.detail();if(d&&this.auth.transferCan('detail')&&!this.busy()&&!this.saving())downloadCsv('hemo-transfer-events-'+d.transfer.unitCode+'.csv',[['زمان','رویداد','وضعیت','شناسه کاربر','شرح','شواهد'],...d.events.map(e=>[bankDateTime(e.occurredAt),this.eventLabel(e.action),this.status(e.newStatus),e.actorUserGuid,e.notes,this.evidence(e.evidenceJson)])]);}
  print(){if(this.auth.transferCan('detail')&&this.detail()&&!this.busy()&&!this.saving())window.print();}
+
+ readonly relatedLinks=computed(()=>{const item=this.detail();return item?this.related(item):[];});
+ related(d:TransferDetail):RelatedLink[]{
+   return [
+     {label:'پرونده پذیرش',pattern:'/admission/detail/:guid',commands:['/admission/detail',d.transfer.admissionGuid]},
+     {label:'جزئیات درخواست',pattern:'/hemo/requests/detail/:guid',commands:['/hemo/requests/detail',d.transfer.requestGuid]},
+     {label:'جزئیات درخواست در بانک خون',pattern:'/hemo/requests/bank/:guid',commands:['/hemo/requests/bank',d.transfer.requestGuid]},
+     {label:'گردش واحد بانک خون',pattern:'/hemo/bank/unit/:guid',commands:['/hemo/bank/unit',d.transfer.unitGuid]},
+     {label:'سوابق حواله‌های درخواست',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query:{request:d.transfer.requestGuid}}
+   ];
+ }
 }
