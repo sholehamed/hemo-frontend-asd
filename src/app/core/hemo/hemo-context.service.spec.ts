@@ -28,7 +28,7 @@ describe('HemoContextService (R02)', () => {
 
   function requests() {
     const list = http.match(r => r.method === 'GET' &&
-      r.url.startsWith(environment.apiUrl.replace(/\\/$/, '') + '/Identity/') &&
+      r.url.startsWith(environment.apiUrl.replace(/\/+$/, '') + '/Identity/') &&
       r.url.endsWith('/Capabilities'));
     expect(list.length).toBe(6);
     return list;

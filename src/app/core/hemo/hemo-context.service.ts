@@ -70,7 +70,7 @@ export class HemoContextService {
     const generation = this.generation;
     this.loading.set(true);
     const get = <T>(module: string): Promise<T | null> =>
-      firstValueFrom(this.http.get<T>(environment.apiUrl.replace(/\\/$/, '') + '/Identity/' + module + '/Capabilities'))
+      firstValueFrom(this.http.get<T>(environment.apiUrl.replace(/\/+$/, '') + '/Identity/' + module + '/Capabilities'))
         .catch(() => null);
     try {
       const [admission, requests, bank, transfer, hv, quality] = await Promise.all([
