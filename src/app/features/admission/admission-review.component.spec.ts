@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { API_BASE_URL } from '../../Services/api-client';
 import { HemoRoleLifecycle } from '../../core/hemo/hemo-role-lifecycle';
 import { AdmissionReviewComponent } from './admission-review.component';
+import { AdmissionPageAccess } from './admission-page-access';
 
 describe('R02 scoped admission clinical reviews',()=>{
   let current:boolean;
@@ -35,10 +36,16 @@ describe('R02 scoped admission clinical reviews',()=>{
   async function init(mode:typeof kind,permissions:Record<string,boolean>=caps):Promise<ComponentFixture<AdmissionReviewComponent>>{
     kind=mode;
     const f=TestBed.createComponent(AdmissionReviewComponent);
-    const start=spyOn(f.componentInstance,'ngOnInit').and.callThrough();
+    // Angular can register lifecycle hooks from the component prototype, not the instance.
+    // Observe the actual page-local capability load called by the real ngOnInit.
+    const access=spyOn(f.debugElement.injector.get(AdmissionPageAccess),'load').and.callThrough();
     f.detectChanges();
+    expect(access).toHaveBeenCalledTimes(1);
+    const initialized=access.calls.mostRecent().returnValue;
     http.expectOne(base+'/Capabilities').flush(blob(permissions));
-    await start.calls.mostRecent().returnValue;
+    // ngOnInit awaits this same promise before subscribing to queryParamMap.
+    await initialized;
+    await f.whenStable();
     f.detectChanges();return f;
   }
   function respond(guid:string,extra:Record<string,unknown>={}){

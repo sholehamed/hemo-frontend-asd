@@ -6,3 +6,6 @@
 - لینک‌ها در جزئیات و فهرست با مجوز لازم بازگردانده شدند. منوی این سه صفحه و تشکیل پرونده هنوز به ریشه /Hemo منتقل نشده و بعد از تایید CI باید opt-in seed آن ثبت شود.
 - تست‌ها: شش سناریوی کامپوننت/HTTP شامل هویت، read-only history، نبود history، پیش‌نیاز ترخیص و خطای سرور، پاسخ بیمار قبلی و تغییر نقش هنگام ثبت؛ یک تست Guard سه مسیر. تست‌ها mock هستند و CI هنوز تایید نشده.
 - حساب یا migration جدید لازم نیست. تست UAT واقعی و چاپگر/اسکنر، داشبورد پذیرش و اتصال سایر ماژول‌ها باقی است. تغییر عمومی AuthService/Interceptor/Guard و main فرانت انجام نشده.
+
+## اصلاح CI 46063471405
+Build و Node (36/36) موفق؛ Karma 60 موفق و 6 ناموفق با TypeError در helper مشترک init. Angular ممکن است lifecycle hook را از prototype ثبت کند و spy نمونه ngOnInit اجرا نشود. helper اکنون spy callThrough روی AdmissionPageAccess.load واقعی می‌گذارد، تعداد فراخوانی را بررسی، پاسخ Blob واقعی را flush و Promise همان load را await می‌کند؛ سپس fixture.whenStable و detectChanges. هیچ assertion بالینی، تست، mock HTTP یا کد production حذف/تغییر نشد. CI اصلاحی هنوز تایید نشده است.
