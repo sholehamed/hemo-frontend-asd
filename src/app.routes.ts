@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { MENU_ROLE_CONTEXT } from './app/Shared/layout/component/menu-role-context';
 import { HemoRoleLifecycle } from './app/core/hemo/hemo-role-lifecycle';
 import { hemoAdmissionPilotRoutes } from './app/core/hemo/hemo-admission-pilot.routes';
+import { hemoBankReadRoutes } from './app/core/hemo/hemo-bank-read.routes';
 import { hemoRequestReadRoutes } from './app/core/hemo/hemo-request-read.routes';
 import { AppLayout } from './app/Shared/layout/component/app.layout';
 import { Dashboard } from './app/Shared/pages/dashboard/dashboard';
@@ -17,6 +18,7 @@ export const appRoutes: Routes = [
         children: [
             ...hemoAdmissionPilotRoutes,
             ...hemoRequestReadRoutes,
+            ...hemoBankReadRoutes,
             { path: '', component: Dashboard, canActivate: [authGuardGuard], },
             { path: 'Identity', loadChildren: () => import('./app/Projects/Identity/Identity.routes') },
             { path: 'pages', loadChildren: () => import('./app/Shared/pages/pages.routes') },
