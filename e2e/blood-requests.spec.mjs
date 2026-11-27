@@ -44,7 +44,8 @@ test('nurse submits, doctor returns and approves, bank sees approved request onl
  await page.getByRole('button',{name:'ثبت و ارسال برای پزشک'}).click();
  await expect(page.getByText('درخواست برای پزشک ارسال شد.',{exact:true})).toBeVisible();
  await expect(page.getByRole('button',{name:'تأیید و ارسال به بانک خون'})).toHaveCount(0);
- role='bank';await page.goto('/');await expect(page).toHaveURL(/\/hemo\/requests\/bank$/);await expect(page.getByText('درخواستی مطابق فیلتر یافت نشد.')).toBeVisible();
+ role='bank';await page.goto('/');await expect(page).toHaveURL(/\/home$/);await expect(page.getByRole('heading',{name:'داشبورد نقش سازمانی'})).toBeVisible();
+ await page.getByRole('link',{name:'صف بانک خون',exact:true}).first().click();await expect(page).toHaveURL(/\/hemo\/requests\/bank$/);await expect(page.getByText('درخواستی مطابق فیلتر یافت نشد.')).toBeVisible();
  role='doctor';await page.goto('/hemo/requests/approval');await page.getByRole('link',{name:'بررسی و تصمیم'}).click();
  await page.getByLabel('دلیل / توضیحات (رد، برگشت و لغو الزامی)',{exact:true}).fill('نیاز به اصلاح');
  await page.getByRole('button',{name:'برگشت برای اصلاح'}).click();
