@@ -44,13 +44,13 @@ export class HomeComponent implements OnInit,OnDestroy{
   add(a.can('create')&&a.can('find')&&a.can('detail'),'پذیرش جدید','/admission/new');
   add(a.can('review')&&a.can('detail')&&a.can('list')&&a.can('reviews'),'تطبیق هویت','/admission/identity');
   add(a.can('review')&&a.can('detail')&&a.can('list')&&a.can('reviews'),'کنترل ترخیص','/admission/discharge');
-  add(a.requestCan('nurseCreate'),'درخواست پرستاری','/hemo/requests/new');
-  add(a.requestCan('doctorCreate'),'ثبت دستور پزشک','/hemo/requests/orders');
+  add(a.requestCan('nurseCreate')&&a.requestCan('detail')&&a.can('detail')&&a.can('list'),'درخواست پرستاری','/hemo/requests/new');
+  add(a.requestCan('doctorCreate')&&a.requestCan('detail')&&a.can('detail')&&a.can('list'),'ثبت دستور پزشک','/hemo/requests/orders');
   add(a.requestCan('decide')&&a.requestCan('list'),'کارتابل تأیید پزشک','/hemo/requests/approval');
   add(a.requestCan('bankQueue'),'صف بانک خون','/hemo/requests/bank');
   add(a.bankCan('receive'),'دریافت فرآورده','/hemo/bank/receive');
   add(a.bankCan('inventory')&&a.bankCan('test')&&a.requestCan('bankQueue')&&a.requestCan('bankDetail'),'آزمایش سازگاری','/hemo/bank/crossmatch');
-  add(a.transferCan('candidates')&&a.transferCan('dispatch'),'صدور حواله','/hemo/transfusion/dispatch');
+  add(a.transferCan('candidates')&&a.transferCan('dispatch')&&a.transferCan('detail'),'صدور حواله','/hemo/transfusion/dispatch');
   add(a.transferCan('list')&&a.transferCan('receive'),'دریافت و تطبیق','/hemo/transfusion/tasks',{status:'Dispatched'});
   add(a.transferCan('list')&&a.transferCan('witness'),'صف تطبیق دوم','/hemo/transfusion/tasks',{status:'Verified'});
   add(a.transferCan('list')&&a.transferCan('vital'),'پایش علائم حیاتی','/hemo/transfusion/vitals');
@@ -58,9 +58,9 @@ export class HomeComponent implements OnInit,OnDestroy{
   add(a.hvCan('report')&&a.hvCan('candidates')&&a.hvCan('detail'),'گزارش واکنش','/hemo/hv/new');
   add(a.hvCan('doctorReview')&&a.hvCan('list'),'بررسی واکنش پزشک','/hemo/hv/doctor');
   add(a.hvCan('bankReview')&&a.hvCan('list'),'بررسی واکنش بانک','/hemo/hv/bank');
-  add(a.hvCan('investigate')&&a.hvCan('list'),'تحلیل RCA','/hemo/hv/rca');
+  add((a.hvCan('investigate')||a.hvCan('publishRca'))&&a.hvCan('list'),'تحلیل RCA','/hemo/hv/rca');
   add(a.hvCan('close')&&a.hvCan('list'),'بازبینی نهایی واکنش','/hemo/hv/cases',{status:'ReadyToClose'});
-  add(a.hvCan('list')&&(a.hvCan('capaProgress')||a.hvCan('capaVerify')),'اقدامات CAPA','/hemo/hv/capa');
+  add(a.hvCan('list')&&(a.hvCan('capaProgress')||a.hvCan('capaVerify')||a.hvCan('assignCapa')||a.hvCan('close')),'اقدامات CAPA','/hemo/hv/capa');
   add(a.qualityCan('equipmentList')&&a.qualityCan('equipmentService'),'سرویس و کالیبراسیون','/hemo/quality/maintenance');
   add(a.qualityCan('incidents'),'حوادث تجهیزات','/hemo/quality/incidents');
   add(a.qualityCan('qcList'),'کنترل کیفیت','/hemo/quality/qc');
@@ -78,7 +78,7 @@ export class HomeComponent implements OnInit,OnDestroy{
   await this.auth.load();if(!this.current(g))return;
   const a=this.auth, tasks:Promise<DashboardSection>[]=[];
   const add=(id:string,title:string,description:string,links:DashboardLink[],read:()=>Promise<Metric[]>)=>tasks.push(loadSection(id,title,description,links,read));
-  const go=(allowed:boolean,path:string,query?:Record<string,string>)=>allowed?link('مشاهده رکوردها',path,query):undefined;
+  const go=(allowed:boolean,path:string,query?:Record<string,string>)=>allowed?link(query?'مشاهده رکوردها':'مشاهده گزارش یا کارتابل',path,query):undefined;
   const links=(...items:(DashboardLink|undefined)[])=>items.filter((x):x is DashboardLink=>!!x);
   if(a.can('stats'))add('admission','پذیرش و ایمنی هویت','کل پرونده‌های قابل مشاهده در مرکز جاری',links(go(true,'/admission/stats'),go(a.can('list'),'/admission/list')),async()=>{
    const s=await this.admission.stats(),l=a.can('list');
@@ -93,11 +93,11 @@ export class HomeComponent implements OnInit,OnDestroy{
    const s=await this.bank.stats(),r=(status:string)=>go(a.bankCan('inventory'),'/hemo/bank/inventory',{status});
    return [metric('آزاد',s.available),metric('رزروشده',s.reserved),metric('آماده بررسی تحویل',s.ready),metric('نزدیک انقضا',s.expiringSoon,r('ExpiringSoon'),true),metric('منقضی',s.expired,r('Expired'),true),metric('نگرانی دما در ۲۴ ساعت',s.temperatureConcerns,undefined,true),metric('قرنطینه / انتظار بازرسی',s.hold,undefined,true),...(s.equipmentBlocked===undefined?[]:[metric('مسدود فنی تجهیز',s.equipmentBlocked,undefined,true)])];
   });
-  if(a.transferCan('stats'))add('transfer','تحویل و تزریق','شمارش وضعیت حواله‌های قابل مشاهده؛ نه وظایف شخصی',links(go(true,'/hemo/transfusion')),async()=>{
+  if(a.transferCan('stats'))add('transfer','تحویل و تزریق','شمارش وضعیت حواله‌های قابل مشاهده؛ نه وظایف شخصی',links(go(a.transferCan('list'),'/hemo/transfusion')),async()=>{
    const s=await this.tx.stats(),r=(status:string)=>go(a.transferCan('list'),'/hemo/transfusion/tasks',{status});
    return [metric('در مسیر بخش',s.dispatched,r('Dispatched')),metric('دریافت شده',s.received,r('Received')),metric('در انتظار تطبیق دوم',s.verified,r('Verified')),metric('در حال تزریق',s.inProgress,r('InProgress')),metric('پایان ثبت‌شده',s.completed,r('Completed')),metric('مغایرت دریافت',s.receiptHold,r('ReceiptHold'),true),metric('توقف ثبت‌شده',s.stopped,r('Stopped'),true),metric('در مسیر برگشت',s.returning,r('Returning'),true)];
   });
-  if(a.hvCan('stats'))add('hv','واکنش و هموویژیلانس','پرونده‌ها و پیگیری ثبت‌شده؛ بدون استنباط نرخ واکنش',links(go(true,'/hemo/hv')),async()=>{
+  if(a.hvCan('stats'))add('hv','واکنش و هموویژیلانس','پرونده‌ها و پیگیری ثبت‌شده؛ بدون استنباط نرخ واکنش',links(go(a.hvCan('list'),'/hemo/hv')),async()=>{
    const s=await this.hv.stats(),r=(status:string)=>go(a.hvCan('list'),'/hemo/hv/cases',{status});
    return [metric('پرونده باز',s.open,r('Open'),true),metric('در انتظار پزشک',s.pendingDoctor,r('Reported'),true),metric('در انتظار بانک',s.pendingBank,r('DoctorReviewed'),true),metric('RCA باز',s.rcaOpen,r('RcaOpen'),true),metric('CAPA باز',s.capaOpen,undefined,true),metric('CAPA سررسید گذشته',s.capaOverdue,undefined,true),metric('گزارش بیرونی موردنیاز',s.externalPending,undefined,true)];
   });
