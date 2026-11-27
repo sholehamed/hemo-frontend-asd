@@ -17,19 +17,26 @@ describe('R02 admission pilot route', () => {
   afterEach(() => {
     if(old===null) sessionStorage.removeItem('url'); else sessionStorage.setItem('url',old);
   });
-  async function guard() {
-    const config = hemoAdmissionPilotRoutes[0];
+  async function guard(path='admission/stats') {
+    const config = hemoAdmissionPilotRoutes.find(r=>r.path===path)!;
     const snapshot = {routeConfig:config,parent:{routeConfig:{path:''},parent:null}} as unknown as ActivatedRouteSnapshot;
     const result=TestBed.runInInjectionContext(()=>authGuardGuard(snapshot,{} as RouterStateSnapshot));
     return firstValueFrom(result as Observable<boolean>);
   }
   it('uses the original guard, with the exact seeded page pattern', async () => {
-    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his']);
+    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his','admission/new','admission/detail/:guid']);
     expect(hemoAdmissionPilotRoutes.every(r=>r.canActivate?.[0]===authGuardGuard)).toBeTrue();
     expect(hemoAdmissionPilotRoutes[0].canActivate).toEqual([authGuardGuard]);
     expect(await guard()).toBeTrue();
     expect(auth.CheckPagePermission).toHaveBeenCalledOnceWith('/admission/stats');
     expect(sessionStorage.getItem('url')).toBe('/admission/stats');
+  });
+  it('checks exact seeded new and parameterized detail patterns',async()=>{
+    expect(await guard('admission/new')).toBeTrue();
+    expect(auth.CheckPagePermission).toHaveBeenCalledWith('/admission/new');
+    expect(await guard('admission/detail/:guid')).toBeTrue();
+    expect(auth.CheckPagePermission).toHaveBeenCalledWith('/admission/detail/:guid');
+    expect(sessionStorage.getItem('url')).toBe('/admission/detail/:guid');
   });
   it('rejects an unauthorized company role', async () => {
     auth.CheckPagePermission.and.returnValue(of(false));
