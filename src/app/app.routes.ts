@@ -20,5 +20,6 @@ export const routes:Routes=[
  {path:'hemo/requests/approval',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
  {path:'hemo/requests/doctor',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
  {path:'hemo/requests',canActivate:[authGuard],pathMatch:'full',loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
- {path:'',pathMatch:'full',redirectTo:'admission'},{path:'**',redirectTo:'admission'}
+ {path:'home',canActivate:[authGuard],loadComponent:()=>import('./features/home/home.component').then(m=>m.HomeComponent)},
+ {path:'',pathMatch:'full',redirectTo:'home'},{path:'**',redirectTo:'home'}
 ];

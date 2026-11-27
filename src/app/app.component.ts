@@ -19,7 +19,7 @@ export class AppComponent implements OnInit{
   }
   requestVisible(path:string){switch(path){case '/hemo/requests':return this.auth.requestCan('list');case '/hemo/requests/new':return this.auth.requestCan('nurseCreate');case '/hemo/requests/orders':return this.auth.requestCan('doctorCreate');case '/hemo/requests/approval':return this.auth.requestCan('decide')&&this.auth.requestCan('list');default:return this.auth.requestCan('bankQueue');}}
   home(){return this.auth.homePath();}
-  async ngOnInit(){if(this.auth.loggedIn()){await this.auth.refreshContext();if((this.router.url==='/'||this.router.url==='/admission')&&!this.visible('/admission')&&this.auth.allowed())void this.router.navigateByUrl(this.home());}}
+  ngOnInit(){if(this.auth.loggedIn())void this.auth.refreshContext();}
   roleChange(event:Event){this.auth.selectRole(Number((event.target as HTMLSelectElement).value));}
   async logout(){await this.auth.logout();void this.router.navigateByUrl('/login');}
 }

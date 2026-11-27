@@ -48,7 +48,7 @@ export class AuthService {
     }catch{this.allowed.set(false);}
     finally{this.checking.set(false);}
   }
-  selectRole(role:number){const current=this.session();if(!current||!this.roles().some(r=>r.gkey===role))return;this.setSession({...current,userRole:role});this.allowed.set(false);location.assign('/admission');}
+  selectRole(role:number){const current=this.session();if(!current||!this.roles().some(r=>r.gkey===role))return;this.setSession({...current,userRole:role});this.allowed.set(false);location.assign('/home');}
   async logout(){
     try{if(this.session())await firstValueFrom(this.http.get('/Identity/User/UserLogout'));}catch{/* clear local session regardless */}
     this.clear();

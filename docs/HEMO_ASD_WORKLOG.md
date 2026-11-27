@@ -85,3 +85,6 @@ Open gaps:
 
 ### ST03-05 | تست مرورگری و لینک پذیرش
 - Build و CI تا 9e3ce36f موفق. افزودن تست گردش پرستار → برگشت پزشک → اصلاح → تأیید → صف بانک با fixture قرارداد و کنترل فرم اختصاصی؛ لینک درخواست‌های هر پذیرش. اجرای CI جدید در انتظار بررسی است.
+
+### ST-03 | final review
+- Run 46020137756: production build PASS, 12/12 unit tests PASS, 3/4 Playwright PASS; new request lifecycle timed out at the admission picker on a direct deep link. Removed shell-level default navigation during asynchronous bootstrap; explicit home route resolves the permitted landing page after capabilities are known. Role changes use /home. Added direct URL assertion, root bank landing assertion and diagnostic output. Rechecking all tests; no merge yet.
