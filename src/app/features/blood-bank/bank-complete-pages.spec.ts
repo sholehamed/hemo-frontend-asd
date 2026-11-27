@@ -53,7 +53,6 @@ describe('R02 remaining bank workflows',()=>{
    mode='lab';const {f,c,load,queue,api}=await inventory({inventory:true,test:true,returnRequest:true},{bankQueue:true,bankDetail:true});
    http.expectOne(base+'/Inventory').flush(blob(page));http.expectOne(requests+'/BankQueue').flush(blob(page));await load.calls.mostRecent().returnValue;await queue.calls.mostRecent().returnValue;
    const choose=c.choose('request-a');http.expectOne(requests+'/Bank/request-a').flush(blob(request('request-a')));
-   const get= f.debugElement.injector.get(BloodBankService);
    // Wait for the scoped selection to schedule the inventory read.
    for(let i=0;i<20&&load.calls.count()<2;i++)await new Promise(resolve=>setTimeout(resolve,0));
    http.expectOne(base+'/Inventory').flush(blob(page));await choose;
