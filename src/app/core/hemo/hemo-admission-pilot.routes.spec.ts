@@ -24,7 +24,7 @@ describe('R02 admission pilot route', () => {
     return firstValueFrom(result as Observable<boolean>);
   }
   it('uses the original guard, with the exact seeded page pattern', async () => {
-    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his','admission/new','admission/detail/:guid']);
+    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his','admission/new','admission/detail/:guid','admission/identity','admission/history','admission/discharge']);
     expect(hemoAdmissionPilotRoutes.every(r=>r.canActivate?.[0]===authGuardGuard)).toBeTrue();
     expect(hemoAdmissionPilotRoutes[0].canActivate).toEqual([authGuardGuard]);
     expect(await guard()).toBeTrue();
@@ -37,6 +37,13 @@ describe('R02 admission pilot route', () => {
     expect(await guard('admission/detail/:guid')).toBeTrue();
     expect(auth.CheckPagePermission).toHaveBeenCalledWith('/admission/detail/:guid');
     expect(sessionStorage.getItem('url')).toBe('/admission/detail/:guid');
+  });
+  it('checks the exact seeded review routes and kinds',async()=>{
+    for(const [path,kind] of [['admission/identity','Identity'],['admission/history','History'],['admission/discharge','Clearance']]){
+      expect(hemoAdmissionPilotRoutes.find(r=>r.path===path)?.data?.['kind']).toBe(kind);
+      expect(await guard(path)).toBeTrue();
+      expect(auth.CheckPagePermission).toHaveBeenCalledWith('/'+path);
+    }
   });
   it('rejects an unauthorized company role', async () => {
     auth.CheckPagePermission.and.returnValue(of(false));
