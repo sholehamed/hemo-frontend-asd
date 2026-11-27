@@ -2,6 +2,8 @@
 <section class="heading"><p class="eyebrow">هموویژیلانس / درخواست خون</p><h1>{{title}}</h1><p class="muted">{{bank?'صرفاً درخواست‌های تأییدشده پزشک؛ این صف مجوز صدور یا تزریق نیست.':approval?'درخواست‌های ارسال‌شده برای تکمیل نظر و تصمیم پزشک.':'فهرست واقعی درخواست‌های مرکز جاری؛ اولویت‌های فوری در ابتدای جدول.'}}</p></section>
 @if(auth.loading()){<app-request-state [loading]="true" [error]="null"/>}@else if(!allowed()){<section class="panel"><h2>مجوز مشاهده این کارتابل را ندارید.</h2>@if(!bank&&!approval&&auth.requestCan('bankQueue')){<a mat-button routerLink="/hemo/requests/bank">صف بانک خون</a>}</section>}@else{
 <div class="actions no-print">
+@if(!bank&&!approval&&auth.requestCan('detail')&&auth.requestCan('nurseCreate')){<a mat-flat-button class="primary-button" routerLink="/hemo/requests/new" [queryParams]="patientFilter()?{admission:patientFilter()}:{}">＋ ثبت درخواست پرستاری</a>}
+@if(!bank&&!approval&&auth.requestCan('detail')&&auth.requestCan('doctorCreate')){<a mat-flat-button class="primary-button" routerLink="/hemo/requests/orders" [queryParams]="patientFilter()?{admission:patientFilter()}:{}">＋ ثبت دستور پزشک</a>}
 @if(auth.requestCan('list')&&auth.requestCan('decide')&&!approval){<a mat-stroked-button routerLink="/hemo/requests/approval">کارتابل تأیید پزشک</a>}
 @if(auth.requestCan('bankQueue')&&!bank){<a mat-stroked-button routerLink="/hemo/requests/bank">صف بانک خون</a>}
 @if(auth.requestCan('list')&&(approval||bank)){<a mat-stroked-button routerLink="/hemo/requests">همه درخواست‌ها</a>}
