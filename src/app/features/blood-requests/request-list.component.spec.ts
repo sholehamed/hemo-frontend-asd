@@ -52,7 +52,7 @@ describe('R02 scoped blood request read pages',()=>{
     await load.calls.mostRecent().returnValue;f.detectChanges();
     http.expectNone(base+'/BindPaging');http.expectNone(base+'/Stats');
     expect(f.nativeElement.textContent).toContain('FixturePatient');
-    expect(f.nativeElement.querySelector('a[href*="/hemo/requests/bank/request-a"]')).toBeNull();
+    expect(f.nativeElement.querySelector('a[href*="/hemo/requests/bank/request-a"]')).not.toBeNull();
     f.destroy();
   });
   it('requires decide and list for approval, and forces the AwaitingDoctor filter',async()=>{

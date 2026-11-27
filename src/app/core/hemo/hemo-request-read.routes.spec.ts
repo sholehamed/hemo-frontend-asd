@@ -19,8 +19,8 @@ describe('R02 guarded blood request read routes',()=>{
     const snap={routeConfig:config,parent:{routeConfig:{path:''},parent:null}} as unknown as ActivatedRouteSnapshot;
     return firstValueFrom(TestBed.runInInjectionContext(()=>authGuardGuard(snap,{} as RouterStateSnapshot)) as Observable<boolean>);
   }
-  it('uses the company guard and exact page patterns for all four read routes',async()=>{
-    expect(hemoRequestReadRoutes.map(r=>r.path)).toEqual(['hemo/requests/bank','hemo/requests/approval','hemo/requests/doctor','hemo/requests']);
+  it('uses the company guard and exact page patterns for all six request routes',async()=>{
+    expect(hemoRequestReadRoutes.map(r=>r.path)).toEqual(['hemo/requests/bank/:guid','hemo/requests/detail/:guid','hemo/requests/bank','hemo/requests/approval','hemo/requests/doctor','hemo/requests']);
     for(const r of hemoRequestReadRoutes){
       expect(r.canActivate).toEqual([authGuardGuard]);expect(await check(r.path!)).toBeTrue();
       expect(auth.CheckPagePermission).toHaveBeenCalledWith('/'+r.path);
