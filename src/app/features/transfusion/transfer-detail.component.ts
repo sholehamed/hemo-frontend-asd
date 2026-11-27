@@ -87,7 +87,8 @@ export class TransferDetailComponent implements OnInit,OnDestroy{
      {label:'جزئیات درخواست',pattern:'/hemo/requests/detail/:guid',commands:['/hemo/requests/detail',d.transfer.requestGuid]},
      {label:'جزئیات درخواست در بانک خون',pattern:'/hemo/requests/bank/:guid',commands:['/hemo/requests/bank',d.transfer.requestGuid]},
      {label:'گردش واحد بانک خون',pattern:'/hemo/bank/unit/:guid',commands:['/hemo/bank/unit',d.transfer.unitGuid]},
-     {label:'سوابق حواله‌های درخواست',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query:{request:d.transfer.requestGuid}}
+     {label:'سوابق حواله‌های درخواست',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query:{request:d.transfer.requestGuid}},
+     {label:'پرونده‌های واکنش مرتبط',pattern:'/hemo/hv/cases',commands:['/hemo/hv/cases'],query:{transfer:d.transfer.guid}}
    ];
  }
 }
