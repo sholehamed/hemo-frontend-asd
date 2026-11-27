@@ -1,0 +1,21 @@
+name: HEMO admission CI
+on:
+  push:
+    branches: [feature/st-01-st-02-admission, feature/st-03-blood-requests, feature/st-04-blood-bank, feature/st-05-transfusion, feature/st-06-hemovigilance, feature/st-07-quality-management, feature/st-08-delivery]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  build-test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: npm install --no-audit --no-fund
+      - run: npm test
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e

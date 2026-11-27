@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {reviewActions,capaActions,closeReady,demo} from '../src/app/features/hemovigilance/hv-model.ts';
+const caps={observe:true,doctorReview:true,bankReview:true,investigate:true,returnToDoctor:true,publishRca:true,external:true,close:true,capaProgress:true,capaVerify:true,userGuid:'actor'};
+const d={case:{status:'Reported'},actions:[],transferStatus:'Stopped',externalStatus:'NotRequired',rcaRequired:false};
+test('initial case exposes doctor but not bank or closure',()=>{assert.deepEqual(reviewActions(d,caps),['Observe','DoctorReview','External']);});
+test('closed case is immutable',()=>{assert.deepEqual(reviewActions({...d,case:{status:'Closed'}},caps),[]);});
+test('return to doctor blocked after CAPA assignment',()=>{const x={...d,case:{status:'RcaOpen'},actions:[{}]};assert.ok(!reviewActions(x,caps).includes('ReturnToDoctor'));});
+test('only assigned owner can submit and independent reviewer can verify',()=>{const x={...d,case:{status:'CapaMonitoring'}},c={ownerUserGuid:'actor',status:'Open'};assert.deepEqual(capaActions(x,c,caps),['CapaProgress']);assert.deepEqual(capaActions(x,{...c,status:'Submitted',submittedBy:'actor'},caps),[]);assert.deepEqual(capaActions(x,{...c,status:'Submitted',submittedBy:'actor'},{...caps,userGuid:'reviewer'}),['CapaVerify','CapaReject']);});
+test('closure requires reviewed CAPA and external disposition',()=>{const x={...d,case:{status:'CapaMonitoring'},rcaRequired:true,rcaPublishedAt:'now',actions:[{status:'Verified'}]};assert.ok(closeReady(x));assert.ok(!closeReady({...x,actions:[{status:'Submitted'}]}));assert.ok(!closeReady({...x,externalStatus:'SentManually',externalReference:''}));assert.ok(!closeReady({...x,transferStatus:'InProgress'}));assert.ok(demo('DEMO-ST06-01'));});

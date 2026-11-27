@@ -1,0 +1,28 @@
+@if(auth.loggedIn()){
+<div class="hemo-shell">
+  @if(drawer()){<button type="button" class="backdrop" aria-label="بستن منو" (click)="drawer.set(false)"></button>}
+  <aside class="side" [class.open]="drawer()">
+    <a class="brand" [routerLink]="home()" (click)="drawer.set(false)"><span class="brand-mark">🩸</span><span><strong>هموویژیلانس</strong><small dir="ltr">HEMO • Blood Safety</small></span></a>
+    @if(auth.can('list')){<div class="nav-caption">مدیریت پذیرش</div>}
+    @if(auth.allowed()){
+      <nav aria-label="منوی پذیرش">
+        @for(item of nav;track item.path){@if(visible(item.path)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:item.exact}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}
+      </nav>
+      @if(auth.requestCan('list')||auth.requestCan('bankQueue')){<div class="nav-caption">درخواست خون و فرآورده</div><nav aria-label="درخواست خون">@for(item of requestNav;track item.path){@if(requestVisible(item.path)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span>{{item.icon}}</span>{{item.label}}</a>}}</nav>}
+      @if(auth.bankCan('inventory')||auth.bankCan('stats')||auth.bankCan('temperatureHistory')||auth.bankCan('receive')){<div class="nav-caption">عملیات بانک خون</div><nav aria-label="عملیات بانک خون">@for(item of bankNav;track item.path){@if(auth.bankCan(item.cap)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}</nav>}
+      @if(auth.transferCan('list')||auth.transferCan('stats')||auth.transferCan('candidates')){<div class="nav-caption">تحویل و پایش تزریق</div><nav aria-label="تحویل و پایش تزریق">@for(item of transferNav;track item.path){@if(auth.transferCan(item.cap)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}</nav>}
+      @if(auth.hvCan('list')||auth.hvCan('stats')||auth.hvCan('report')||auth.hvCan('reports')){<div class="nav-caption">واکنش و هموویژیلانس</div><nav aria-label="واکنش و هموویژیلانس">@for(item of hvNav;track item.path){@if(auth.hvCan(item.cap)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}</nav>}
+      @if((auth.qualityCan('equipmentList')||auth.qualityCan('stats')||auth.qualityCan('committeeList')||auth.qualityCan('qcList')||auth.qualityCan('auditList')||auth.qualityCan('trainingList')||auth.qualityCan('facility'))){<div class="nav-caption">تجهیزات و مدیریت کیفیت</div><nav aria-label="تجهیزات و مدیریت کیفیت">@for(item of qualityNav;track item.path){@if(auth.qualityCan(item.cap)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}</nav>}
+    }
+    <div class="side-footer"><strong>{{auth.session()?.firstName}} {{auth.session()?.lastName}}</strong><span>حساب سازمانی</span><button mat-stroked-button (click)="logout()">خروج از سامانه</button></div>
+  </aside>
+  <section class="workspace">
+    <header class="topbar"><button class="mobile-toggle" type="button" (click)="drawer.set(!drawer())" aria-label="منو">☰</button><div><strong>سامانه پایش ایمنی انتقال خون</strong><small>مدیریت فرایند انتقال خون</small></div><div class="role-picker"><label for="role">نقش جاری</label><select id="role" [value]="auth.session()?.userRole?.toString() ?? ''" (change)="roleChange($event)">@for(role of auth.roles();track role.gkey){<option [value]="role.gkey.toString()">{{role.name}}</option>}</select></div></header>
+    <main class="workspace-content">
+      @if(auth.checking()){<app-request-state [loading]="true"/>}
+      @else if(!auth.allowed()){<div class="panel"><h2>دسترسی به ماژول‌های HEMO در این نقش فراهم نیست</h2><p>نقش سازمانی مجاز را انتخاب کنید یا از مدیر سامانه بخواهید منوی پذیرش را تخصیص دهد. در صورت قطع ارتباط با سرور، مجدداً تلاش کنید.</p><button mat-flat-button class="primary-button" (click)="auth.refreshContext()">تلاش مجدد</button></div>}
+      @else{<router-outlet/>}
+    </main>
+  </section>
+</div>
+}@else{<router-outlet/>}

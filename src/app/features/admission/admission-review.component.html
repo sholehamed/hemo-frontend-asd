@@ -1,0 +1,34 @@
+<section class="heading"><p class="eyebrow">پذیرش / بررسی پرونده</p><h1>{{title}}</h1><p class="muted">اطلاعات و نتیجه بررسی به‌صورت واقعی در پرونده مرکز جاری ذخیره می‌شود.</p></section>
+<app-admission-picker (selected)="select($event)"/>
+<app-request-state [loading]="busy()||saving()" [error]="error()"/>
+@if(success()){<div class="notice success">{{success()}}</div>}
+@if(patient();as p){
+<div class="print-target">
+<section class="panel"><div class="patient-title"><h2>{{p.firstName}} {{p.lastName}}</h2><span class="status-pill" [class]="p.identityStatus">{{label(p.identityStatus)}}</span></div>
+<div class="detail-grid" style="margin-top:12px"><div><small>شماره پرونده</small><span class="mono">{{p.hisNumber}}</span></div><div><small>شناسه هویتی</small><span class="mono">{{p.identificationNumber}}</span></div><div><small>تاریخ تولد</small>{{date(p.birthDate)||'نامشخص'}}</div><div><small>بخش / تخت</small>{{p.ward}} / {{p.bedNumber}}</div><div><small>وضعیت بستری</small>{{label(p.status)}}</div></div>
+<div class="actions no-print"><a mat-stroked-button [routerLink]="['/admission/detail',p.guid]">جزئیات و چاپ مچ‌بند</a><button mat-stroked-button (click)="print()">چاپ خلاصه بررسی</button></div>
+</section>
+@if(kind==='Identity'){
+<section class="panel"><h2><span class="section-no">۱</span>تطبیق مدرک فیزیکی و پرونده</h2><p>بارکد صادرشده: <span class="mono">{{p.wristbandCode}}</span></p><div class="notice warn">تأیید باید توسط کارشناس پس از بررسی واقعی مدارک و مچ‌بند انجام شود؛ سامانه صرفاً نتیجه بررسی را ثبت می‌کند. در بیمار مجهول‌الهویه، بررسی شناسه موقت به معنای احراز هویت قطعی نیست.</div></section>
+}
+@if(kind==='History'){
+<section class="panel"><h2>سوابق ثبت‌شده در همین مرکز</h2><div class="detail-grid"><div><small>گروه خونی ثبت‌شده</small>{{p.bloodGroup||'ثبت نشده'}}</div><div><small>سابقه انتقال خون</small>{{label(p.transfusionHistory)}}</div><div><small>آخرین بررسی</small>{{date(p.historyReviewedAt)||'بررسی نشده'}}</div></div>
+<div class="notice" [class.warn]="p.allergy||p.alloantibody||p.transfusionHistory==='Reaction'"><strong>هشدارهای ثبت‌شده</strong><span>آلرژی: {{p.allergy?'گزارش شده':'علامت نخورده'}} | آنتی‌بادی: {{p.alloantibody?'گزارش شده':'علامت نخورده'}}</span><span>کم‌لوکوسیت: {{p.leukoreduced?'ثبت شده':'علامت نخورده'}} | اشعه‌دیدگی: {{p.irradiated?'ثبت شده':'علامت نخورده'}}</span><span>{{p.notes||'توضیحی ثبت نشده است.'}}</span></div>
+<div class="table-wrap"><table><thead><tr><th>تاریخ پذیرش</th><th>پرونده</th><th>بخش</th><th>سابقه ثبت‌شده</th><th>وضعیت</th></tr></thead><tbody>@for(h of history();track h.guid){<tr><td>{{date(h.admittedAt)}}</td><td><a [routerLink]="['/admission/detail',h.guid]">{{h.hisNumber}}</a></td><td>{{h.ward}}</td><td>{{label(h.transfusionHistory)}}</td><td>{{label(h.status)}}</td></tr>}@empty{<tr><td colspan="5">سابقه‌ای یافت نشد.</td></tr>}</tbody></table></div>
+<div class="notice warn">جدول بالا سوابق پذیرش و اطلاعات اعلام‌شده است، نه فهرست قطعی واحدهای خونی تزریق‌شده. برای جزئیات تزریق‌های ثبت‌شده از ماژول تحویل و پایش و برای واکنش از هموویژیلانس با نقش مجاز استفاده کنید. اتصال IBTO برقرار نشده است؛ نبود رکورد، نبود سابقه بالینی را اثبات نمی‌کند.</div>
+</section>
+}
+@if(kind==='Clearance'){
+<section class="panel"><h2>وضعیت بررسی پرونده</h2><div class="detail-grid"><div><small>تطبیق هویت</small>{{label(p.identityStatus)}}</div><div><small>بررسی سوابق</small>{{date(p.historyReviewedAt)||'ثبت نشده'}}</div><div><small>آخرین بررسی ترخیص</small>{{date(p.clearanceReviewedAt)||'ثبت نشده'}}</div></div><div class="notice warn">این مرحله فقط آمادگی مدارک برای بررسی ترخیص را ثبت می‌کند؛ ترخیص واقعی یا تصمیم بالینی توسط سامانه انجام نمی‌شود. اطلاعات خارج از سامانه باید به‌صورت مستند بررسی شود. درخواست تعیین‌تکلیف‌نشده، واحد رزروشده یا حواله باز مانع ثبت آمادگی است؛ پیام سرور را بررسی کنید. پیگیری واکنش‌ها نیز باید به‌صورت مستند بررسی شود.</div></section>
+}
+@if(auth.can('review')){<section class="panel"><h2>{{kind==='Identity'?'چک‌لیست صحه‌گذاری مچ‌بند':kind==='Clearance'?'چک‌لیست کنترل پرونده پیش از ترخیص':'ثبت بررسی مستند سوابق'}}</h2>
+@if(kind!=='History'){<div class="checklist">@for(step of steps;track step;let i=$index){<label><input type="checkbox" [checked]="checks()[i]" (change)="checked(i,$any($event.target).checked)" [disabled]="saving()"><span>{{step}}</span></label>}</div>}
+<label style="display:grid;gap:6px;margin-top:16px">توضیحات و موارد پیگیری<textarea [(ngModel)]="notes" rows="4" maxlength="2000" placeholder="شرح مستند بررسی، مغایرت یا اقدامات لازم"></textarea></label>
+<div class="actions no-print">
+@if(kind==='Identity'){<button mat-flat-button class="primary-button" [disabled]="saving()||!complete()" (click)="save('Verified')">ثبت تأیید نهایی تطبیق هویت</button><button mat-stroked-button [disabled]="saving()||!notes.trim()" (click)="save('Mismatch')">گزارش عدم انطباق</button>}
+@if(kind==='History'){<button mat-flat-button class="primary-button" [disabled]="saving()||!notes.trim()" (click)="save('Reviewed')">ثبت تأییدیه بررسی سوابق</button>}
+@if(kind==='Clearance'){<button mat-stroked-button [disabled]="saving()" (click)="save('Draft')">ذخیره پیش‌نویس</button><button mat-flat-button class="primary-button" [disabled]="saving()||!complete()||p.identityStatus!=='Verified'||!p.historyReviewedAt" (click)="save('Ready')">ثبت بررسی و آماده‌سازی پرونده ترخیص</button>}
+</div></section>}@else{<div class="notice info">نقش جاری فقط مجوز مشاهده دارد.</div>}
+<section class="panel"><h2>تاریخچه بررسی‌های پرونده</h2><div class="table-wrap"><table><thead><tr><th>زمان</th><th>نوع</th><th>نتیجه</th><th>شرح</th></tr></thead><tbody>@for(r of reviews();track $index){<tr><td>{{date(r.reviewedAt)}}</td><td>{{label(r.kind)}}</td><td>{{label(r.outcome)}}</td><td style="white-space:normal;min-width:180px">{{r.notes||'—'}}</td></tr>}@empty{<tr><td colspan="4">هنوز بررسی ثبت نشده است.</td></tr>}</tbody></table></div></section>
+</div>
+}

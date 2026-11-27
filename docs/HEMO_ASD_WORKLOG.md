@@ -1,0 +1,149 @@
+# HEMO-ASD Frontend — Worklog
+
+**تاریخ ایجاد:** 2026-11-27  
+**مقصد:** `sholehamed/hemo-frontend-asd`  
+**مبنای مشترک:** Backend ASD `docs/HEMO_ASD_DEVELOPMENT_GUIDE_FA.md`
+
+| ID | اقدام | وضعیت | شواهد |
+|---|---|---|---|
+| FE-ST00-001 | بررسی tree مخزن Frontend ASD | DONE | `main@7a168d786920749c699d6b72cc270b506547657f`؛ صرفاً `.gitignore` |
+| FE-ST00-002 | بررسی مرجع Angular قبلی | DONE (static review) | `sholehamed/hemo-frontend`؛ Angular 22.2.6، standalone و Material |
+| FE-ST00-003 | فهرست صفحات Raw / شکست لینک‌های منو | DONE (inventory) | ۶۲ HTML، ۷ حوزه، ۱۲ مسیر غایب |
+| FE-ST00-004 | سند الگوهای Angular، UI و Slice | DONE | `docs/HEMO_ASD_FRONTEND_GUIDE_FA.md` |
+| FE-ST00-005 | PR مستندات | DONE (OPEN PR) | [Frontend #1](https://github.com/sholehamed/hemo-frontend-asd/pull/1)؛ merge نشده |
+| FE-ST01-001 | ایجاد workspace واقعی Angular | TODO | هنوز code/scaffold ایجاد نشده |
+| FE-ST01-002 | Auth/layout/menu و قرارداد API با Backend ASD | TODO | هنوز اتصال واقعی برقرار نشده |
+| FE-ST02-001 | `HEMO-ADM-001`: UI پذیرش متصل به Backend | TODO | بعد از Gate ST-01 |
+
+**Tracker اصلی:** [HEMO-ASD #2](https://github.com/sholehamed/hemo-backend-asd/issues/2). **Backend docs PR:** [#1](https://github.com/sholehamed/hemo-backend-asd/pull/1).
+
+## تصمیم‌های Frontend
+
+- **ADR-FE-001:** ریپوی مقصد خالی است؛ استاندارد Angular فقط با ارجاع به repo قبلی و نه با ادعای کد موجود در مقصد تعیین می‌شود.
+- **ADR-FE-002:** Angular 22 standalone + Material + ReactiveForms/Signals نقطه شروع پیشنهادی است؛ API contracts با Backend ASD بازنویسی می‌شود.
+- **ADR-FE-003:** HTML Raw مرجع UX/سناریوست و logic Mock آن وارد production نمی‌شود.
+- **ADR-FE-004:** Interceptor route-to-endpoint فقط discovery/logging است و **هرگز منبع مجوز قابل اعتماد** نیست.
+
+## وضعیت تست
+
+| Test | Status | علت |
+|---|---|---|
+| Angular build | NOT RUN | Workspace در مقصد وجود ندارد |
+| Unit tests | NOT RUN | Source وجود ندارد |
+| Playwright E2E | NOT RUN | Source و Backend متصل وجود ندارند |
+| Access-control E2E | NOT RUN | API و Seed نیاز به آماده‌سازی دارند |
+
+### قالب ثبت توسعه آتی
+
+```text
+Date:
+Stage / Slice ID:
+Raw page / target route:
+UI operations and states:
+API contract & backend PR:
+Changed components / services / guards:
+Tests run (command + PASS/FAIL/NOT RUN):
+Commit / PR:
+Open gaps:
+```
+
+هر مرحله باید همراه با commit و نتیجه واقعی تست ثبت شود؛ صرف ظاهر صفحه «تکمیل» محسوب نمی‌شود.
+
+## ST-01 | Angular scaffold
+
+- مالک پروژه: زیرساخت Backend شرکت تغییر نمی‌کند. Angular workspace از الگوی مخزن قبلی، theme با رنگ‌های Raw، login با captcha موجود (`NftCaptchaStyle`)، interceptor با Bearer/UserRole، guard، role picker و shell ریسپانسیو ایجاد شدند. RequestStateComponent، jalali-date.ts و error model قبلی مستقیماً بازاستفاده شدند.
+- BotDetect با plugin jQuery برای جلوگیری از وابستگی ماژول قدیمی Angular استفاده شد؛ سازگاری runtime باید روی Backend واقعی آزمون شود. Session token در sessionStorage همان تب، بدون داده بیمار؛ endpoint stats واقعی برای کنترل نمایش منوی پذیرش.
+- Build/Tests: NOT RUN. هنوز مرحله ST-02 رابط کاربری در این commit کامل نشده است.
+
+## ST-02 | پذیرش
+
+- ایجاد API service تایپ‌شده، صفحه پذیرش سریع و داشبورد واقعی، فرم کامل مطابق Raw، فهرست با فیلتر و CSV، جزئیات و ویرایش، مچ‌بند Code128، انتخاب‌گر مشترک بیمار، چک‌لیست هویت/سوابق/آمادگی ترخیص با تاریخچه، گزارش آماری و صفحه HIS.
+- بازاستفاده RequestStateComponent و jalali-date از مخزن قبلی؛ کامپوننت‌های مشترک AdmissionTable / AdmissionMetrics / AdmissionPicker / Wristband برای عدم تکرار UI. رنگ و ساختار RTL مطابق Raw.
+- HIS و IBTO و سوابق قطعی واحدهای خون/واکنش وابسته به قرارداد خارجی و مراحل آتی‌اند؛ در صفحه به صراحت اعلام و عملیات بیرونی غیرفعال است. اصلاح هویت/ادغام بیمار مجهول پس از تطبیق رسمی نیازمند طراحی جداگانه است. چاپ نیازمند آزمون چاپگر واقعی.
+- Build/Tests/E2E: NOT RUN در محیط حاضر؛ هیچ تأیید عملکرد runtime ادعا نشده است.
+
+### ST-02 | اصلاح هویت و تست
+
+- صفحه جزئیات کامپوننت مشترک اصلاح هویت و تعیین شناسه موقت را دارد؛ API PatientIdentity واقعی، دلیل اصلاح، تأیید کاربر و بازخوانی پرونده.
+- تست‌های Node قواعد شناسه/تاریخ/چک‌لیست/CSV و قرارداد route/API نوشته شد. Playwright دو سناریوی مرورگری با fixture قرارداد (نه اتصال SQL/Identity حقیقی) برای پذیرش، بارکد و بررسی‌ها نوشته شد. وضعیت اجرا تا قبل از CI: NOT RUN.
+
+
+### ST-01/ST-02 verification update
+- GitHub Actions run 46013829530: npm install PASS, npm test 9/9 PASS, Angular build PASS (initial budget warning 24.80 kB); browser installation FAIL because ubuntu-latest resolves to Ubuntu 26.04, unsupported by Playwright 1.52. E2E not run in that attempt. Pin CI runner to Ubuntu 24.04 for compatibility, without changing application libraries.
+- Independently executed 5 utility tests using exact SHA-verified source/test blobs in Node 22.16: PASS 5/5.
+- PR #2 remains draft pending successful browser checks and real environment verification.
+
+## ST-03 | آغاز توسعه
+- ST-01/ST-02 Merge شدند؛ 9/9 unit + 3/3 browser fixtures و Build PASS (PR #2). شاخه feature/st-03-blood-requests از main ساخته شد.
+- استخراج مسیرها و فرم‌ها از Raw؛ مدل تایپ‌شده اقلام، وضعیت‌ها و قواعد ساختاری به همراه دو تست جدید و برنامه reuse کامپوننت‌های پذیرش. هنوز Route، API یا رفتار نمایشی ناقص به main اضافه نشده است.
+
+### ST03-04 | پوسته و کارتابل
+- سرویس تایپ‌شده API، مجوزهای مستقل پذیرش/درخواست، مسیرهای پرستار و پزشک و بانک خون، فهرست فیلترپذیر و آمار، خروجی صفحه و چاپ. فرم و جزئیات در ادامه همین شاخه تکمیل می‌شود. Build هنوز بررسی نشده است.
+
+### ST03-04 | فرم و تصمیم
+- ویزارد انتخاب بیمار و نوع فرم، اقلام چندگانه، فیلدهای اختصاصی، ذخیره پیش‌نویس/ارسال، جزئیات و ثبت تصمیم پزشک، برگشت/لغو/رد، تاریخچه و چاپ؛ صف بانک فقط خواندنی. راهنمای کاربر اضافه شد. CI در ادامه بررسی می‌شود.
+
+### ST03-05 | تست مرورگری و لینک پذیرش
+- Build و CI تا 9e3ce36f موفق. افزودن تست گردش پرستار → برگشت پزشک → اصلاح → تأیید → صف بانک با fixture قرارداد و کنترل فرم اختصاصی؛ لینک درخواست‌های هر پذیرش. اجرای CI جدید در انتظار بررسی است.
+
+### ST-03 | final review
+- Run 46020137756: production build PASS, 12/12 unit tests PASS, 3/4 Playwright PASS; new request lifecycle timed out at the admission picker on a direct deep link. Removed shell-level default navigation during asynchronous bootstrap; explicit home route resolves the permitted landing page after capabilities are known. Role changes use /home. Added direct URL assertion, root bank landing assertion and diagnostic output. Rechecking all tests; no merge yet.
+
+## ST-04 | رابط بانک خون
+- مدل تایپ‌شده API، قابلیت‌های نقش، داشبورد و گزارش، موجودی و فیلتر درخواست/فرآورده، دریافت مستقل واحد، تاریخ/ساعت شمسی محلی و پایش دما. صفحه جزئیات و گردش واحد در کامیت بعد تکمیل می‌شود. CI هنوز بررسی نشده.
+
+### ST04 | فرم آزمایش و گردش واحد
+- صفحه جزئیات با انتخاب درخواست تأییدشده، فرم مستند آزمایش، تاریخچه، عملیات براساس نقش/وضعیت، رزرو، ذوب، قرنطینه، آماده‌سازی، امحا؛ پیوند از کارتابل ST-03. تست‌های قواعد UI و راهنمای کاربری ثبت شد. Build و E2E باید بررسی شوند.
+
+### ST04 | آزمون مرورگر
+- سناریوی مرورگری fixture: ورود بانک، ثبت دما، دریافت، بازرسی مسئول، اتصال درخواست ST-03، آزمایش، رزرو، ذوب، آماده‌سازی، نگرانی دمایی و توقف، لغو رزرو، امحا و برگشت درخواست. چهار تست قواعد UI. نتیجه اجرای نهایی CI هنوز بررسی نشده است.
+
+- Frontend initial production compile failed on redundant closing block in inventory template; fixed and re-running CI.
+
+- ماتریس واقعی موجودی، تاریخچه آزمایش با فیلتر و خروجی، صف رزروهای نیازمند ذوب و تست مرورگر گزارش تکمیل شد. منتظر CI نهایی.
+
+- Browser run 46023312020: 16 unit tests and build passed; four regression browser tests passed, bank scenario timed out at the temperature assessment select accessible name. Added explicit accessible names to new select controls including dynamic laboratory phases; retain all workflow assertions, re-run.
+
+## ST-05 | پوسته و کارتابل
+- تایپ قرارداد، service، قابلیت‌های نقش، داشبورد و لیست‌های فیلترشده کارتابل/پایش/مرجوعی/سوابق و فرم صدور مستند تک‌واحد. صفحه جزئیات و پایش در کامیت بعد. CI pending.
+
+### ST05 | فرم گردش و پایش
+- فرم واحد مشترک برای دریافت/مغایرت، تطبیق دو حساب، T0، شروع، ثبت مشاهده، پایان/توقف، مرجوعی، امحا و یادداشت پزشک. پیوند از ST02/03/04، جدول علائم، تایم‌لاین، چاپ و CSV. ۵ تست قواعد UI و راهنمای کامل تمرین و محدودیت‌ها. CI pending.
+
+### ST05 | browser regression
+- افزودن Playwright fixture صدور سه واحد، دریافت، شاهد مستقل، ثبت پایش و پایان، مغایرت و مرجوعی/امحا، پزشک و توقف؛ در انتظار CI. Backend 84/84 در کامیت 69cb5358 سبز.
+
+- تکمیل فرم Raw با حجم تزریق‌شده ثبت‌شده، سرعت مشاهده‌شده، مراحل تکمیلی پایش و زمان واقعی واقعه. تست fixture چک‌لیست فقط پنج checkbox را انتخاب می‌کند. CI pending.
+
+- Run 46027240081: build/unit/regression passed, ST05 fixture failed to select the five checkboxes after changing selector to native name. Restored accessible role-based selection with exact count and dispatch diagnostic; added assertions for volume/rate payloads. Re-run final CI.
+
+## ST-06 | پوسته، گزارش اولیه و کارتابل‌ها
+- سرویس، تایپ قرارداد، capability و navigation، انتخاب حواله و گزارش مشاهده، فیلتر کارتابل پزشک/بانک/RCA/CAPA، داشبورد و نمودار شمارش. جزئیات و آرشیو در کامیت بعد؛ CI pending.
+
+### ST06 | جزئیات، RCA/CAPA و آرشیو
+- فرم‌های نقش‌محور بررسی، علائم ST05، تحلیل مستقیم/ریشه‌ای، تخصیص و پیگیری اقدام، بازبین مستقل، تاریخچه، چاپ و CSV؛ گزارش تجمیعی snapshot با وضعیت ارسال دستی؛ لینک از حواله و راهنمای کاربران؛ تست قواعد UI. CI pending.
+
+### ST06 | browser
+- سناریوی Playwright قرارداد API: گزارش از حواله، پزشک و بانک، تصمیم و تخصیص CAPA/RCA، اجرای مالک، بازبین مستقل، بسته شدن مشروط به گزارش بیرونی و آرشیو ثابت. CI pending.
+
+- CI 46029666054: build، 26 تست واحد و شش رگرسیون مرورگر سبز؛ کارتابل RCA و فیلتر CAPA مالک تکمیل شد، import بلااستفاده حذف شد. سناریوی جدید مرورگر و رگرسیون CI pending.
+
+## ST-07 | UI پایه
+- capability نوع‌محور، navigation و route، سرویس و مدل، کارتابل شناسنامه/سررسید/دما، داشبورد تجهیزات، حوادث و CSV. فرم جزئیات و مدیریت کیفیت در کامیت بعد. CI هنوز کامل نیست.
+
+- جزئیات شناسنامه، سرویس/کالیبراسیون، توقف/آزادسازی مستقل/آرشیو، حادثه و رفع نقص، ثبت دمای کامل و تاریخچه مشترک ST04، چاپ و CSV و لینک از واحد بانک. CI pending.
+
+### ST07 | UI کیفیت و گزارش
+- فرم‌های نوع‌دار QC، کمیته و مصوبه، ممیزی و آموزش، ایجاد و اصلاح پیش‌نویس/ردیف، ارسال و بازبینی مستقل، پیگیری مصوبه، داشبورد مصرف و کیفیت، متادیتا مرکز، چاپ/CSV، راهنمای کاربر. ۴ آزمون UI rules؛ CI pending.
+
+- نمایش توقف فنی تجهیزات در موجودی، جزئیات و داشبورد بانک؛ تاریخچه تغییرات مشخصات مرکز و رفع import بلااستفاده.
+
+- آزمون مرورگری قراردادی ST07: سرویس و تأیید مستقل تجهیز، انحراف دما، اجرای مصوبه و تأیید مستقل، بسته‌شدن جلسه و بررسی QC.
+
+## ST-08 | Delivery (in progress)
+- ST07 baseline merged. Branch feature/st-08-delivery. Corrected outdated admission history notice to refer to transfusion and hemovigilance, clarified administrative clearance gate. No new roles/routes or change to existing infrastructure.
+- Added Playwright fixture rejection scenario: verified identity/history, complete checklist, server rejects open flow, error visible and no success. This is contract UI coverage, not live backend test. Full frontend regression triggered, result NOT RUN/NOT OBSERVED at writing.
+- Consolidated guide docs/delivery/USER_GUIDE_FA.md with roles, scenario IDs, setup, end-to-end manual checks and error handling. Backend docs/delivery holds all 14 existing accounts and unified Seed instructions, developer/deployment guide. Live multi-role browser E2E and final delivery gate remain open.
+
+### ST08 | CI verification and browser fix
+- GitHub-hosted run 46036610600 on 2e53274c: build PASS, 30/30 unit PASS, 8/9 browser PASS. New ST08 fixture timed out before clicking disabled identity confirmation: locator.all() did not wait for asynchronously rendered five checkboxes. Added explicit count assertion before enumeration, validated outgoing clearance payload and unchanged Active status on rejection. Re-run all browser tests; new result not yet observed. PR #8.
