@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit,OnDestroy{
      if(this.current(g)){this.permitted.set(new Set(allowed.filter((x):x is string=>x!==null)));this.checkedLinks.set(true);}
    }finally{if(this.current(g))this.checkingLinks.set(false);}
  }
+ visibleQuickLinks(){return this.quickLinks().filter(l=>this.canNavigate(l.path));}
  quickLinks():DashboardLink[]{
   const a=this.auth, links:DashboardLink[]=[];
   const add=(allowed:boolean,label:string,path:string,query?:Record<string,string>)=>{if(allowed)links.push(link(label,path,query));};
