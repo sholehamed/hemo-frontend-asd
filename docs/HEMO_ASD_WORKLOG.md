@@ -72,3 +72,19 @@ Open gaps:
 - GitHub Actions run 46013829530: npm install PASS, npm test 9/9 PASS, Angular build PASS (initial budget warning 24.80 kB); browser installation FAIL because ubuntu-latest resolves to Ubuntu 26.04, unsupported by Playwright 1.52. E2E not run in that attempt. Pin CI runner to Ubuntu 24.04 for compatibility, without changing application libraries.
 - Independently executed 5 utility tests using exact SHA-verified source/test blobs in Node 22.16: PASS 5/5.
 - PR #2 remains draft pending successful browser checks and real environment verification.
+
+## ST-03 | آغاز توسعه
+- ST-01/ST-02 Merge شدند؛ 9/9 unit + 3/3 browser fixtures و Build PASS (PR #2). شاخه feature/st-03-blood-requests از main ساخته شد.
+- استخراج مسیرها و فرم‌ها از Raw؛ مدل تایپ‌شده اقلام، وضعیت‌ها و قواعد ساختاری به همراه دو تست جدید و برنامه reuse کامپوننت‌های پذیرش. هنوز Route، API یا رفتار نمایشی ناقص به main اضافه نشده است.
+
+### ST03-04 | پوسته و کارتابل
+- سرویس تایپ‌شده API، مجوزهای مستقل پذیرش/درخواست، مسیرهای پرستار و پزشک و بانک خون، فهرست فیلترپذیر و آمار، خروجی صفحه و چاپ. فرم و جزئیات در ادامه همین شاخه تکمیل می‌شود. Build هنوز بررسی نشده است.
+
+### ST03-04 | فرم و تصمیم
+- ویزارد انتخاب بیمار و نوع فرم، اقلام چندگانه، فیلدهای اختصاصی، ذخیره پیش‌نویس/ارسال، جزئیات و ثبت تصمیم پزشک، برگشت/لغو/رد، تاریخچه و چاپ؛ صف بانک فقط خواندنی. راهنمای کاربر اضافه شد. CI در ادامه بررسی می‌شود.
+
+### ST03-05 | تست مرورگری و لینک پذیرش
+- Build و CI تا 9e3ce36f موفق. افزودن تست گردش پرستار → برگشت پزشک → اصلاح → تأیید → صف بانک با fixture قرارداد و کنترل فرم اختصاصی؛ لینک درخواست‌های هر پذیرش. اجرای CI جدید در انتظار بررسی است.
+
+### ST-03 | final review
+- Run 46020137756: production build PASS, 12/12 unit tests PASS, 3/4 Playwright PASS; new request lifecycle timed out at the admission picker on a direct deep link. Removed shell-level default navigation during asynchronous bootstrap; explicit home route resolves the permitted landing page after capabilities are known. Role changes use /home. Added direct URL assertion, root bank landing assertion and diagnostic output. Rechecking all tests; no merge yet.

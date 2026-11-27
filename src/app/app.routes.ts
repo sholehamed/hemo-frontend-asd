@@ -11,5 +11,15 @@ export const routes:Routes=[
  {path:'admission/his',canActivate:[authGuard],loadComponent:()=>import('./features/admission/admission-his.component').then(m=>m.AdmissionHisComponent)},
  {path:'admission/stats',canActivate:[authGuard],loadComponent:()=>import('./features/admission/admission-stats.component').then(m=>m.AdmissionStatsComponent)},
  {path:'admission',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/admission/admission-dashboard.component').then(m=>m.AdmissionDashboardComponent)},
- {path:'',pathMatch:'full',redirectTo:'admission'},{path:'**',redirectTo:'admission'}
+ {path:'hemo/requests/new',canActivate:[authGuard],data:{source:'Nurse'},loadComponent:()=>import('./features/blood-requests/request-form.component').then(m=>m.RequestFormComponent)},
+ {path:'hemo/requests/orders',canActivate:[authGuard],data:{source:'Doctor'},loadComponent:()=>import('./features/blood-requests/request-form.component').then(m=>m.RequestFormComponent)},
+ {path:'hemo/requests/edit/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/blood-requests/request-form.component').then(m=>m.RequestFormComponent)},
+ {path:'hemo/requests/detail/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/blood-requests/request-detail.component').then(m=>m.RequestDetailComponent)},
+ {path:'hemo/requests/bank/:guid',canActivate:[authGuard],data:{bank:true},loadComponent:()=>import('./features/blood-requests/request-detail.component').then(m=>m.RequestDetailComponent)},
+ {path:'hemo/requests/bank',canActivate:[authGuard],data:{mode:'bank'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
+ {path:'hemo/requests/approval',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
+ {path:'hemo/requests/doctor',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
+ {path:'hemo/requests',canActivate:[authGuard],pathMatch:'full',loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
+ {path:'home',canActivate:[authGuard],loadComponent:()=>import('./features/home/home.component').then(m=>m.HomeComponent)},
+ {path:'',pathMatch:'full',redirectTo:'home'},{path:'**',redirectTo:'home'}
 ];

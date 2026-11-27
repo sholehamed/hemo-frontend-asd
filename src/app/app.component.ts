@@ -7,7 +7,18 @@ import { RequestStateComponent } from './shared/components/request-state.compone
 export class AppComponent implements OnInit{
   readonly auth=inject(AuthService);private router=inject(Router);readonly drawer=signal(false);
   readonly nav=[{label:'داشبورد پذیرش',path:'/admission',icon:'▦',exact:true},{label:'پذیرش بیمار جدید',path:'/admission/new',icon:'＋',exact:false},{label:'فهرست بیماران بستری',path:'/admission/list',icon:'☷',exact:false},{label:'تطبیق هویت و مچ‌بند',path:'/admission/identity',icon:'✓',exact:false},{label:'سوابق انتقال خون',path:'/admission/history',icon:'◷',exact:false},{label:'کنترل ترخیص',path:'/admission/discharge',icon:'⇥',exact:false},{label:'همگام‌سازی HIS',path:'/admission/his',icon:'↔',exact:false},{label:'گزارش‌های پذیرش',path:'/admission/stats',icon:'▥',exact:false}];
-  visible(path:string){return path!=='/admission/new'||this.auth.can('create');}
+  readonly requestNav=[{label:'درخواست‌های خون',path:'/hemo/requests',icon:'☷'},{label:'ثبت درخواست پرستاری',path:'/hemo/requests/new',icon:'＋'},{label:'ثبت دستور پزشک',path:'/hemo/requests/orders',icon:'＋'},{label:'کارتابل تأیید پزشک',path:'/hemo/requests/approval',icon:'✓'},{label:'صف بانک خون',path:'/hemo/requests/bank',icon:'▦'}];
+  visible(path:string){
+    if(path==='/admission')return this.auth.can('stats')&&this.auth.can('list');
+    if(path==='/admission/new')return this.auth.can('create');
+    if(path==='/admission/list')return this.auth.can('list');
+    if(path==='/admission/stats')return this.auth.can('stats');
+    if(path==='/admission/his')return this.auth.can('list')&&this.auth.can('stats');
+    if(path==='/admission/history')return this.auth.can('history')&&this.auth.can('reviews')&&this.auth.can('detail');
+    return this.auth.can('reviews')&&this.auth.can('detail')&&this.auth.can('list');
+  }
+  requestVisible(path:string){switch(path){case '/hemo/requests':return this.auth.requestCan('list');case '/hemo/requests/new':return this.auth.requestCan('nurseCreate');case '/hemo/requests/orders':return this.auth.requestCan('doctorCreate');case '/hemo/requests/approval':return this.auth.requestCan('decide')&&this.auth.requestCan('list');default:return this.auth.requestCan('bankQueue');}}
+  home(){return this.auth.homePath();}
   ngOnInit(){if(this.auth.loggedIn())void this.auth.refreshContext();}
   roleChange(event:Event){this.auth.selectRole(Number((event.target as HTMLSelectElement).value));}
   async logout(){await this.auth.logout();void this.router.navigateByUrl('/login');}
