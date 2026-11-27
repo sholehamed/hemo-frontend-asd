@@ -95,4 +95,28 @@ describe('R02 scoped quality operations',()=>{
    const write=spyOn(api,'saveFacility').and.callThrough(),task=c.save();const req=http.expectOne(base+'/FacilitySave');expect(req.request.body.version).toBe('AQID');expect(req.request.body.history).toBeUndefined();req.flush(null,{status:204,statusText:'No Content'});await write.calls.mostRecent().returnValue;
    http.expectOne(base+'/Facility').flush(blob({...facility,facilityName:'Updated',version:'BAUG'}));await task;expect(c.form.version).toBe('BAUG');expect(c.success()).not.toBeNull();f.destroy();
  });
+
+ it('saves QC line with current record and line versions and typed result',async()=>{
+   const existing:QualityLine={...line,status:'Draft',ownerUserGuid:null,dueAt:null,data:{lot:'LOT',manufacturer:'Maker',expiry:'2027-01-01T00:00:00Z',positiveExpected:'Positive',positiveObserved:'Positive',negativeExpected:'Negative',negativeObserved:'Negative',result:'Accepted',notes:'Fixture'}};
+   const {f,c,api}=await open({qcDetail:true,qcLine:true},detail('Draft',[existing]));
+   await c.startLine(existing);expect(c.editingLine()).toBeTrue();c.lineData['lot']='LOT2';
+   const write=spyOn(api,'action').and.callThrough(),task=c.saveLine();const req=http.expectOne(base+'/QcLine');
+   expect(req.request.body.guid).toBe('record-a');expect(req.request.body.version).toBe('AQID');expect(req.request.body.lineGuid).toBe('line-a');expect(req.request.body.lineVersion).toBe('BAUG');expect(req.request.body.data.lot).toBe('LOT2');expect(req.request.body.ownerUserGuid).toBeNull();
+   req.flush(blob('line-a'));await write.calls.mostRecent().returnValue;
+   http.expectOne(base+'/QcDetail/record-a').flush(blob(detail('Draft',[{...existing,data:{...existing.data,lot:'LOT2'}}])));await task;expect(c.success()).not.toBeNull();f.destroy();
+ });
+ it('submits a committee resolution from its assigned owner at 100 percent for review',async()=>{
+   kind='Committee';userGuid='owner-a';const pending={...line,status:'Open',progress:0};
+   const {f,c,api}=await open({committeeDetail:true,committeeProgress:true},detail('Approved',[pending]));c.selectLine(pending,'Progress');c.progress=100;c.notes='Completed with evidence';
+   spyOn(window,'confirm').and.returnValue(true);const write=spyOn(api,'action').and.callThrough(),task=c.applyLine();const req=http.expectOne(base+'/CommitteeProgress');
+   expect(req.request.body.progress).toBe(100);expect(req.request.body.lineVersion).toBe('BAUG');req.flush(null,{status:204,statusText:'No Content'});await write.calls.mostRecent().returnValue;
+   http.expectOne(base+'/CommitteeDetail/record-a').flush(blob(detail('Approved',[line])));await task;expect(c.detail()?.lines[0].status).toBe('Submitted');expect(c.lineActions(line)).toEqual([]);f.destroy();
+ });
+ it('does not create a training draft with a QC create grant',async()=>{
+   kind='Training';const f=TestBed.createComponent(QualityListComponent),c=f.componentInstance;
+   const access=spyOn(f.debugElement.injector.get(QualityPageAccess),'load').and.callThrough(),load=spyOn(c,'load').and.callThrough();
+   f.detectChanges();http.expectOne(base+'/Capabilities').flush(blob({permissions:{trainingList:true,trainingDetail:true,qcCreate:true},userGuid}));await access.calls.mostRecent().returnValue;
+   http.expectOne(base+'/TrainingList').flush(blob({data:[],pageNumber:1,totalCount:0,totalPages:0,hasPreviousPage:false,hasNextPage:false}));await load.calls.mostRecent().returnValue;
+   expect(c.canCreate()).toBeFalse();c.openCreate();await c.save();http.expectNone(base+'/TrainingCreate');f.destroy();
+ });
 });
