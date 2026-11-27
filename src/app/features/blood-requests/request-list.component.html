@@ -1,8 +1,8 @@
 @if(scope.isCurrent()){
 <section class="heading"><p class="eyebrow">هموویژیلانس / درخواست خون</p><h1>{{title}}</h1><p class="muted">{{bank?'صرفاً درخواست‌های تأییدشده پزشک؛ این صف مجوز صدور یا تزریق نیست.':approval?'درخواست‌های ارسال‌شده برای تکمیل نظر و تصمیم پزشک.':'فهرست واقعی درخواست‌های مرکز جاری؛ اولویت‌های فوری در ابتدای جدول.'}}</p></section>
-@if(auth.loading()){<app-request-state [loading]="true" [error]="null"/>}@else if(!allowed()){<section class="panel"><h2>مجوز مشاهده این کارتابل را ندارید.</h2></section>}@else{
+@if(auth.loading()){<app-request-state [loading]="true" [error]="null"/>}@else if(!allowed()){<section class="panel"><h2>مجوز مشاهده این کارتابل را ندارید.</h2>@if(!bank&&!approval&&auth.requestCan('bankQueue')){<a mat-button routerLink="/hemo/requests/bank">صف بانک خون</a>}</section>}@else{
 <div class="actions no-print">
-@if(auth.requestCan('decide')&&!approval){<a mat-stroked-button routerLink="/hemo/requests/approval">کارتابل تأیید پزشک</a>}
+@if(auth.requestCan('list')&&auth.requestCan('decide')&&!approval){<a mat-stroked-button routerLink="/hemo/requests/approval">کارتابل تأیید پزشک</a>}
 @if(auth.requestCan('bankQueue')&&!bank){<a mat-stroked-button routerLink="/hemo/requests/bank">صف بانک خون</a>}
 @if(auth.requestCan('list')&&(approval||bank)){<a mat-stroked-button routerLink="/hemo/requests">همه درخواست‌ها</a>}
 </div>
@@ -16,8 +16,8 @@
 <div class="actions"><button mat-flat-button class="primary-button" [disabled]="busy()">اعمال فیلتر</button><button mat-stroked-button type="button" (click)="reset()">پاک کردن</button></div></form></section>
 <app-request-state [loading]="busy()" [error]="error()"/>
 @if(page();as p){<section class="panel print-target"><div class="patient-title"><h2>درخواست‌ها — {{fa(p.totalCount)}} مورد</h2><div class="actions no-print"><button mat-stroked-button (click)="exportPage()" [disabled]="!p.data.length">CSV صفحه جاری</button><button mat-stroked-button (click)="print()">چاپ صفحه</button></div></div>
-<div class="table-wrap"><table><thead><tr><th>درخواست</th><th>بیمار / پرونده</th><th>بخش</th><th>نوع فرم</th><th>اولویت</th><th>تعداد واحد</th><th>وضعیت</th><th>تاریخ</th><th class="no-print">وضعیت اتصال</th></tr></thead><tbody>
-@for(r of p.data;track r.guid){<tr><td><span class="mono">{{r.requestNumber}}</span></td><td><strong>{{r.patientName}}</strong><br><small>{{r.hisNumber}}</small></td><td>{{r.ward}}</td><td>{{formLabel(r.formType)}}</td><td><span class="status-pill" [class.Mismatch]="r.priority==='Emergency'" [class.Pending]="r.priority==='Urgent'">{{priorities[r.priority]}}</span></td><td>{{fa(r.totalUnits)}}</td><td><span class="status-pill" [class.Verified]="r.status==='AwaitingBank'" [class.Pending]="r.status==='AwaitingDoctor'||r.status==='Returned'" [class.Mismatch]="r.status==='Rejected'">{{statusLabels[r.status]}}</span></td><td>{{date(r.created)}}</td><td class="no-print"><span class="muted">جزئیات در مرحله اتصال</span></td></tr>}@empty{<tr><td colspan="9">درخواستی مطابق فیلتر یافت نشد.</td></tr>}</tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th>درخواست</th><th>بیمار / پرونده</th><th>بخش</th><th>نوع فرم</th><th>اولویت</th><th>تعداد واحد</th><th>وضعیت</th><th>تاریخ</th></tr></thead><tbody>
+@for(r of p.data;track r.guid){<tr><td><span class="mono">{{r.requestNumber}}</span></td><td><strong>{{r.patientName}}</strong><br><small>{{r.hisNumber}}</small></td><td>{{r.ward}}</td><td>{{formLabel(r.formType)}}</td><td><span class="status-pill" [class.Mismatch]="r.priority==='Emergency'" [class.Pending]="r.priority==='Urgent'">{{priorities[r.priority]}}</span></td><td>{{fa(r.totalUnits)}}</td><td><span class="status-pill" [class.Verified]="r.status==='AwaitingBank'" [class.Pending]="r.status==='AwaitingDoctor'||r.status==='Returned'" [class.Mismatch]="r.status==='Rejected'">{{statusLabels[r.status]}}</span></td><td>{{date(r.created)}}</td></tr>}@empty{<tr><td colspan="8">درخواستی مطابق فیلتر یافت نشد.</td></tr>}</tbody></table></div>
 <div class="pagination no-print"><button mat-stroked-button [disabled]="busy()||!p.hasPreviousPage" (click)="load(p.pageNumber-1)">قبلی</button><span>صفحه {{fa(p.pageNumber)}} از {{fa(p.totalPages)}}</span><button mat-stroked-button [disabled]="busy()||!p.hasNextPage" (click)="load(p.pageNumber+1)">بعدی</button></div>
 </section>}}}
 
