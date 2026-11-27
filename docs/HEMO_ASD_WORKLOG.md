@@ -66,3 +66,9 @@ Open gaps:
 
 - صفحه جزئیات کامپوننت مشترک اصلاح هویت و تعیین شناسه موقت را دارد؛ API PatientIdentity واقعی، دلیل اصلاح، تأیید کاربر و بازخوانی پرونده.
 - تست‌های Node قواعد شناسه/تاریخ/چک‌لیست/CSV و قرارداد route/API نوشته شد. Playwright دو سناریوی مرورگری با fixture قرارداد (نه اتصال SQL/Identity حقیقی) برای پذیرش، بارکد و بررسی‌ها نوشته شد. وضعیت اجرا تا قبل از CI: NOT RUN.
+
+
+### ST-01/ST-02 verification update
+- GitHub Actions run 46013829530: npm install PASS, npm test 9/9 PASS, Angular build PASS (initial budget warning 24.80 kB); browser installation FAIL because ubuntu-latest resolves to Ubuntu 26.04, unsupported by Playwright 1.52. E2E not run in that attempt. Pin CI runner to Ubuntu 24.04 for compatibility, without changing application libraries.
+- Independently executed 5 utility tests using exact SHA-verified source/test blobs in Node 22.16: PASS 5/5.
+- PR #2 remains draft pending successful browser checks and real environment verification.
