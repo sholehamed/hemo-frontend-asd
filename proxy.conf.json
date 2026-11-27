@@ -1,0 +1,12 @@
+{
+  "/Identity": {
+    "target": "http://127.0.0.1:1002",
+    "secure": false,
+    "changeOrigin": true
+  },
+  "/captchaendpoint": {
+    "target": "http://127.0.0.1:1002",
+    "secure": false,
+    "changeOrigin": true
+  }
+}

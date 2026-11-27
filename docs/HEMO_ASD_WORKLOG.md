@@ -48,3 +48,9 @@ Open gaps:
 ```
 
 هر مرحله باید همراه با commit و نتیجه واقعی تست ثبت شود؛ صرف ظاهر صفحه «تکمیل» محسوب نمی‌شود.
+
+## ST-01 | Angular scaffold
+
+- مالک پروژه: زیرساخت Backend شرکت تغییر نمی‌کند. Angular workspace از الگوی مخزن قبلی، theme با رنگ‌های Raw، login با captcha موجود (`NftCaptchaStyle`)، interceptor با Bearer/UserRole، guard، role picker و shell ریسپانسیو ایجاد شدند. RequestStateComponent، jalali-date.ts و error model قبلی مستقیماً بازاستفاده شدند.
+- BotDetect با plugin jQuery برای جلوگیری از وابستگی ماژول قدیمی Angular استفاده شد؛ سازگاری runtime باید روی Backend واقعی آزمون شود. Session token در sessionStorage همان تب، بدون داده بیمار؛ endpoint stats واقعی برای کنترل نمایش منوی پذیرش.
+- Build/Tests: NOT RUN. هنوز مرحله ST-02 رابط کاربری در این commit کامل نشده است.
