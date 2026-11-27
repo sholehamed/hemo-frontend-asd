@@ -29,6 +29,14 @@ export const routes:Routes=[
  {path:'hemo/bank/temperature',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-temperature.component').then(m=>m.BankTemperatureComponent)},
  {path:'hemo/bank/reports',canActivate:[authGuard],data:{report:true},loadComponent:()=>import('./features/blood-bank/bank-dashboard.component').then(m=>m.BankDashboardComponent)},
  {path:'hemo/bank',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-dashboard.component').then(m=>m.BankDashboardComponent)},
+ {path:'hemo/transfusion/dispatch',canActivate:[authGuard],loadComponent:()=>import('./features/transfusion/transfer-dispatch.component').then(m=>m.TransferDispatchComponent)},
+ {path:'hemo/transfusion/detail/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/transfusion/transfer-detail.component').then(m=>m.TransferDetailComponent)},
+ {path:'hemo/transfusion/tasks',canActivate:[authGuard],data:{mode:'tasks'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
+ {path:'hemo/transfusion/vitals',canActivate:[authGuard],data:{mode:'vitals'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
+ {path:'hemo/transfusion/monitoring',canActivate:[authGuard],data:{mode:'monitoring'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
+ {path:'hemo/transfusion/returns',canActivate:[authGuard],data:{mode:'returns'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
+ {path:'hemo/transfusion/records',canActivate:[authGuard],data:{mode:'records'},loadComponent:()=>import('./features/transfusion/transfer-list.component').then(m=>m.TransferListComponent)},
+ {path:'hemo/transfusion',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/transfusion/transfer-dashboard.component').then(m=>m.TransferDashboardComponent)},
  {path:'home',canActivate:[authGuard],loadComponent:()=>import('./features/home/home.component').then(m=>m.HomeComponent)},
  {path:'',pathMatch:'full',redirectTo:'home'},{path:'**',redirectTo:'home'}
 ];
