@@ -1,0 +1,101 @@
+import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, convertToParamMap, provideRouter } from '@angular/router';
+import { provideHttpClient } from '@angular/common/http';
+import { HttpTestingController,provideHttpClientTesting } from '@angular/common/http/testing';
+import { provideNoopAnimations } from '@angular/platform-browser/animations';
+import { BehaviorSubject } from 'rxjs';
+import { API_BASE_URL } from '../../Services/api-client';
+import { HemoRoleLifecycle } from '../../core/hemo/hemo-role-lifecycle';
+import { AdmissionCreateComponent } from './admission-create.component';
+import { AdmissionDetailComponent } from './admission-detail.component';
+import { AdmissionPageAccess } from './admission-page-access';
+
+describe('R02 admission creation and detail in company Angular19',()=>{
+  let current:boolean;
+  let http:HttpTestingController;
+  let params:BehaviorSubject<ReturnType<typeof convertToParamMap>>;
+  const base='https://fixture.invalid/Identity/PatientAdmission';
+  const a='11111111-1111-4111-8111-111111111111',b='22222222-2222-4222-8222-222222222222';
+  const caps={create:true,find:true,detail:true,list:true,update:true,identity:false};
+  const blob=(v:unknown)=>new Blob([JSON.stringify(v)],{type:'application/json'});
+  const patient=(guid:string,name:string)=>({guid,firstName:name,lastName:'Fixture',hisNumber:'TEST',identificationType:'Unknown',identificationNumber:'TEST-ID',wristbandCode:'HEMO-TEST-001',birthDate:null,gender:'Unknown',admittedAt:'2026-01-01',status:'Active',identityStatus:'Pending',ward:'Ward',bedNumber:'1',physician:'Doctor',version:'v1'});
+  beforeEach(()=>{
+    current=true;params=new BehaviorSubject(convertToParamMap({guid:a}));
+    TestBed.configureTestingModule({providers:[provideRouter([]),provideNoopAnimations(),provideHttpClient(),provideHttpClientTesting(),
+      {provide:API_BASE_URL,useValue:'https://fixture.invalid'},
+      {provide:HemoRoleLifecycle,useValue:{capture:()=>({}),isCurrent:()=>current}},
+      {provide:ActivatedRoute,useValue:{paramMap:params.asObservable(),snapshot:{queryParamMap:convertToParamMap({}),paramMap:convertToParamMap({guid:a})}}}]});
+    http=TestBed.inject(HttpTestingController);
+  });
+  afterEach(()=>http.verify());
+  it('requires all three capabilities and preserves the existing creation DTO and navigation',async()=>{
+    const f=TestBed.createComponent(AdmissionCreateComponent);
+    const access=spyOn(f.debugElement.injector.get(AdmissionPageAccess),'load').and.callThrough();
+    const nav=spyOn(TestBed.inject(Router),'navigate').and.resolveTo(true);
+    f.detectChanges();
+    expect(f.componentInstance.canCreate()).toBeFalse();
+    http.expectOne(base+'/Capabilities').flush(blob(caps));
+    await access.calls.mostRecent().returnValue;
+    f.detectChanges();
+    expect(f.componentInstance.canCreate()).toBeTrue();
+    f.componentInstance.form.patchValue({identificationType:'Unknown',hisNumber:'۱۲۳',ward:'Ward',bedNumber:'1',physician:'Doctor'});
+    const pending=f.componentInstance.submit();
+    const r=http.expectOne(base);
+    expect(r.request.method).toBe('POST');
+    expect(r.request.body).toEqual(jasmine.objectContaining({identificationType:'Unknown',identificationNumber:'',hisNumber:'123',ward:'Ward'}));
+    r.flush(blob(a),{status:201,statusText:'Created'});
+    await pending;
+    expect(nav).toHaveBeenCalledOnceWith(['/admission/detail',a],{queryParams:{created:1}});
+    f.destroy();
+  });
+  it('rejects denied creation and does not navigate on a stale response',async()=>{
+    const f=TestBed.createComponent(AdmissionCreateComponent);
+    const access=spyOn(f.debugElement.injector.get(AdmissionPageAccess),'load').and.callThrough();
+    const nav=spyOn(TestBed.inject(Router),'navigate').and.resolveTo(true);
+    f.detectChanges();
+    http.expectOne(base+'/Capabilities').flush(blob({...caps,find:false}));
+    await access.calls.mostRecent().returnValue;
+    await f.componentInstance.submit();http.expectNone(base);
+    const allowed=f.debugElement.injector.get(AdmissionPageAccess).load();
+    http.expectOne(base+'/Capabilities').flush(blob(caps));await allowed;
+    f.componentInstance.form.patchValue({identificationType:'Unknown',hisNumber:'TEST',ward:'Ward',bedNumber:'1',physician:'Doctor'});
+    const pending=f.componentInstance.submit();const r=http.expectOne(base);
+    current=false;r.flush(blob(a),{status:201,statusText:'Created'});await pending;
+    expect(nav).not.toHaveBeenCalled();expect(f.componentInstance.canCreate()).toBeFalse();
+    f.destroy();
+  });
+  it('rejects a late old-patient response on param-only navigation, then saves the new version',async()=>{
+    const f=TestBed.createComponent(AdmissionDetailComponent);
+    const component=f.componentInstance;
+    const load=spyOn(component,'load').and.callThrough();
+    const access=spyOn(f.debugElement.injector.get(AdmissionPageAccess),'load').and.callThrough();
+    f.detectChanges();
+    const first=load.calls.mostRecent().returnValue;
+    http.expectOne(base+'/Capabilities').flush(blob(caps));await access.calls.mostRecent().returnValue;
+    const old=http.expectOne(base+'/'+a);
+    params.next(convertToParamMap({guid:b}));
+    const second=load.calls.mostRecent().returnValue;
+    expect(component.patient()).toBeNull();
+    http.expectOne(base+'/Capabilities').flush(blob(caps));await access.calls.mostRecent().returnValue;
+    http.expectOne(base+'/'+b).flush(blob(patient(b,'NewPatient')));
+    await second;old.flush(blob(patient(a,'OldPatient')));await first;
+    f.detectChanges();
+    expect(component.patient()?.guid).toBe(b);
+    expect(f.nativeElement.textContent).toContain('NewPatient');
+    expect(f.nativeElement.textContent).not.toContain('OldPatient');
+    expect(f.nativeElement.querySelector('app-patient-identity-edit')).toBeNull();
+    component.form.patchValue({ward:'Updated'});
+    let reloadStarted!:()=>void;
+    const reloadReady=new Promise<void>(resolve=>reloadStarted=resolve);
+    load.and.callFake(()=>{const pending=AdmissionDetailComponent.prototype.load.call(component);reloadStarted();return pending;});
+    const save=component.save();const r=http.expectOne(base);
+    expect(r.request.method).toBe('PUT');expect(r.request.body).toEqual(jasmine.objectContaining({guid:b,version:'v1',ward:'Updated'}));
+    r.flush(null,{status:204,statusText:'No Content'});
+    await reloadReady;
+    const reload=http.match(base+'/Capabilities');
+    expect(reload.length).toBe(1);
+    reload[0].flush(blob(caps));await access.calls.mostRecent().returnValue;
+    http.expectOne(base+'/'+b).flush(blob({...patient(b,'NewPatient'),ward:'Updated',version:'v2'}));
+    await save;expect(component.patient()?.version).toBe('v2');f.destroy();
+  });
+});

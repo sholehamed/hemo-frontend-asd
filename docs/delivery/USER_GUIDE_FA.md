@@ -31,3 +31,6 @@ DEMO-ST07-CENTRIFUGE برای رفع حادثه، سرویس مستند بعد �
 ## راهنماهای جزئی
 [پذیرش](../admission/USER_GUIDE_FA.md) · [درخواست خون](../blood-requests/USER_GUIDE_FA.md) · [بانک خون](../blood-bank/USER_GUIDE_FA.md) · [تزریق](../transfusion/USER_GUIDE_FA.md) · [هموویژیلانس](../hemovigilance/USER_GUIDE_FA.md) · [کیفیت](../quality/USER_GUIDE_FA.md).
 حساب جدید در ST08 ایجاد نشده؛ فهرست و تنظیم Seed در Backend docs/delivery/DEMO_ACCOUNTS_FA.md.
+
+## ST-09
+پس از فعال‌سازی مرحله داشبورد، میز کار نقش سازمانی در `/home` قرار دارد. برای حساب‌های جدید، شاخص‌ها، Drill-down و مقایسه هفتگی [راهنمای داشبورد](DASHBOARD_GUIDE_FA.md) را ببینید.

@@ -1,21 +1,63 @@
 name: HEMO admission CI
 on:
   push:
-    branches: [feature/st-01-st-02-admission, feature/st-03-blood-requests, feature/st-04-blood-bank, feature/st-05-transfusion, feature/st-06-hemovigilance, feature/st-07-quality-management, feature/st-08-delivery]
+    branches: [feature/st-01-st-02-admission, feature/st-03-blood-requests, feature/st-04-blood-bank, feature/st-05-transfusion, feature/st-06-hemovigilance, feature/st-07-quality-management, feature/st-08-delivery, feature/st-09-dashboards]
   pull_request:
     branches: [main]
 permissions:
   contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 jobs:
   build-test:
+    name: Current Angular 19 foundation and HEMO model tests
     runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
-      - run: npm install --no-audit --no-fund
-      - run: npm test
+      - run: npm ci --no-audit --no-fund
+      - run: npm run test:hemo
+      - run: npm test -- --watch=false --browsers=ChromeHeadless
+        timeout-minutes: 5
       - run: npm run build
+  st09-browser-baseline:
+    name: ST09 browser regression (pre-R01 snapshot only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: st09-baseline
+    steps:
+      # Keep baseline dependencies separate from the current Angular 19 lock.
+      - uses: actions/checkout@v4
+        with:
+          path: integration
+          sparse-checkout: docs/legacy
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          ref: c4a792aaa7f6fe9c541b66ab73f32d076df71f82
+          path: st09-baseline
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: st09-baseline/.node-version
+      - name: Install verified ST09 dependency lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          cp ../integration/docs/legacy/st09-browser-package-lock.json package-lock.json
+          npm ci --no-audit --no-fund --prefer-online --fetch-retries=3
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
+        timeout-minutes: 10
+      - name: Retain verified ST09 lockfile
+        uses: actions/upload-artifact@v4
+        with:
+          name: st09-browser-package-lock
+          path: st09-baseline/package-lock.json
+          if-no-files-found: error

@@ -30,7 +30,7 @@ export class AuthService {
   transferCan(key:CapabilityKey){return this.transferCapabilities()?.[key]===true;}
   bankCan(key:keyof BankCapabilities){return this.bankCapabilities()?.[key]===true;}
   requestCan(key:keyof RequestCapabilities){return this.requestCapabilities()?.[key]===true;}
-  homePath(){return this.can('stats')&&this.can('list')?'/admission':this.requestCan('list')?'/hemo/requests':this.bankCan('stats')?'/hemo/bank':this.bankCan('inventory')?'/hemo/bank/inventory':this.bankCan('temperatureHistory')?'/hemo/bank/temperature':this.requestCan('bankQueue')?'/hemo/requests/bank':this.transferCan('stats')?'/hemo/transfusion':this.transferCan('list')?'/hemo/transfusion/tasks':this.transferCan('candidates')?'/hemo/transfusion/dispatch':this.hvCan('stats')?'/hemo/hv':this.hvCan('list')?'/hemo/hv/cases':this.hvCan('candidates')?'/hemo/hv/new':this.hvCan('reports')?'/hemo/hv/reports':this.qualityCan('stats')?'/hemo/quality':this.qualityCan('equipmentStats')?'/hemo/quality/equipment-dashboard':this.qualityCan('equipmentList')?'/hemo/quality/equipment':this.qualityCan('qcList')?'/hemo/quality/qc':this.qualityCan('committeeList')?'/hemo/quality/committee':this.qualityCan('auditList')?'/hemo/quality/audit':this.qualityCan('trainingList')?'/hemo/quality/training':this.qualityCan('facility')?'/hemo/quality/settings':this.can('list')?'/admission/list':'/admission';}
+  homePath(){return '/home';}
   can(key:keyof AdmissionCapabilities){return this.capabilities()?.[key]===true;}
   readonly checking=signal(false);
   async login(req:LoginRequest):Promise<'otp'|'password'|'ok'>{

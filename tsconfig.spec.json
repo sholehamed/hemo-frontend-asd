@@ -8,6 +8,11 @@
             "jasmine"
         ]
     },
+    // Angular compiler options inherited from the company root specify node types.
+    // Keep Jasmine globals in the test compiler only; production config stays untouched.
+    "angularCompilerOptions": {
+        "types": ["jasmine", "node"]
+    },
     "include": [
         "src/**/*.spec.ts",
         "src/**/*.d.ts"

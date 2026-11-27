@@ -1,4 +1,6 @@
-import { Component,inject,input,output,signal,effect } from '@angular/core';
+import { Component,OnDestroy,inject,input,output,signal,effect } from '@angular/core';
+import { HemoPageScope } from '../../core/hemo/hemo-page-scope';
+import { AdmissionPageAccess } from './admission-page-access';
 import { FormBuilder,ReactiveFormsModule,Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { AdmissionView,AdmissionsService } from '../../core/api/admissions.service';
@@ -18,15 +20,19 @@ import { isNationalId,message } from '../../shared/admission-utils';
 <app-request-state [loading]="busy()" [error]="error()"/><div class="actions"><button mat-flat-button class="primary-button" [disabled]="busy()||form.invalid">ثبت اصلاح هویت</button><button mat-stroked-button type="button" (click)="open.set(false)">انصراف</button></div></form>
 }
 </section>`})
-export class PatientIdentityEditComponent{
+export class PatientIdentityEditComponent implements OnDestroy{
+ private readonly scope=inject(HemoPageScope,{optional:true});private readonly access=inject(AdmissionPageAccess,{optional:true});private destroyed=false;
+ private current(guid:string){return !this.destroyed&&(!this.scope||this.scope.isCurrent())&&(!this.access||this.access.can('identity'))&&this.patient().guid===guid;}
+ ngOnDestroy(){this.destroyed=true;this.form.reset();}
  readonly patient=input.required<AdmissionView>();readonly saved=output<void>();readonly open=signal(false);readonly busy=signal(false);readonly error=signal<string|null>(null);
  private api=inject(AdmissionsService);private fb=inject(FormBuilder);
  readonly form=this.fb.nonNullable.group({identificationType:['Unknown'],identificationNumber:[''],firstName:['',Validators.required],lastName:['',Validators.required],fatherName:[''],birthDate:[''],gender:['Unknown'],mobile:[''],reason:['',[Validators.required,Validators.maxLength(2000)]]});
  constructor(){effect(()=>{const p=this.patient();this.form.patchValue({identificationType:p.identificationType,identificationNumber:p.identificationNumber,firstName:p.firstName,lastName:p.lastName,fatherName:p.fatherName??'',birthDate:isoToJalali(p.birthDate),gender:p.gender,mobile:p.mobile??'',reason:''});if(p.identificationType!=='Unknown'){this.form.controls.identificationType.disable();this.form.controls.identificationNumber.disable();}else{this.form.controls.identificationType.enable();this.form.controls.identificationNumber.enable();}});}
- async save(){if(this.busy()||this.form.invalid)return;this.error.set(null);const p=this.patient(),v=this.form.getRawValue(),birth=v.birthDate?jalaliToIso(v.birthDate):null,id=normalizeDigits(v.identificationNumber).trim();
+ async save(){if(!this.current(this.patient().guid)||this.busy()||this.form.invalid)return;this.error.set(null);const p=this.patient(),v=this.form.getRawValue(),birth=v.birthDate?jalaliToIso(v.birthDate):null,id=normalizeDigits(v.identificationNumber).trim();
    if((v.identificationType!=='Unknown'&&(!birth||!id))||(v.birthDate&&!birth)||(v.identificationType==='NationalId'&&!isNationalId(id))){this.error.set('شناسه و تاریخ تولد را بررسی کنید.');return;}
    if(!window.confirm('اصلاح مشخصات باعث نیاز به بررسی مجدد هویت و سوابق می‌شود. ثبت شود؟'))return;
-   this.busy.set(true);try{await this.api.updateIdentity({...v,guid:p.guid,version:p.version,identificationNumber:id,birthDate:birth,mobile:normalizeDigits(v.mobile)||null,fatherName:v.fatherName||null});this.open.set(false);this.saved.emit();}
-   catch(e){this.error.set(message(e));}finally{this.busy.set(false);}
+   if(!this.current(p.guid))return;
+   this.busy.set(true);try{await this.api.updateIdentity({...v,guid:p.guid,version:p.version,identificationNumber:id,birthDate:birth,mobile:normalizeDigits(v.mobile)||null,fatherName:v.fatherName||null});if(!this.current(p.guid))return;this.open.set(false);this.saved.emit();}
+   catch(e){if(this.current(p.guid))this.error.set(message(e));}finally{if(this.current(p.guid))this.busy.set(false);}
  }
 }

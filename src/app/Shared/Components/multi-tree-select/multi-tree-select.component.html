@@ -9,7 +9,7 @@ appendTo="body" [id]="Name" [name]="Name" selectionMode="multiple" display="chip
 
  [options]="Data" [(ngModel)]="SelectedData"  [filter]="true" [filterBy]="DataLabelName" [showClear]="false" [placeholder]="PersianName +' را انتخاب کنید'"
 
-class="md:w-20rem w-full" containerStyleClass="w-full"  [options]="Data" placeholder="Select Item"></p-treeSelect>
+class="md:w-20rem w-full" containerStyleClass="w-full"></p-treeSelect>
 
 
 <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['required']">{{PersianName}} اجباری می باشد.</span>

@@ -1,7 +1,12 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { NgIf } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { TreeSelectModule } from 'primeng/treeselect';
 
 @Component({
   selector: 'app-multi-tree-select',
+  standalone: true,
+  imports: [NgIf, FormsModule, TreeSelectModule],
   templateUrl: './multi-tree-select.component.html',
   styleUrl: './multi-tree-select.component.css'
 })

@@ -5,6 +5,7 @@
     <a class="brand" [routerLink]="home()" (click)="drawer.set(false)"><span class="brand-mark">🩸</span><span><strong>هموویژیلانس</strong><small dir="ltr">HEMO • Blood Safety</small></span></a>
     @if(auth.can('list')){<div class="nav-caption">مدیریت پذیرش</div>}
     @if(auth.allowed()){
+      <nav aria-label="میز کار"><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" (click)="drawer.set(false)"><span aria-hidden="true">▦</span>داشبورد نقش سازمانی</a></nav>
       <nav aria-label="منوی پذیرش">
         @for(item of nav;track item.path){@if(visible(item.path)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:item.exact}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}
       </nav>
