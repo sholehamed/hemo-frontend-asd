@@ -36,7 +36,7 @@ describe('R02 scoped quality reads',()=>{
  async function start<T extends {load: (...args:any[])=>Promise<void>}>(component:new (...args:any[])=>T,permissions:Record<string,boolean>){
    const f=TestBed.createComponent(component),c=f.componentInstance;
    const access=spyOn(f.debugElement.injector.get(QualityPageAccess),'load').and.callThrough();
-   const load=spyOn(c,'load').and.callThrough();f.detectChanges();
+   const load=spyOn(c as {load:(...args:any[])=>Promise<void>},'load').and.callThrough();f.detectChanges();
    http.expectOne(base+'/Capabilities').flush(blob({permissions,userGuid:'user-a'}));await access.calls.mostRecent().returnValue;
    return {f,c,load};
  }
