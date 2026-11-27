@@ -12,6 +12,6 @@ import { label } from '../../shared/admission-utils';
 <td><span class="mono">{{a.identificationNumber}}</span></td><td>{{a.ward}} / {{a.bedNumber}}</td><td><strong dir="ltr">{{a.bloodGroup||'—'}}</strong></td>
 <td><span class="status-pill" [class]="a.identityStatus">{{label(a.identityStatus)}}</span>@if(a.allergy||a.alloantibody||a.transfusionHistory==='Reaction'){<br><span class="status-pill Mismatch">هشدار سابقه</span>}</td>
 <td>{{date(a.admittedAt)}}<br><small>{{label(a.status)}}</small></td>
-@if(showActions()){<td><div class="actions compact-actions"><a mat-button [routerLink]="['/admission/detail',a.guid]">جزئیات / مچ‌بند</a><a mat-button [routerLink]="['/admission/identity']" [queryParams]="{guid:a.guid}">تطبیق</a></div></td>}
+@if(showActions()){<td><div class="actions compact-actions"><a mat-button [routerLink]="['/admission/detail',a.guid]">جزئیات / مچ‌بند</a>@if(showIdentityAction()){<a mat-button [routerLink]="['/admission/identity']" [queryParams]="{guid:a.guid}">تطبیق</a>}</div></td>}
 </tr>}@empty{<tr><td [attr.colspan]="showActions()?7:6" class="muted">پرونده‌ای برای نمایش وجود ندارد.</td></tr>}</tbody></table></div>`,styles:['.compact-actions{gap:0;margin:0}.compact-actions a{font-size:11px;padding:0 5px;min-width:auto}']})
-export class AdmissionTableComponent {readonly rows=input.required<AdmissionView[]>();readonly showActions=input(true);readonly label=label;readonly date=isoToJalali;}
+export class AdmissionTableComponent {readonly rows=input.required<AdmissionView[]>();readonly showActions=input(true);readonly showIdentityAction=input(true);readonly label=label;readonly date=isoToJalali;}
