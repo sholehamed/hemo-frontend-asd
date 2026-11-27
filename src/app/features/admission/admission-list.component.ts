@@ -1,7 +1,7 @@
 import { AuthService } from '../../core/auth/auth.service';
 import { Component,OnInit,inject,signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute,RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { AdmissionFilters,AdmissionPage,AdmissionsService,AdmissionView } from '../../core/api/admissions.service';
 import { RequestStateComponent } from '../../shared/components/request-state.component';
@@ -18,10 +18,10 @@ import { isoToJalali,normalizeDigits } from '../../shared/jalali-date';
 </section>`})
 export class AdmissionListComponent implements OnInit{
  readonly auth=inject(AuthService);
- private api=inject(AdmissionsService);readonly page=signal<AdmissionPage|null>(null);readonly wards=signal<string[]>([]);readonly busy=signal(false);readonly exporting=signal(false);readonly error=signal<string|null>(null);
+ private route=inject(ActivatedRoute);private api=inject(AdmissionsService);readonly page=signal<AdmissionPage|null>(null);readonly wards=signal<string[]>([]);readonly busy=signal(false);readonly exporting=signal(false);readonly error=signal<string|null>(null);
  readonly groups=BLOOD_GROUPS;readonly fa=fa;search='';ward='';identity='';blood='';status='';
  private applied:AdmissionFilters={};private sequence=0;
- ngOnInit(){void this.load(1);void this.api.stats().then(x=>this.wards.set(x.wards.map(w=>w.name))).catch(()=>{});}
+ ngOnInit(){const q=this.route.snapshot.queryParamMap;const status=q.get('status')??'',identity=q.get('identity')??'';this.status=['Active','ReadyForDischarge'].includes(status)?status:'';this.identity=['Pending','Verified','Mismatch'].includes(identity)?identity:'';void this.load(1);void this.api.stats().then(x=>this.wards.set(x.wards.map(w=>w.name))).catch(()=>{});}
  private filters():AdmissionFilters{return {search:normalizeDigits(this.search).trim(),ward:this.ward,identityStatus:this.identity,bloodGroup:this.blood,status:this.status};}
  async load(pageNumber:number){
   if(pageNumber===1)this.applied=this.filters();
