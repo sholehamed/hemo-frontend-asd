@@ -10,10 +10,12 @@
 | FE-ST00-002 | بررسی مرجع Angular قبلی | DONE (static review) | `sholehamed/hemo-frontend`؛ Angular 22.2.6، standalone و Material |
 | FE-ST00-003 | فهرست صفحات Raw / شکست لینک‌های منو | DONE (inventory) | ۶۲ HTML، ۷ حوزه، ۱۲ مسیر غایب |
 | FE-ST00-004 | سند الگوهای Angular، UI و Slice | DONE | `docs/HEMO_ASD_FRONTEND_GUIDE_FA.md` |
-| FE-ST00-005 | PR مستندات | IN PROGRESS | branch `docs/st-00-hemo-asd-plan-20261127` |
+| FE-ST00-005 | PR مستندات | DONE (OPEN PR) | [Frontend #1](https://github.com/sholehamed/hemo-frontend-asd/pull/1)؛ merge نشده |
 | FE-ST01-001 | ایجاد workspace واقعی Angular | TODO | هنوز code/scaffold ایجاد نشده |
 | FE-ST01-002 | Auth/layout/menu و قرارداد API با Backend ASD | TODO | هنوز اتصال واقعی برقرار نشده |
 | FE-ST02-001 | `HEMO-ADM-001`: UI پذیرش متصل به Backend | TODO | بعد از Gate ST-01 |
+
+**Tracker اصلی:** [HEMO-ASD #2](https://github.com/sholehamed/hemo-backend-asd/issues/2). **Backend docs PR:** [#1](https://github.com/sholehamed/hemo-backend-asd/pull/1).
 
 ## تصمیم‌های Frontend
 
