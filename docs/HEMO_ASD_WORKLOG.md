@@ -147,3 +147,9 @@ Open gaps:
 
 ### ST08 | CI verification and browser fix
 - GitHub-hosted run 46036610600 on 2e53274c: build PASS, 30/30 unit PASS, 8/9 browser PASS. New ST08 fixture timed out before clicking disabled identity confirmation: locator.all() did not wait for asynchronously rendered five checkboxes. Added explicit count assertion before enumeration, validated outgoing clearance payload and unchanged Active status on rejection. Re-run all browser tests; new result not yet observed. PR #8.
+
+## ST-09 | داشبوردهای نقش‌محور
+- ST09-01: /home به میز کار قابلیت‌محور تبدیل شد؛ ورود و تغییر نقش به Home، منوی مستقل، ماژول‌های قبلی حفظ.
+- ST09-02: هفت گروه آماری از APIهای موجود، اقدامات سریع و هشدار، زمان آخرین دریافت، خطای مستقل، CSV و نمای responsive.
+- ST09-03: Drill-down با فیلترهای معتبر وضعیت و mine؛ عدم لینک به فیلتر غیرمعادل؛ مقایسه دو هفته کامل UTC برای پذیرش/HV/کیفیت.
+- ST09-04: سه تست model و دو Playwright جدید، راهنمای کاربر/توسعه‌دهنده. نتیجه CI هنوز تأیید نشده است. تست واقعی مرورگر با backend شرکت و بازبینی بصری UAT باقی است.
