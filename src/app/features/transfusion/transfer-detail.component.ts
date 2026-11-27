@@ -47,7 +47,7 @@ export class TransferDetailComponent implements OnInit{
  this.busy.set(true);await this.api.vital({guid:d.transfer.guid,version:d.transfer.version,phase:v.phase,measuredAt,systolic:systolic!,diastolic:diastolic!,pulse:pulse!,temperature:temperature!,spo2:spo2!,respiration:respiration!,urineMl:v.urineMl,rateMlPerHour:v.rateMlPerHour,notes:v.notes||null});
  this.vital=emptyVital();this.measured=measuredFields();this.success.set('پایش علائم ثبت شد.');await this.load();
  }catch(e){this.error.set(message(e));}finally{this.busy.set(false);}}
- eventLabel(s:string){return s==='Dispatch'?'صدور و ارسال':s==='Vital'?'ثبت پایش':ACTIONS[s as TransferAction]??s;}
+ eventLabel(s:string){return s==='ReactionReport'?'ثبت گزارش واکنش':s==='Dispatch'?'صدور و ارسال':s==='Vital'?'ثبت پایش':ACTIONS[s as TransferAction]??s;}
  status(s:string){return STATUSES[s as keyof typeof STATUSES]??s;}
  evidence(raw:string|null){if(!raw)return '';try{const v=JSON.parse(raw) as Record<string,unknown>;const labels:Record<string,string>={UnitCode:'کد واحد مشاهده‌شده',WristbandCode:'مچ‌بند مشاهده‌شده',Checks:'چک‌لیست',Temperature:'دما',Condition:'وضعیت',ReceiverName:'فرد مرتبط',NeedleReference:'وسیله',SuspectedReaction:'نگرانی',CarrierName:'حامل',CarrierCode:'کد حامل',ContainerCode:'ظرف',TransportIndicator:'نشانگر',PackCount:'تعداد آیس‌پک',Phase:'نوبت',MeasuredAt:'زمان اندازه‌گیری',ActualOccurredAt:'زمان واقعی واقعه',VolumeMl:'حجم مشاهده‌شده'};
  return Object.entries(v).filter(([k,x])=>k in labels&&x!==null&&x!==''&&x!==false).map(([k,x])=>labels[k]+': '+(typeof x==='boolean'?'ثبت شده':String(x))).join(' | ');

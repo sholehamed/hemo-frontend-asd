@@ -116,3 +116,14 @@ Open gaps:
 - تکمیل فرم Raw با حجم تزریق‌شده ثبت‌شده، سرعت مشاهده‌شده، مراحل تکمیلی پایش و زمان واقعی واقعه. تست fixture چک‌لیست فقط پنج checkbox را انتخاب می‌کند. CI pending.
 
 - Run 46027240081: build/unit/regression passed, ST05 fixture failed to select the five checkboxes after changing selector to native name. Restored accessible role-based selection with exact count and dispatch diagnostic; added assertions for volume/rate payloads. Re-run final CI.
+
+## ST-06 | پوسته، گزارش اولیه و کارتابل‌ها
+- سرویس، تایپ قرارداد، capability و navigation، انتخاب حواله و گزارش مشاهده، فیلتر کارتابل پزشک/بانک/RCA/CAPA، داشبورد و نمودار شمارش. جزئیات و آرشیو در کامیت بعد؛ CI pending.
+
+### ST06 | جزئیات، RCA/CAPA و آرشیو
+- فرم‌های نقش‌محور بررسی، علائم ST05، تحلیل مستقیم/ریشه‌ای، تخصیص و پیگیری اقدام، بازبین مستقل، تاریخچه، چاپ و CSV؛ گزارش تجمیعی snapshot با وضعیت ارسال دستی؛ لینک از حواله و راهنمای کاربران؛ تست قواعد UI. CI pending.
+
+### ST06 | browser
+- سناریوی Playwright قرارداد API: گزارش از حواله، پزشک و بانک، تصمیم و تخصیص CAPA/RCA، اجرای مالک، بازبین مستقل، بسته شدن مشروط به گزارش بیرونی و آرشیو ثابت. CI pending.
+
+- CI 46029666054: build، 26 تست واحد و شش رگرسیون مرورگر سبز؛ کارتابل RCA و فیلتر CAPA مالک تکمیل شد، import بلااستفاده حذف شد. سناریوی جدید مرورگر و رگرسیون CI pending.
