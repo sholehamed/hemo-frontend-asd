@@ -78,6 +78,7 @@ test('read-only role hides write actions and rejects direct creation UI',async({
 
 test('ST08: administrative clearance surfaces server rejection without changing status',async({page})=>{
  await page.goto('/admission/identity?guid='+guid);
+ await expect(page.locator('.checklist input[type=checkbox]')).toHaveCount(5);
  for(const box of await page.locator('.checklist input[type=checkbox]').all())await box.check();
  await page.getByRole('button',{name:'ثبت تأیید نهایی تطبیق هویت'}).click();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toBeVisible();
@@ -85,7 +86,10 @@ test('ST08: administrative clearance surfaces server rejection without changing 
  await page.locator('textarea').fill('بررسی مستند آموزشی');
  await page.getByRole('button',{name:'ثبت تأییدیه بررسی سوابق'}).click();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toBeVisible();
- await page.route('**/Identity/PatientAdmission/Review',route=>route.fulfill({status:400,json:{detail:'گردش خون باز است؛ ابتدا وضعیت واحد را تعیین تکلیف کنید.'}}));
+ await page.route('**/Identity/PatientAdmission/Review',route=>{
+  expect(route.request().postDataJSON()).toMatchObject({guid,kind:'Clearance',outcome:'Ready',checklist:31});
+  return route.fulfill({status:400,json:{detail:'گردش خون باز است؛ ابتدا وضعیت واحد را تعیین تکلیف کنید.'}});
+ });
  await page.goto('/admission/discharge?guid='+guid);
  await expect(page.getByText('درخواست تعیین‌تکلیف‌نشده',{exact:false})).toBeVisible();
  await expect(page.locator('.checklist input[type=checkbox]')).toHaveCount(5);
@@ -93,4 +97,5 @@ test('ST08: administrative clearance surfaces server rejection without changing 
  await page.getByRole('button',{name:'ثبت بررسی و آماده‌سازی پرونده ترخیص'}).click();
  await expect(page.getByText('گردش خون باز است؛ ابتدا وضعیت واحد را تعیین تکلیف کنید.')).toBeVisible();
  await expect(page.getByText('بررسی در پرونده ذخیره شد.')).toHaveCount(0);
+ await expect(page.getByText('بستری فعال',{exact:true})).toBeVisible();
 });
