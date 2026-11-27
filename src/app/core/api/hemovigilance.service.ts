@@ -1,11 +1,12 @@
 import {Injectable,inject} from '@angular/core';
-import {HttpClient} from '@angular/common/http';
+import {HemoCompanyHttp} from './hemo-company-http';
 import {firstValueFrom} from 'rxjs';
 import {BankPage} from '../../features/blood-bank/bank-model';
-import {CaseRow,HvDetail,Candidate,Owner,Filters,Summary,ReactionInput,ReviewAction,ReviewInput,CapaCreateInput,CapaAction,CapaActionInput,ReportInput,ReportRow,ReportDetail} from '../../features/hemovigilance/hv-model';
+import {HvCapabilities,CaseRow,HvDetail,Candidate,Owner,Filters,Summary,ReactionInput,ReviewAction,ReviewInput,CapaCreateInput,CapaAction,CapaActionInput,ReportInput,ReportRow,ReportDetail} from '../../features/hemovigilance/hv-model';
 @Injectable({providedIn:'root'})
 export class HemovigilanceService{
- private http=inject(HttpClient);private url='/Identity/Hemovigilance';
+ private http=inject(HemoCompanyHttp);private url='/Identity/Hemovigilance';
+ capabilities(){return firstValueFrom(this.http.get<HvCapabilities>(this.url+'/Capabilities'));}
  list(f:Filters={}){return firstValueFrom(this.http.post<BankPage<CaseRow>>(this.url+'/List',f));}
  detail(id:string){return firstValueFrom(this.http.get<HvDetail>(this.url+'/Detail/'+encodeURIComponent(id)));}
  stats(f:Filters={}){return firstValueFrom(this.http.post<Summary>(this.url+'/Stats',f));}
