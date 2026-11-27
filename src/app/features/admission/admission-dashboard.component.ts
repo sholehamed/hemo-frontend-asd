@@ -17,11 +17,11 @@ import { normalizeDigits } from '../../shared/jalali-date';
 <section class="heading"><p class="eyebrow">مدیریت پذیرش بیمارستان</p><h1>داشبورد پذیرش بیمارستان</h1><p class="muted">نمای یکپارچه تشکیل پرونده، وضعیت هویتی و ایمنی انتقال خون در مرکز جاری</p></section>
 <app-request-state [loading]="busy()||auth.loading()" [error]="error()"/>
 @if(auth.can('stats')){<app-request-state [loading]="statsBusy()" [error]="statsError()"/><app-admission-metrics [stats]="stats()"/><a mat-button routerLink="/admission/stats">گزارش‌های پذیرش</a>}
-@if(auth.can('list')||auth.can('stats')){<button mat-stroked-button (click)="load()" [disabled]="busy()">به‌روزرسانی داشبورد</button>}
+@if(auth.can('list')||auth.can('stats')){<button mat-stroked-button (click)="load()" [disabled]="busy()||quick()">به‌روزرسانی داشبورد</button>}
 @if(canCreate()){<section class="panel"><div class="patient-title"><h2>پذیرش سریع بیمار</h2><button mat-flat-button class="primary-button" (click)="quick.set(!quick())">{{quick()?'بستن فرم':'＋ تشکیل پرونده جدید'}}</button></div>@if(quick()){<app-admission-create [compact]="true"/>}@else{<p class="muted">ثبت مشخصات، تشکیل پرونده و صدور شناسه مچ‌بند از یک فرم.</p><div class="page-links"><a routerLink="/admission/new">＋ پذیرش بیمار</a>@if(canReview()){<a routerLink="/admission/identity">✓ تطبیق هویت</a>@if(auth.can('history')){<a routerLink="/admission/history">◷ بررسی سوابق</a>}<a routerLink="/admission/discharge">⇥ کنترل ترخیص</a>}</div>}</section>}
 @if(auth.can('list')){<section class="panel"><h2>استعلام فوری پرونده و سوابق ثبت‌شده</h2><form class="actions" (ngSubmit)="searchPatients()"><input name="search" [(ngModel)]="search" placeholder="نام، شماره پرونده، کد ملی یا بارکد" style="flex:1;min-width:160px"><button mat-flat-button class="primary-button" [disabled]="searching()">جستجو</button></form>
 <app-request-state [loading]="searching()" [error]="searchError()"/>@if(results();as rows){<div class="table-wrap"><table><thead><tr><th>بیمار</th><th>پرونده</th><th>گروه خونی</th><th>هشدار</th><th></th></tr></thead><tbody>@for(p of rows;track p.guid){<tr><td>{{p.firstName}} {{p.lastName}}</td><td>{{p.hisNumber}}</td><td>{{p.bloodGroup||'ثبت نشده'}}</td><td>{{p.allergy||p.alloantibody||p.transfusionHistory==='Reaction'?'نیاز به بررسی سابقه':'—'}}</td><td>@if(canReview()&&auth.can('history')){<a mat-button routerLink="/admission/history" [queryParams]="{guid:p.guid}">بررسی سوابق</a>}@else if(auth.can('detail')){<a mat-button [routerLink]="['/admission/detail',p.guid]">جزئیات</a>}</td></tr>}@empty{<tr><td colspan="5">پرونده‌ای پیدا نشد.</td></tr>}</tbody></table></div>}</section>
-<section class="panel"><div class="patient-title"><h2>پذیرش‌های اخیر و وضعیت شناسه هویتی</h2><div class="actions"><button mat-stroked-button (click)="load()">به‌روزرسانی</button><a mat-button routerLink="/admission/list">همه پرونده‌ها</a></div></div><app-request-state [loading]="listBusy()" [error]="listError()"/><app-admission-table [rows]="recent()" [showActions]="auth.can('detail')" [showIdentityAction]="canReview()"/></section>}
+<section class="panel"><div class="patient-title"><h2>پذیرش‌های اخیر و وضعیت شناسه هویتی</h2><div class="actions"><button mat-stroked-button (click)="load()" [disabled]="busy()||quick()">به‌روزرسانی</button><a mat-button routerLink="/admission/list">همه پرونده‌ها</a></div></div><app-request-state [loading]="listBusy()" [error]="listError()"/><app-admission-table [rows]="recent()" [showActions]="auth.can('detail')" [showIdentityAction]="canReview()"/></section>}
 @if(!auth.loading()&&!auth.can('list')&&!auth.can('stats')&&!canCreate()){<p role="alert">دسترسی به داده‌های داشبورد تأیید نشده است.</p>}
 } @else {<p role="alert">نقش یا نشست تغییر کرده است. <a routerLink="/">بازگشت به صفحه اصلی</a></p>}
 `})
@@ -39,7 +39,7 @@ export class AdmissionDashboardComponent implements OnInit,OnDestroy{
  ngOnInit(){void this.load();}
  ngOnDestroy(){this.scope.invalidate();++this.seq;++this.searchSeq;this.stats.set(null);this.recent.set([]);this.results.set(null);this.search='';}
  async load(){
-   if(!this.scope.isCurrent()||this.busy())return;
+   if(!this.scope.isCurrent()||this.busy()||this.quick())return;
    const seq=++this.seq;++this.searchSeq;
    this.busy.set(true);this.error.set(null);this.stats.set(null);this.recent.set([]);this.results.set(null);
    this.searching.set(false);this.searchError.set(null);this.statsError.set(null);this.listError.set(null);
