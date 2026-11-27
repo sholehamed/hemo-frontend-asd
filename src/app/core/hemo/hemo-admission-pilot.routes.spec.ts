@@ -24,7 +24,7 @@ describe('R02 admission pilot route', () => {
     return firstValueFrom(result as Observable<boolean>);
   }
   it('uses the original guard, with the exact seeded page pattern', async () => {
-    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his','admission/new','admission/detail/:guid','admission/identity','admission/history','admission/discharge']);
+    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his','admission/new','admission/detail/:guid','admission/identity','admission/history','admission/discharge','admission/dashboard','admission']);
     expect(hemoAdmissionPilotRoutes.every(r=>r.canActivate?.[0]===authGuardGuard)).toBeTrue();
     expect(hemoAdmissionPilotRoutes[0].canActivate).toEqual([authGuardGuard]);
     expect(await guard()).toBeTrue();
@@ -44,6 +44,12 @@ describe('R02 admission pilot route', () => {
       expect(await guard(path)).toBeTrue();
       expect(auth.CheckPagePermission).toHaveBeenCalledWith('/'+path);
     }
+  });
+  it('guards dashboard alias and existing admission path separately',async()=>{
+    expect(await guard('admission/dashboard')).toBeTrue();
+    expect(auth.CheckPagePermission).toHaveBeenCalledWith('/admission/dashboard');
+    expect(await guard('admission')).toBeTrue();
+    expect(auth.CheckPagePermission).toHaveBeenCalledWith('/admission');
   });
   it('rejects an unauthorized company role', async () => {
     auth.CheckPagePermission.and.returnValue(of(false));

@@ -14,5 +14,7 @@ export const hemoAdmissionPilotRoutes: Routes = [
   {path:'admission/detail/:guid',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/admission/admission-detail.component').then(m=>m.AdmissionDetailComponent)},
   {path:'admission/identity',canActivate:[authGuardGuard],data:{kind:'Identity'},loadComponent:()=>import('../../features/admission/admission-review.component').then(m=>m.AdmissionReviewComponent)},
   {path:'admission/history',canActivate:[authGuardGuard],data:{kind:'History'},loadComponent:()=>import('../../features/admission/admission-review.component').then(m=>m.AdmissionReviewComponent)},
-  {path:'admission/discharge',canActivate:[authGuardGuard],data:{kind:'Clearance'},loadComponent:()=>import('../../features/admission/admission-review.component').then(m=>m.AdmissionReviewComponent)}
+  {path:'admission/discharge',canActivate:[authGuardGuard],data:{kind:'Clearance'},loadComponent:()=>import('../../features/admission/admission-review.component').then(m=>m.AdmissionReviewComponent)},
+  {path:'admission/dashboard',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/admission/admission-dashboard.component').then(m=>m.AdmissionDashboardComponent)},
+  {path:'admission',pathMatch:'full',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/admission/admission-dashboard.component').then(m=>m.AdmissionDashboardComponent)}
 ];
