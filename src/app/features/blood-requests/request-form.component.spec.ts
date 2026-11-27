@@ -13,7 +13,7 @@ import { RequestFormComponent } from './request-form.component';
 import { blankClinical,RequestDetail } from './blood-request-model';
 
 describe('R02 company request forms',()=>{
- let current:boolean,http:HttpTestingController,source:'Nurse'|'Doctor',params:BehaviorSubject<ReturnType<typeof convertToParamMap>>;
+ let current:boolean,http:HttpTestingController,source:'Nurse'|'Doctor',params:BehaviorSubject<ReturnType<typeof convertToParamMap>>,query:BehaviorSubject<ReturnType<typeof convertToParamMap>>;
  const requests='https://fixture.invalid/Identity/BloodRequest';
  const admissions='https://fixture.invalid/Identity/PatientAdmission';
  const blob=(x:unknown)=>new Blob([JSON.stringify(x)],{type:'application/json'});
@@ -23,11 +23,11 @@ describe('R02 company request forms',()=>{
    clientRequestId:'fixture-key',version:'AQID',bloodGroup:null,identityStatus:'Verified',bedNumber:'1',items:[],clinical:blankClinical(),history:[],admissionChanged:false
  });
  beforeEach(()=>{
-   current=true;source='Nurse';params=new BehaviorSubject(convertToParamMap({}));
+   current=true;source='Nurse';params=new BehaviorSubject(convertToParamMap({}));query=new BehaviorSubject(convertToParamMap({}));
    TestBed.configureTestingModule({providers:[provideRouter([]),provideNoopAnimations(),provideHttpClient(),provideHttpClientTesting(),
      {provide:API_BASE_URL,useValue:'https://fixture.invalid'},
      {provide:HemoRoleLifecycle,useValue:{capture:()=>({}),isCurrent:()=>current}},
-     {provide:ActivatedRoute,useValue:{paramMap:params.asObservable(),snapshot:{get data(){return {source};},get paramMap(){return params.value;},queryParamMap:convertToParamMap({})}}}]});
+     {provide:ActivatedRoute,useValue:{paramMap:params.asObservable(),queryParamMap:query.asObservable(),snapshot:{get data(){return {source};},get paramMap(){return params.value;},get queryParamMap(){return query.value;}}}}]});
    http=TestBed.inject(HttpTestingController);
  });
  afterEach(()=>http.verify());
@@ -112,5 +112,17 @@ describe('R02 company request forms',()=>{
    spyOn(TestBed.inject(Router),'navigate').and.resolveTo(true);
    const task=c.save(false);const update=http.expectOne(requests);expect(update.request.method).toBe('PUT');expect(update.request.body.guid).toBe('request-a');expect(update.request.body.version).toBe('AQID');
    update.flush(null,{status:204,statusText:'No Content'});await task;http.expectNone(requests+'/Nurse');f.destroy();
+ });
+
+ it('resets a linked request form when the admission query changes and ignores the old response',async()=>{
+   const {f,c}=await start({detail:true,nurseCreate:true});
+   const selectSpy=spyOn(c,'selectPatient').and.callThrough();
+   query.next(convertToParamMap({admission:'patient-a'}));
+   const old=http.expectOne(admissions+'/patient-a'),first=selectSpy.calls.mostRecent().returnValue;
+   query.next(convertToParamMap({admission:'patient-b'}));
+   const fresh=http.expectOne(admissions+'/patient-b'),second=selectSpy.calls.mostRecent().returnValue;
+   fresh.flush(blob(admission('patient-b')));await second;old.flush(blob(admission('patient-a')));await first;
+   expect(c.patient()?.guid).toBe('patient-b');expect(c.draft.patientAdmissionGuid).toBe('patient-b');
+   expect(c.draft.clinical.diagnosis).toBe('Diagnosis patient-b');f.destroy();
  });
 });
