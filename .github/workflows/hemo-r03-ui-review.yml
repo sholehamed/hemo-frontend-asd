@@ -1,0 +1,84 @@
+name: HEMO R03 UI review
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  live-browser:
+    name: Current PR UI and responsive browser checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: sholehamed/hemo-backend-asd
+          ref: 82864ea984bf46dd8ab9f96a15f7944c8e7e623f
+          path: hemo-browser-backend
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+      - name: Build current PR Angular with a CI-only loopback API address
+        run: |
+          npm ci --no-audit --no-fund
+          node --input-type=module <<'NODE'
+          import {readFileSync,writeFileSync} from 'node:fs';
+          const path='src/environments/environment.ts';
+          const source=readFileSync(path,'utf8');
+          const original="apiUrl: 'http://127.0.0.1:1002'";
+          if(source.split(original).length!==2) throw new Error('Expected exactly one pinned API environment setting');
+          writeFileSync(path,source.replace(original,"apiUrl: 'http://127.0.0.1:18002'"));
+          NODE
+          npm run build
+      - name: Install isolated browser runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hemo-browser"
+          npm install --prefix "$RUNNER_TEMP/hemo-browser" --no-save --package-lock=false playwright@1.51.1
+          node "$RUNNER_TEMP/hemo-browser/node_modules/playwright/cli.js" install --with-deps chromium
+          cp hemo-browser-backend/tests/browser/r03-live-browser.mjs "$RUNNER_TEMP/hemo-browser/"
+          cp tests/browser/r03-ui-review.mjs "$RUNNER_TEMP/hemo-browser/"
+          mkdir -p "$RUNNER_TEMP/hemo-ui-screenshots"
+          echo "HEMO_UI_SCREENSHOTS=$RUNNER_TEMP/hemo-ui-screenshots" >> "$GITHUB_ENV"
+          test -f "$GITHUB_WORKSPACE/dist/sakai-ng/browser/index.html"
+          echo "HEMO_BROWSER_DIST=$GITHUB_WORKSPACE/dist/sakai-ng/browser" >> "$GITHUB_ENV"
+          echo "HEMO_BROWSER_SCRIPT=$RUNNER_TEMP/hemo-browser/r03-ui-review.mjs" >> "$GITHUB_ENV"
+      - name: Start isolated SQL Server on loopback
+        shell: bash
+        run: |
+          set -euo pipefail
+          password="Hemo!$(openssl rand -hex 24)"
+          echo "::add-mask::$password"
+          docker run -d --rm --name hemo-browser-sql -e ACCEPT_EULA=Y -e MSSQL_SA_PASSWORD="$password" -p 127.0.0.1:1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          for i in {1..60}; do
+            if docker exec hemo-browser-sql /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "$password" -C -Q "SELECT 1" >/dev/null 2>&1; then
+              echo "HEMO_TEST_SQL=Server=localhost,1433;User ID=sa;Password=$password;TrustServerCertificate=True" >> "$GITHUB_ENV"
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+      - name: Run continuous HTTP, browser and UI review
+        working-directory: hemo-browser-backend
+        run: dotnet test tests/Hemo.Admission.Tests -c Release --filter "FullyQualifiedName~IsolatedHttpAcceptanceTests" --logger "console;verbosity=normal"
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hemo-r03-ui-synthetic-screenshots
+          path: ${{ runner.temp }}/hemo-ui-screenshots/*.png
+          if-no-files-found: error
+          retention-days: 7
+      - if: always()
+        run: docker rm -f hemo-browser-sql || true

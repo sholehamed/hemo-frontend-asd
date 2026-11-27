@@ -1,0 +1,88 @@
+// HEMO pages only: the existing company theme and other routes are untouched.
+.hemo-page {
+  display: block; min-width: 0; max-width: 100%; direction: rtl; line-height: 1.7;
+  --hemo-bg: #fff; --hemo-subtle: #f5f7fa; --hemo-text: #263347; --hemo-muted: #52647c;
+  --hemo-border: #dbe2e9; --hemo-accent: #11457f; --hemo-focus: #1769b4;
+  --hemo-danger: #9f1834; --hemo-danger-bg: #fff1f3;
+  --hemo-good: #11624b; --hemo-good-bg: #e6f7ef;
+  --hemo-warn: #805400; --hemo-warn-bg: #fff4db;
+  color: var(--hemo-text);
+  &, *, *::before, *::after { box-sizing: border-box; }
+  > :not(router-outlet) { display: block; min-width: 0; max-width: 100%; }
+  .heading { margin-block-end: 20px; }
+  h1 { font-size: clamp(21px, 2.3vw, 29px); font-weight: 700; line-height: 1.45; margin: 6px 0 12px; overflow-wrap: anywhere; }
+  h2 { font-size: 18px; font-weight: 700; margin: 0 0 12px; overflow-wrap: anywhere; }
+  h3 { font-size: 16px; font-weight: 600; overflow-wrap: anywhere; }
+  .eyebrow { color: var(--hemo-accent); font-size: 12px; font-weight: 700; margin: 0; }
+  .muted { color: var(--hemo-muted); font-size: 13px; }
+  .panel, .form-card, .record-card, .area-card, .metric { background: var(--hemo-bg); color: var(--hemo-text); border: 1px solid var(--hemo-border); border-radius: 12px; min-width: 0; padding: clamp(12px, 2vw, 20px); margin-block-end: 16px; }
+  .form-grid, .scope-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px,100%),1fr)); gap: 14px; align-items: start; }
+  .form-grid label { display: grid; min-width: 0; gap: 5px; }
+  .wide, .full { grid-column: 1 / -1; }
+  input:not([type=checkbox]):not([type=radio]), select, textarea { width: 100%; min-width: 0; max-width: 100%; min-height: 40px; padding: 8px 10px; border: 1px solid var(--hemo-border); border-radius: 7px; background: var(--hemo-bg); color: var(--hemo-text); font: inherit; }
+  input[type=checkbox], input[type=radio] { width: auto; flex: 0 0 auto; }
+  textarea { resize: vertical; }
+  input:disabled, select:disabled, textarea:disabled { background: var(--hemo-subtle); opacity: .7; }
+  mat-form-field { width: 100%; min-width: 0; }
+  :is(button,a,input,select,textarea):focus-visible { outline: 2px solid var(--hemo-focus); outline-offset: 2px; }
+  .actions, .page-actions, .page-links, .patient-title, .pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-block: 10px; min-width: 0; }
+  .patient-title { justify-content: space-between; }
+  .patient-title h2 { margin: 0; }
+  .pagination { justify-content: flex-end; }
+  .actions :is(button,a), .page-actions :is(button,a), .dashboard-actions :is(button,a) { min-height: 40px; white-space: normal; max-width: 100%; text-align: center; }
+  .primary-button { background: var(--hemo-accent) !important; color: #fff !important; border-radius: 8px; }
+  .primary-button:disabled { opacity: .55; }
+  .notice { padding: 12px 14px; margin-block: 12px; border: 1px solid var(--hemo-border); border-radius: 8px; background: var(--hemo-subtle); overflow-wrap: anywhere; }
+  .notice.warn { color: var(--hemo-warn); background: var(--hemo-warn-bg); border-color: currentColor; }
+  .notice.danger, .notice.error { color: var(--hemo-danger); background: var(--hemo-danger-bg); border-color: currentColor; }
+  .notice.success { color: var(--hemo-good); background: var(--hemo-good-bg); border-color: currentColor; }
+  .notice.info { color: var(--hemo-text); background: var(--hemo-subtle); }
+  .metric-grid, .detail-grid, .area-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px,100%),1fr)); gap: 12px; margin-block-end: 14px; }
+  .metric { border-block-start: 3px solid var(--hemo-accent); margin: 0; }
+  .metric.good { border-block-start-color: var(--hemo-good); }
+  .metric.warn { border-block-start-color: var(--hemo-warn); }
+  .metric.danger { border-block-start-color: var(--hemo-danger); }
+  .metric strong { display: block; font-size: 25px; font-variant-numeric: tabular-nums; }
+  .metric span, .detail-grid small { color: var(--hemo-muted); }
+  .detail-grid > div { min-width: 0; background: var(--hemo-subtle); padding: 10px; border-radius: 8px; overflow-wrap: anywhere; }
+  .detail-grid small { display: block; }
+  .split { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1fr); gap: 16px; }
+  .checklist { display: grid; gap: 8px; }
+  .checklist label { display: flex; align-items: flex-start; gap: 8px; }
+  .table-wrap, .table-scroll { width: 100%; max-width: 100%; min-width: 0; overflow-x: auto; overscroll-behavior-inline: contain; }
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  th,td { padding: 10px; border-block-end: 1px solid var(--hemo-border); text-align: start; white-space: nowrap; }
+  th { background: var(--hemo-subtle); color: var(--hemo-muted); font-weight: 700; }
+  .status-pill { display: inline-block; padding: 3px 9px; border-radius: 14px; font-size: 12px; font-weight: 700; color: var(--hemo-text); background: var(--hemo-subtle); }
+  .status-pill.Verified, .status-pill.ReadyForDischarge, .status-pill.good, .status-pill.success { color: var(--hemo-good); background: var(--hemo-good-bg); }
+  .status-pill.Mismatch, .status-pill.danger, .status-pill.error { color: var(--hemo-danger); background: var(--hemo-danger-bg); }
+  .status-pill.Pending, .status-pill.warn { color: var(--hemo-warn); background: var(--hemo-warn-bg); }
+  .mono { direction: ltr; unicode-bidi: isolate; display: inline-block; max-width: 100%; overflow-wrap: anywhere; font-family: Consolas,monospace; }
+  .bar-row { display: grid; grid-template-columns: minmax(70px,110px) minmax(0,1fr) 45px; gap: 8px; align-items: center; margin-block: 8px; }
+  .bar-track { height: 12px; border-radius: 8px; overflow: hidden; background: var(--hemo-subtle); }
+  .bar-fill { height: 100%; background: var(--hemo-accent); border-radius: 8px; }
+  .print-only { display: none; }
+  .section-no { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 6px; background: var(--hemo-subtle); color: var(--hemo-accent); margin-inline-end: 6px; }
+  .wristband { color: #172235; overflow-wrap: anywhere; } // dark ink on white for scan/print
+  @media (max-width: 850px) { .split { grid-template-columns: minmax(0,1fr); } }
+  @media (max-width: 580px) { .form-grid,.scope-grid { grid-template-columns: minmax(0,1fr); } .metric-grid,.detail-grid { grid-template-columns: repeat(auto-fit,minmax(min(125px,100%),1fr)); } .actions :is(button,a), .dashboard-actions :is(button,a) { min-height: 44px; } }
+}
+.app-dark .hemo-page {
+  --hemo-bg: #202b38; --hemo-subtle: #18222f; --hemo-text: #e7eef7; --hemo-muted: #bac9db;
+  --hemo-border: #435366; --hemo-accent: #215e9f; --hemo-focus: #a3d0ff;
+  --hemo-danger: #ffb6c3; --hemo-danger-bg: #4b2331;
+  --hemo-good: #98e8cd; --hemo-good-bg: #173b33;
+  --hemo-warn: #ffdb98; --hemo-warn-bg: #44351d;
+  .eyebrow, .section-no { color: #a3d0ff; }
+}
+@media (max-width: 580px) {
+  .layout-main-container:has(.router-outlet.hemo-page) { padding-inline: 12px; }
+}
+@media print {
+  // Zero specificity for the blanket hide rule; explicit print targets must override it.
+  :where(body:has(.hemo-page .print-target)) * { visibility: hidden !important; }
+  .hemo-page .print-target, .hemo-page .print-target * { visibility: visible !important; }
+  .hemo-page .print-target { position: absolute; inset: 0 auto auto 0; background: white; color: #172235; }
+  .hemo-page .no-print { display: none !important; }
+  .hemo-page .print-only { display: block; }
+}
