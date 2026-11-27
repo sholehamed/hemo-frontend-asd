@@ -13,7 +13,7 @@ import { AdmissionPickerComponent } from '../admission/admission-picker.componen
 import { RequestStateComponent } from '../../shared/components/request-state.component';
 import { BLOOD_GROUPS,label,message } from '../../shared/admission-utils';
 import { isoToJalali,jalaliToIso,normalizeDigits } from '../../shared/jalali-date';
-import { RequestInput,RequestForm,RequestLine,RequestDetail,REQUEST_PRODUCTS,REQUEST_FORMS,PRIORITIES,blankClinical,submissionIssue,productLabel,formLabel,canEditRequest } from './blood-request-model';
+import { RequestInput,RequestForm,RequestDetail,REQUEST_PRODUCTS,REQUEST_FORMS,PRIORITIES,blankClinical,submissionIssue,productLabel,formLabel,canEditRequest } from './blood-request-model';
 @Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,BloodRequestsService,AdmissionsService,RequestPageAccess,AdmissionPageAccess],imports:[FormsModule,RouterLink,MatButtonModule,AdmissionPickerComponent,RequestStateComponent],templateUrl:'./request-form.component.html',styleUrl:'./request-form.component.css'})
 export class RequestFormComponent implements OnInit,OnDestroy{
  readonly scope=inject(HemoPageScope);readonly auth=inject(RequestPageAccess);readonly admissionAccess=inject(AdmissionPageAccess);private api=inject(BloodRequestsService);private admissions=inject(AdmissionsService);private router=inject(Router);private route=inject(ActivatedRoute);
@@ -28,6 +28,11 @@ export class RequestFormComponent implements OnInit,OnDestroy{
  draft:RequestInput={patientAdmissionGuid:'',clientRequestId:'',formType:'General',priority:'Routine',items:[],clinical:blankClinical()};
  sampleDate='';sampleTime='';neededDate='';neededTime='';surgeryDate='';
  private seq=0;private params?:Subscription;
+ private newClientRequestId():string{
+   const bytes=crypto.getRandomValues(new Uint8Array(16));bytes[6]=(bytes[6]&15)|64;bytes[8]=(bytes[8]&63)|128;
+   const hex=Array.from(bytes,n=>n.toString(16).padStart(2,'0')).join('');
+   return [hex.slice(0,8),hex.slice(8,12),hex.slice(12,16),hex.slice(16,20),hex.slice(20)].join('-');
+ }
  private current(seq:number){return this.scope.isCurrent()&&seq===this.seq;}
  private resetDraft(){
    this.patient.set(null);this.existing.set(null);this.persistedGuid.set(null);this.saved.set(null);this.ready.set(false);this.step.set(1);this.error.set(null);this.busy.set(false);
@@ -42,8 +47,7 @@ export class RequestFormComponent implements OnInit,OnDestroy{
      if(!this.allowed())return;
      if(this.editGuid)void this.loadEdit(this.editGuid);
      else{
-       // Use the existing UUID generator supported by secure browser contexts.
-       this.draft.clientRequestId=crypto.randomUUID();this.ready.set(true);
+       this.draft.clientRequestId=this.newClientRequestId();this.ready.set(true);
        const patient=this.route.snapshot.queryParamMap.get('admission');if(patient)void this.selectPatient(patient);
      }
    });
@@ -71,7 +75,7 @@ export class RequestFormComponent implements OnInit,OnDestroy{
    try{
      const p=await this.admissions.get(guid);if(!this.current(seq))return;
      if(p.guid.toLowerCase()!==guid.toLowerCase()||p.status!=='Active'){this.error.set('فقط پذیرش فعال و مطابق شناسه قابل انتخاب است.');return;}
-     this.draft={patientAdmissionGuid:p.guid,clientRequestId:crypto.randomUUID(),formType:'General',priority:'Routine',items:[],clinical:blankClinical()};
+     this.draft={patientAdmissionGuid:p.guid,clientRequestId:this.newClientRequestId(),formType:'General',priority:'Routine',items:[],clinical:blankClinical()};
      this.sampleDate=this.sampleTime=this.neededDate=this.neededTime=this.surgeryDate='';
      this.patient.set(p);this.draft.clinical.diagnosis=p.diagnosis;this.draft.clinical.priorReaction=p.transfusionHistory==='Reaction'?true:null;this.draft.clinical.unexpectedAntibody=p.alloantibody?true:null;
    }catch(e){if(this.current(seq))this.error.set(message(e));}finally{if(this.current(seq))this.busy.set(false);}
@@ -83,8 +87,9 @@ export class RequestFormComponent implements OnInit,OnDestroy{
  private prepare():RequestInput{
   const d=this.draft.clinical.formDetails;d.sampleAt=this.combine(this.sampleDate,this.sampleTime);d.neededAt=this.combine(this.neededDate,this.neededTime);
   d.surgeryAt=this.surgeryDate.trim()?this.combine(this.surgeryDate,'00:00'):null;
-  if(!this.patient()||this.patient()!.guid!==this.draft.patientAdmissionGuid)throw new Error('ابتدا پذیرش بیمار را انتخاب کنید.');
+  if(!this.patient()||this.patient()!.guid.toLowerCase()!==this.draft.patientAdmissionGuid.toLowerCase())throw new Error('ابتدا پذیرش بیمار را انتخاب کنید.');
   if(this.draft.items.some(x=>!Number.isSafeInteger(x.quantity)||x.quantity<1||x.quantity>10000)||new Set(this.draft.items.map(x=>x.productCode)).size!==this.draft.items.length)throw new Error('نوع فرآورده تکراری یا تعداد واحد نامعتبر است.');
+  if(!this.forms().some(f=>f.code===this.draft.formType))throw new Error('نوع فرم برای ثبت‌کننده مجاز نیست.');
   return structuredClone(this.draft);
  }
  next(){if(!this.allowed()||!this.ready()||this.busy()||this.persistedGuid())return;this.error.set(null);try{this.prepare();this.step.set(Math.min(3,this.step()+1));}catch(e){this.error.set(message(e));}}
