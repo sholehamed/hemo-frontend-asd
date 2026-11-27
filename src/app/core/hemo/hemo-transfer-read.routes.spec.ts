@@ -19,8 +19,8 @@ describe('R02 guarded transfer read routes',()=>{
     const snap={routeConfig:config,parent:{routeConfig:{path:''},parent:null}} as unknown as ActivatedRouteSnapshot;
     return firstValueFrom(TestBed.runInInjectionContext(()=>authGuardGuard(snap,{} as RouterStateSnapshot)) as Observable<boolean>);
   }
-  it('uses the company guard and exact page patterns for all six transfer routes',async()=>{
-    expect(hemoTransferReadRoutes.map(r=>r.path)).toEqual(['hemo/transfusion/tasks','hemo/transfusion/vitals','hemo/transfusion/monitoring','hemo/transfusion/returns','hemo/transfusion/records','hemo/transfusion']);
+  it('uses the company guard and exact page patterns for all eight transfer routes',async()=>{
+    expect(hemoTransferReadRoutes.map(r=>r.path)).toEqual(['hemo/transfusion/dispatch','hemo/transfusion/detail/:guid','hemo/transfusion/tasks','hemo/transfusion/vitals','hemo/transfusion/monitoring','hemo/transfusion/returns','hemo/transfusion/records','hemo/transfusion']);
     for(const r of hemoTransferReadRoutes){
       expect(r.canActivate).toEqual([authGuardGuard]);expect(await check(r.path!)).toBeTrue();
       expect(auth.CheckPagePermission).toHaveBeenCalledWith('/'+r.path);
