@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {allowedRecordActions,allowedResolutionActions,equipmentDue,equipmentActions} from '../src/app/features/quality/quality-model.ts';
+const c={userGuid:'owner',permissions:{committeeSubmit:true,committeeApprove:true,committeeProgress:true,committeeVerify:true,committeeClose:true,equipmentRelease:true,equipmentArchive:true}};
+const r={kind:'Committee',status:'Draft',createdByUserGuid:'owner'};
+test('creator submits but cannot approve own work',()=>{assert.deepEqual(allowedRecordActions(r,c),['Submit']);assert.deepEqual(allowedRecordActions({...r,status:'Submitted'},c),[]);assert.deepEqual(allowedRecordActions({...r,status:'Submitted'},{...c,userGuid:'reviewer'}),['Approve','Reject']);});
+test('resolution owner and verifier independent',()=>{const x={...r,status:'Approved',createdByUserGuid:'creator'},l={ownerUserGuid:'owner',status:'Open'};assert.deepEqual(allowedResolutionActions(x,l,c),['Progress']);assert.deepEqual(allowedResolutionActions(x,{...l,status:'Submitted'},c),[]);assert.deepEqual(allowedResolutionActions(x,{...l,status:'Submitted'},{...c,userGuid:'reviewer'}),['Verify','Return']);});
+test('equipment due and archived prevent release',()=>{const e={status:'Hold',calibrationDueAt:'2020-01-01T00:00:00',maintenanceDueAt:null};assert.ok(equipmentDue(e));assert.ok(!equipmentActions({equipment:e,incidents:[],storedUnits:0},c).includes('Release'));assert.deepEqual(equipmentActions({equipment:{...e,status:'Archived'},incidents:[],storedUnits:0},c),[]);});
+test('open incident and stored units prevent archive',()=>{const e={status:'Hold',calibrationDueAt:null,maintenanceDueAt:null};assert.deepEqual(equipmentActions({equipment:e,incidents:[{status:'Open'}],storedUnits:0},c),[]);assert.deepEqual(equipmentActions({equipment:e,incidents:[],storedUnits:1},c),['Release']);});

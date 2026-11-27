@@ -1,0 +1,21 @@
+import {Component,OnInit,inject,signal} from '@angular/core';
+import {FormsModule} from '@angular/forms';
+import {MatButtonModule} from '@angular/material/button';
+import {AuthService} from '../../core/auth/auth.service';
+import {QualityService} from '../../core/api/quality.service';
+import {RequestStateComponent} from '../../shared/components/request-state.component';
+import {message} from '../../shared/admission-utils';
+import {Facility} from './quality-model';
+@Component({standalone:true,imports:[FormsModule,MatButtonModule,RequestStateComponent],template:`
+<section class="heading"><p class="eyebrow">HEMO / تنظیمات</p><h1>اطلاعات پایه مرکز و مراجع گزارش</h1></section>
+@if(!auth.qualityCan('facility')){<section class="panel"><h2>مجوز مشاهده اطلاعات مرکز ندارید.</h2></section>}@else{
+<div class="notice info">این صفحه فقط اطلاعات پایه مرکز HEMO را نگه می‌دارد. تنظیمات امنیتی، آستانه بالینی، HIS، SMS، بکاپ و کلیدهای سرویس بدون قرارداد و مجوز سازمانی تغییر نمی‌کنند.</div><app-request-state [loading]="busy()" [error]="error()"/>@if(success()){<div class="notice success">{{success()}}</div>}
+@if(loaded()){<section class="panel"><h2>مشخصات مرکز</h2><form class="form-grid" (ngSubmit)="save()"><label>نام مرکز *<input name="name" [(ngModel)]="form.facilityName" maxlength="200" required [disabled]="!auth.qualityCan('facilitySave')"></label><label>کد اعتباربخشی<input name="accreditation" [(ngModel)]="form.accreditationCode" maxlength="100" [disabled]="!auth.qualityCan('facilitySave')"></label><label>رئیس مرکز / کمیته<input name="chair" [(ngModel)]="form.chair" maxlength="200" [disabled]="!auth.qualityCan('facilitySave')"></label><label>دبیر کمیته<input name="secretary" [(ngModel)]="form.secretary" maxlength="200" [disabled]="!auth.qualityCan('facilitySave')"></label><label>مسئول هموویژیلانس<input name="officer" [(ngModel)]="form.officer" maxlength="200" [disabled]="!auth.qualityCan('facilitySave')"></label><label>مرکز انتقال خون پشتیبان<input name="bloodCenter" [(ngModel)]="form.bloodCenter" maxlength="200" [disabled]="!auth.qualityCan('facilitySave')"></label><label>کد پایگاه<input name="bloodCenterCode" [(ngModel)]="form.bloodCenterCode" maxlength="100" [disabled]="!auth.qualityCan('facilitySave')"></label><label class="wide">پانویس گزارش‌های داخلی<textarea name="footer" [(ngModel)]="form.reportFooter" maxlength="1000" [disabled]="!auth.qualityCan('facilitySave')"></textarea></label>@if(auth.qualityCan('facilitySave')){<label class="wide">شرح تغییر *<textarea name="notes" [(ngModel)]="notes" required maxlength="4000"></textarea></label><button mat-flat-button class="primary-button" [disabled]="busy()">ذخیره اطلاعات پایه</button>}<button mat-stroked-button type="button" [disabled]="busy()" (click)="load()">دریافت مجدد</button></form></section>}}
+`})
+export class FacilityComponent implements OnInit{
+ readonly auth=inject(AuthService);private api=inject(QualityService);readonly loaded=signal(false);readonly busy=signal(false);readonly error=signal<string|null>(null);readonly success=signal<string|null>(null);
+ form:Facility={facilityName:'',accreditationCode:null,chair:null,secretary:null,officer:null,bloodCenter:null,bloodCenterCode:null,reportFooter:null,version:null};notes='';
+ ngOnInit(){if(this.auth.qualityCan('facility'))void this.load();}
+ async load(){if(!this.auth.qualityCan('facility'))return;this.busy.set(true);this.error.set(null);try{this.form=await this.api.facility();this.notes='';this.loaded.set(true);}catch(e){this.error.set(message(e));this.loaded.set(false);}finally{this.busy.set(false);}}
+ async save(){if(!this.auth.qualityCan('facilitySave')||this.busy())return;this.busy.set(true);this.error.set(null);this.success.set(null);try{await this.api.saveFacility({...this.form,notes:this.notes});this.success.set('اطلاعات پایه ثبت شد.');await this.load();}catch(e){this.error.set(message(e));}finally{this.busy.set(false);}}
+}
