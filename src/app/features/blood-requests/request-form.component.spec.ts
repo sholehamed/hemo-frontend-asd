@@ -7,6 +7,8 @@ import { BehaviorSubject } from 'rxjs';
 import { API_BASE_URL } from '../../Services/api-client';
 import { HemoRoleLifecycle } from '../../core/hemo/hemo-role-lifecycle';
 import { BloodRequestsService } from '../../core/api/blood-requests.service';
+import { RequestPageAccess } from './request-page-access';
+import { AdmissionPageAccess } from '../admission/admission-page-access';
 import { RequestFormComponent } from './request-form.component';
 import { blankClinical,RequestDetail } from './blood-request-model';
 
@@ -32,12 +34,13 @@ describe('R02 company request forms',()=>{
  async function start(caps:Record<string,boolean>,admissionCaps:Record<string,boolean>={list:true,detail:true},mode:'Nurse'|'Doctor'='Nurse',guid?:string){
    source=mode;if(guid)params.next(convertToParamMap({guid}));
    const f=TestBed.createComponent(RequestFormComponent);
-   const init=spyOn(f.componentInstance,'ngOnInit').and.callThrough();
+   const access=spyOn(f.debugElement.injector.get(RequestPageAccess),'load').and.callThrough();
+   const admissionAccess=spyOn(f.debugElement.injector.get(AdmissionPageAccess),'load').and.callThrough();
    const edit=spyOn(f.componentInstance,'loadEdit').and.callThrough();
    f.detectChanges();
    http.expectOne(requests+'/Capabilities').flush(blob(caps));
    http.expectOne(admissions+'/Capabilities').flush(blob(admissionCaps));
-   await init.calls.mostRecent().returnValue;
+   await Promise.all([access.calls.mostRecent().returnValue,admissionAccess.calls.mostRecent().returnValue]);
    return {f,c:f.componentInstance,edit,api:f.debugElement.injector.get(BloodRequestsService)};
  }
  async function select(c:RequestFormComponent,guid='patient-a'){
@@ -98,7 +101,7 @@ describe('R02 company request forms',()=>{
    expect(c.ready()).toBeFalse();http.expectNone(admissions+'/patient-a');await c.save(false);http.expectNone(requests);f.destroy();
  });
  it('updates the existing draft with its version rather than creating a second request',async()=>{
-   const {f,c,edit,api}=await start({detail:true,edit:true},{detail:true},'Nurse','request-a');
+   const {f,c,edit}=await start({detail:true,edit:true},{detail:true},'Nurse','request-a');
    // Capture the in-flight get promise using the existing response event, then wait for the follow-up request.
    const req=http.expectOne(requests+'/request-a');req.flush(blob(detail('request-a')));
    // The Blob adapter decodes asynchronously. Await the next event-loop turn until the admission request is enqueued.
