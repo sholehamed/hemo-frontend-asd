@@ -1,6 +1,7 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
+import { RequestCapabilities } from '../../features/blood-requests/blood-request-model';
 export interface Token { key:string;firstName:string;lastName:string;expireDate:string;forceChangePassword:boolean;multiLogin:boolean;userRole:number }
 export interface CurrentRole { name:string;gkey:number;orgLocationName:string;organizationName:string }
 export interface LoginRequest {username:string;password:string;userEnteredCaptchaCode:string;captchaId:string;otpCode:string|null}
@@ -15,6 +16,9 @@ export class AuthService {
   readonly loggedIn=computed(()=>!!this.session()&&!this.session()?.forceChangePassword);
   readonly allowed=signal(false);
   readonly capabilities=signal<AdmissionCapabilities|null>(null);
+  readonly requestCapabilities=signal<RequestCapabilities|null>(null);
+  requestCan(key:keyof RequestCapabilities){return this.requestCapabilities()?.[key]===true;}
+  homePath(){return this.can('stats')&&this.can('list')?'/admission':this.requestCan('list')?'/hemo/requests':this.requestCan('bankQueue')?'/hemo/requests/bank':this.can('list')?'/admission/list':'/admission';}
   can(key:keyof AdmissionCapabilities){return this.capabilities()?.[key]===true;}
   readonly checking=signal(false);
   async login(req:LoginRequest):Promise<'otp'|'password'|'ok'>{
@@ -27,7 +31,7 @@ export class AuthService {
   private setSession(token:Token){this.session.set(token);sessionStorage.setItem(KEY,JSON.stringify(token));}
   async refreshContext(){
     if(!this.loggedIn())return;
-    this.checking.set(true);this.allowed.set(false);this.capabilities.set(null);
+    this.checking.set(true);this.allowed.set(false);this.capabilities.set(null);this.requestCapabilities.set(null);
     try{
       const roles=await firstValueFrom(this.http.get<CurrentRole[]>('/Identity/UserRole/GetCurrentUserRoles'));
       this.roles.set(roles??[]);
@@ -35,8 +39,12 @@ export class AuthService {
       if(!current||!roles.length)return;
       if(!roles.some(r=>r.gkey===current.userRole))this.setSession({...current,userRole:roles[0].gkey});
       // Ask the real, scoped endpoint rather than trusting a client-side role label.
-      const caps=await firstValueFrom(this.http.get<AdmissionCapabilities>('/Identity/PatientAdmission/Capabilities'));
-      this.capabilities.set(caps);this.allowed.set(Object.values(caps).some(Boolean));
+      const [admission,requests]=await Promise.allSettled([firstValueFrom(this.http.get<AdmissionCapabilities>('/Identity/PatientAdmission/Capabilities')),firstValueFrom(this.http.get<RequestCapabilities>('/Identity/BloodRequest/Capabilities'))]);
+      if(!this.session())return;
+      const caps=admission.status==='fulfilled'?admission.value:null;
+      const req=requests.status==='fulfilled'?requests.value:null;
+      this.capabilities.set(caps);this.requestCapabilities.set(req);
+      this.allowed.set(Object.values(caps??{}).some(Boolean)||Object.values(req??{}).some(Boolean));
     }catch{this.allowed.set(false);}
     finally{this.checking.set(false);}
   }

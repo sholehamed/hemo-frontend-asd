@@ -39,7 +39,7 @@ export class LoginComponent implements AfterViewInit{
     try{const v=this.form.getRawValue();const result=await this.auth.login({...v,otpCode:v.otpCode||null,captchaId:this.captcha.getCaptchaId(),userEnteredCaptchaCode:this.captcha.getUserEnteredCaptchaCode()});
       if(result==='otp'){this.otp.set(true);this.error.set('رمز یک‌بار مصرف ارسال شد. کد امنیتی جدید را نیز وارد کنید.');this.reload();}
       else if(result==='password'){this.error.set('رمز عبور باید از مسیر مدیریت حساب سازمانی تغییر کند.');this.reload();}
-      else void this.router.navigateByUrl('/admission');
+      else void this.router.navigateByUrl(this.auth.homePath());
     }catch(e){this.error.set((e as {message?:string}).message??'ورود انجام نشد.');this.reload();}
     finally{this.busy.set(false);}
   }
