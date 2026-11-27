@@ -1,0 +1,33 @@
+@if(!compact()){<section class="heading"><p class="eyebrow">پذیرش / تشکیل پرونده</p><h1>تشکیل پرونده و پذیرش بیمار جدید</h1><p class="muted">اطلاعات هویتی، بستری و هشدارهای مرتبط با سابقه انتقال خون را ثبت کنید.</p></section>}
+<form [formGroup]="form" (ngSubmit)="submit()">
+<section class="panel">
+ <div class="patient-title"><h2><span class="section-no">۱</span>مشخصات هویتی بیمار</h2><button type="button" mat-stroked-button (click)="unknown()">⚠ ثبت بیمار مجهول‌الهویه</button></div>
+ <div class="form-grid" style="margin-top:18px">
+ <label>نوع شناسه *<select formControlName="identificationType" (change)="identityChanged()"><option value="NationalId">کد ملی</option><option value="Passport">گذرنامه / شناسه اتباع</option><option value="Unknown">مجهول‌الهویه</option></select></label>
+ @if(form.controls.identificationType.value!=='Unknown'){
+ <label>شناسه هویتی *<input formControlName="identificationNumber" dir="ltr" maxlength="64" placeholder="کد ملی یا شماره گذرنامه"><button mat-stroked-button type="button" [disabled]="lookupBusy()" (click)="lookup()">استعلام پرونده داخلی</button></label>
+ }@else{<div class="notice warn">شناسه موقت یکتا پس از ثبت توسط سرور ایجاد می‌شود.</div>}
+ <label>نام *<input formControlName="firstName" maxlength="100" autocomplete="off"></label><label>نام خانوادگی *<input formControlName="lastName" maxlength="100" autocomplete="off"></label>
+ <label>نام پدر<input formControlName="fatherName" maxlength="100"></label><label>تاریخ تولد جلالی *<input formControlName="birthDate" placeholder="۱۳۶۵/۰۲/۱۴" dir="ltr" inputmode="numeric"></label>
+ <label>جنسیت<select formControlName="gender"><option value="Unknown">نامشخص</option><option value="Female">زن</option><option value="Male">مرد</option></select></label>
+ <label>تلفن همراه<input formControlName="mobile" dir="ltr" inputmode="tel" maxlength="32"></label>
+ </div>
+ @if(notice()){<div class="notice info">{{notice()}}</div>}
+ <p class="muted">استعلام فقط از داده‌های ثبت‌شده مرکز جاری است؛ اتصال ثبت احوال یا HIS در این مرحله تعریف نشده است.</p>
+</section>
+<section class="panel"><h2><span class="section-no">۲</span>اطلاعات پرونده و بستری</h2>
+ <div class="form-grid">
+ <label>شماره پرونده بالینی (HIS No) *<input formControlName="hisNumber" maxlength="64" dir="ltr"></label><label>بخش بستری *<input formControlName="ward" maxlength="100" placeholder="عنوان بخش در بیمارستان"></label><label>شماره اتاق و تخت *<input formControlName="bedNumber" maxlength="64"></label>
+ <label>پزشک معالج / کشیک *<input formControlName="physician" maxlength="100"></label><label>نوع پذیرش<select formControlName="admissionType"><option value="Inpatient">بستری</option><option value="Emergency">اورژانس</option><option value="Outpatient">سرپایی</option></select></label>
+ <label>پوشش بیمه<input formControlName="insurance" maxlength="100"></label><label class="wide">تشخیص اولیه / علت بستری<textarea formControlName="diagnosis" maxlength="500" rows="2"></textarea></label></div>
+</section>
+<section class="panel"><h2><span class="section-no">۳</span>سوابق انتقال خون و هشدارهای ایمنی</h2><div class="notice warn">گروه خونی تنها در صورت وجود سابقه مستند معتبر وارد شود. این ثبت، نتیجه آزمایش سازگاری یا مجوز تزریق نیست.</div>
+ <div class="form-grid"><label>گروه خونی و Rh<select formControlName="bloodGroup"><option value="">ثبت نشده / نامشخص</option>@for(g of bloodGroups;track g){<option [value]="g">{{g}}</option>}</select></label>
+ <label>سابقه ترانسفیوژن<select formControlName="transfusionHistory"><option value="Unknown">نامشخص / بررسی نشده</option><option value="None">بدون سابقه</option><option value="Previous">تزریق قبلی بدون عارضه</option><option value="Reaction">سابقه واکنش نامطلوب</option></select></label></div>
+ <div class="checklist" style="margin-top:12px"><mat-checkbox formControlName="allergy">سابقه آلرژی / واکنش شدید گزارش‌شده</mat-checkbox><mat-checkbox formControlName="leukoreduced">نیاز ثبت‌شده به فرآورده کم‌لوکوسیت</mat-checkbox><mat-checkbox formControlName="irradiated">نیاز ثبت‌شده به فرآورده اشعه‌دیده</mat-checkbox><mat-checkbox formControlName="alloantibody">سابقه آنتی‌بادی نامنظم</mat-checkbox></div>
+ <div class="form-grid"><label class="wide">توضیحات و هشدارهای پذیرش به بخش<textarea formControlName="notes" rows="3" maxlength="2000"></textarea></label></div>
+</section>
+@if(preview()){<section class="panel"><h2>پیش‌نمایش مچ‌بند — بدون بارکد معتبر</h2><div class="detail-grid"><div><small>بیمار</small>{{form.controls.firstName.value||'—'}} {{form.controls.lastName.value}}</div><div><small>شماره پرونده</small>{{form.controls.hisNumber.value||'—'}}</div><div><small>تاریخ تولد</small>{{form.controls.birthDate.value||'—'}}</div><div><small>بخش</small>{{form.controls.ward.value||'—'}}</div></div><p class="muted">بارکد واقعی پس از ذخیره پرونده از سرور صادر و قابل چاپ است.</p></section>}
+<app-request-state [loading]="busy()||lookupBusy()" [error]="error()"/>
+<div class="actions"><button mat-flat-button class="primary-button" type="submit" [disabled]="busy()||lookupBusy()">ثبت نهایی پرونده و پذیرش</button><button mat-stroked-button type="button" (click)="preview.set(!preview())">پیش‌نمایش مچ‌بند</button><a mat-button routerLink="/admission">انصراف</a></div>
+</form>

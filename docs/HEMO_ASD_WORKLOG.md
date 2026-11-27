@@ -54,3 +54,10 @@ Open gaps:
 - مالک پروژه: زیرساخت Backend شرکت تغییر نمی‌کند. Angular workspace از الگوی مخزن قبلی، theme با رنگ‌های Raw، login با captcha موجود (`NftCaptchaStyle`)، interceptor با Bearer/UserRole، guard، role picker و shell ریسپانسیو ایجاد شدند. RequestStateComponent، jalali-date.ts و error model قبلی مستقیماً بازاستفاده شدند.
 - BotDetect با plugin jQuery برای جلوگیری از وابستگی ماژول قدیمی Angular استفاده شد؛ سازگاری runtime باید روی Backend واقعی آزمون شود. Session token در sessionStorage همان تب، بدون داده بیمار؛ endpoint stats واقعی برای کنترل نمایش منوی پذیرش.
 - Build/Tests: NOT RUN. هنوز مرحله ST-02 رابط کاربری در این commit کامل نشده است.
+
+## ST-02 | پذیرش
+
+- ایجاد API service تایپ‌شده، صفحه پذیرش سریع و داشبورد واقعی، فرم کامل مطابق Raw، فهرست با فیلتر و CSV، جزئیات و ویرایش، مچ‌بند Code128، انتخاب‌گر مشترک بیمار، چک‌لیست هویت/سوابق/آمادگی ترخیص با تاریخچه، گزارش آماری و صفحه HIS.
+- بازاستفاده RequestStateComponent و jalali-date از مخزن قبلی؛ کامپوننت‌های مشترک AdmissionTable / AdmissionMetrics / AdmissionPicker / Wristband برای عدم تکرار UI. رنگ و ساختار RTL مطابق Raw.
+- HIS و IBTO و سوابق قطعی واحدهای خون/واکنش وابسته به قرارداد خارجی و مراحل آتی‌اند؛ در صفحه به صراحت اعلام و عملیات بیرونی غیرفعال است. اصلاح هویت/ادغام بیمار مجهول پس از تطبیق رسمی نیازمند طراحی جداگانه است. چاپ نیازمند آزمون چاپگر واقعی.
+- Build/Tests/E2E: NOT RUN در محیط حاضر؛ هیچ تأیید عملکرد runtime ادعا نشده است.
