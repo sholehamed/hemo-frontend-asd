@@ -1,0 +1,12 @@
+
+  <app-input-string [Label]="'کد کپچا'" [Placeholder]="'کد کپچا را از تصویر زیر وارد کنید'" [ReadOnly]="false"
+    [Required]="true" [Data]="UserEnteredCaptchaCode" (DataValueChange)="UserEnteredCaptchaCode=$event; UserCaptchaChange($event)"
+    [Submitted]="Submitted"></app-input-string>
+<br>
+<div>
+
+  <app-captcha #captcha (captchaLoaded)="onCaptchaLoaded($event)" (captchaChange)="capchaChange($event)"
+    [captchaStyleName]="'NftCaptchaStyle'" (OnCaptchaIDChange)="CaptchaIDChange($event)">
+  </app-captcha>
+</div>
+<br>

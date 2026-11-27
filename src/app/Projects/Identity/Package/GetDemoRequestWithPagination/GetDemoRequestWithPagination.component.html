@@ -1,0 +1,27 @@
+<app-base [Params]="Params" *ngIf="Params!=null" [Name]="'مدیریت لیست درخواست دمو ها'"
+    [DataUrl]="'Identity/DemoRequest/BindPaging'" [TableConfig]="TableConfig">
+    <ng-template #Actions>
+
+          <p-button *ngIf="ShowUserInfo==true" (onClick)="goBack()" label="برگشت "
+                    [rounded]="true" severity="danger" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <ng-container *ngIf="ShowUserInfo==false">
+            <td>
+                <p-button *ngIf="Accepted==null || Accepted==false" (onClick)="updateDemoRequest(Item,true)"
+                    label="تایید" icon="pi pi-check" [rounded]="true" severity="success" size="small" />
+                <p-button *ngIf="Accepted==null" (onClick)="updateDemoRequest(Item,false)" label="عدم تایید"
+                    icon="pi pi-times" [rounded]="true" severity="danger" size="small" />
+            </td>
+            <td>
+                <p-button *ngIf="Item.totalRequestCount>1"
+                    [routerLink]="['/Identity/Package/UserDemoRequests/'+Item.userGUID]"
+                    [label]="'درخواست های قبلی ('+Item.totalRequestCount+')'" icon="pi pi-list" [rounded]="true"
+                    severity="info" size="small" />
+                    <span *ngIf="Item.totalRequestCount<=1">ندارد</span>
+            </td>
+
+        </ng-container>
+
+    </ng-template>
+</app-base>

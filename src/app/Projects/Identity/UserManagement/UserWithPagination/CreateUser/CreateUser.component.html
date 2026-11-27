@@ -1,0 +1,60 @@
+<p-panel [header]="'ثبت کاربر جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'نام کاربری'" [Placeholder]="'نام کاربری'" [ReadOnly]="false"
+                    [Required]="true" [Data]="CreateUserCommand.username"
+                    (DataValueChange)="CreateUserCommand.username=$event" [Submitted]="Form.submitted"
+                    [maxlength]="16"></app-input-string>
+            </div>
+            <div *ngIf="ChangePage==false" class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'رمز عبور'" [Placeholder]="'رمز عبور'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserCommand.password" (DataValueChange)="CreateUserCommand.password=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+               <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'کد ملی'" [Placeholder]="'کد ملی'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserCommand.nationalcode" (DataValueChange)="CreateUserCommand.nationalcode=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+          
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'نام'" [Placeholder]="'نام'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserCommand.firstName" (DataValueChange)="CreateUserCommand.firstName=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'نام خانوادگی'" [Placeholder]="'نام خانوادگی'" [ReadOnly]="false"
+                    [Required]="true" [Data]="CreateUserCommand.lastName"
+                    (DataValueChange)="CreateUserCommand.lastName=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'موبایل'" [Placeholder]="'موبایل'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserCommand.mobile" (DataValueChange)="CreateUserCommand.mobile=$event"
+                    [Submitted]="Form.submitted" [maxlength]="16"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'ایمیل'" [Placeholder]="'ایمیل'" [ReadOnly]="false" [Required]="false"
+                    [Data]="CreateUserCommand.email" (DataValueChange)="CreateUserCommand.email=$event"
+                    [Submitted]="Form.submitted" [maxlength]="64"></app-input-string>
+            </div>
+              <div *ngIf="ChangePage==true" class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'رمز عبور'" [Placeholder]="'رمز عبور'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserCommand.password2" (DataValueChange)="CreateUserCommand.password2=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

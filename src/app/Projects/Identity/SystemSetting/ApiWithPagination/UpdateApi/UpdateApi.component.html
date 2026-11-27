@@ -1,0 +1,86 @@
+<form #Form="ngForm">
+    <div class="grid grid-cols-12 gap-8">
+        <div class="col-span-12">
+            <app-input-string [Label]="'عنوان'" [Placeholder]="'عنوان'" [ReadOnly]="false" [Required]="true"
+                [Data]="UpdateApiCommand.title" (DataValueChange)="UpdateApiCommand.title=$event"
+                [Submitted]="Form.submitted"></app-input-string>
+        </div>
+        <div class="col-span-12">
+            <app-input-string [Label]="'اطلاعات حساس'" [Placeholder]="'کلید داده های حساس ورودی و خروجی با , جدا شود'"
+                [ReadOnly]="false" [Required]="false" [Data]="UpdateApiCommand.sensitive"
+                (DataValueChange)="UpdateApiCommand.sensitive=$event" [Submitted]="Form.submitted"></app-input-string>
+        </div>
+    </div>
+    <br>
+    <div class="grid grid-cols-12 gap-8">
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'سرویس از نوع عمومی می باشد'" [Data]="UpdateApiCommand.isPublic"
+                (DataValueChange)="UpdateApiCommand.isPublic=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'سرویس فعال می باشد'" [Data]="UpdateApiCommand.active"
+                (DataValueChange)="UpdateApiCommand.active=$event"></app-checkbox>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'در سطح اینترنت قابل نمایش می باشد'" [Data]="UpdateApiCommand.internet"
+                (DataValueChange)="UpdateApiCommand.internet=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'در سطح اینترانت قابل نمایش می باشد'" [Data]="UpdateApiCommand.intranet"
+                (DataValueChange)="UpdateApiCommand.intranet=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'لاگ فعال می باشد'" [Data]="UpdateApiCommand.logData"
+                (DataValueChange)="UpdateApiCommand.logData=$event"></app-checkbox>
+        </div>
+
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'هدر درخواست کاربر لاگ می شود'" [Data]="UpdateApiCommand.logRequestHeaders"
+                (DataValueChange)="UpdateApiCommand.logRequestHeaders=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'هدر پاسخ سرویس لاگ می شود'" [Data]="UpdateApiCommand.logResponseHeaders"
+                (DataValueChange)="UpdateApiCommand.logResponseHeaders=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'بدنه درخواست کاربر لاگ می شود'" [Data]="UpdateApiCommand.logRequestBody"
+                (DataValueChange)="UpdateApiCommand.logRequestBody=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'بدنه پاسخ سرویس لاگ می شود'" [Data]="UpdateApiCommand.logResponseBody"
+                (DataValueChange)="UpdateApiCommand.logResponseBody=$event"></app-checkbox>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-checkbox [Label]="'ریت لیمیت فعال می باشد'" [Data]="UpdateApiCommand.enableRateLimiting"
+                (DataValueChange)="UpdateApiCommand.enableRateLimiting=$event"></app-checkbox>
+        </div>
+
+
+    </div>
+    <br>
+    <div class="grid grid-cols-12 gap-8" *ngIf="UpdateApiCommand.enableRateLimiting">
+       
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-input-number [Label]="'مدت زمان دوره (ثانیه)'" [Placeholder]="'مدت زمان دوره (ثانیه)'" [ReadOnly]="false" [Required]="true"
+                [useGrouping]="false" [Data]="UpdateApiCommand.period"
+                (DataValueChange)="UpdateApiCommand.period=$event" [Submitted]="Form.submitted"></app-input-number>
+        </div>
+        <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+            <app-input-number [Label]="'تعداد درخواست'" [Placeholder]="'تعداد درخواست'" [ReadOnly]="false"
+                [Required]="true" [useGrouping]="false" [Data]="UpdateApiCommand.limit"
+                (DataValueChange)="UpdateApiCommand.limit=$event" [Submitted]="Form.submitted"></app-input-number>
+        </div>
+    </div>
+    <hr>
+    <div class="grid grid-cols-12 gap-8">
+        <div class="col-span-6 text-center">
+            <p-button type="Submit" (onClick)="Form.valid && Update() " label="ذخیره"
+                severity="success" />
+        </div>
+        <div class="col-span-6 text-center">
+            <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                severity="danger" />
+        </div>
+    </div>
+</form>

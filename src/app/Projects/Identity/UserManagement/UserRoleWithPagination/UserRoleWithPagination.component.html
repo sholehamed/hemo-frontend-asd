@@ -1,0 +1,15 @@
+<app-base *ngIf="UserGuid!=''" [Params]="{UserID:UserGuid}" [Name]="'مدیریت لیست نقش کاربر ها'" [DataUrl]="'Identity/UserRole/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions let-Item>
+        <p-button [routerLink]="[(AdminPage?'/Identity/UserManagement/UserRole/CreateUserRole/':'/Identity/UserManagement/OrglocationCreateUserRole/')+UserGuid]" label="ثبت جدید" [raised]="true" severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+   
+        <td>
+            <p-button [routerLink]="[(AdminPage?'/Identity/UserManagement/UserRole/ChangeUserRole/':'/Identity/UserManagement/UserRole/OrglocationChangeUserRole/')+UserGuid+'/'+Item.guid]" pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+           
+        </td>
+        
+    </ng-template>
+</app-base>

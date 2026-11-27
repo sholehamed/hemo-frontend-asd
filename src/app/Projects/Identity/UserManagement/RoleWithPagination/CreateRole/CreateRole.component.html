@@ -1,0 +1,39 @@
+<p-panel [header]="'ثبت نقش جدید'">
+    <!-- <h4>توجه : نوع شرکت را فقط زمانی انتخاب کنید که می خواهید هنگام ثبت نام کاربر به صورت اتوماتیک به کاربر داده شود</h4> -->
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'عنوان'" [Placeholder]="'عنوان'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateRoleCommand.name" (DataValueChange)="CreateRoleCommand.name=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <!-- <div *ngIf="AdminPage==true" class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-dropdown
+                    [Label]="'نوع شرکت'"
+                    [ReadOnly]="false"
+                    [Required]="false"
+                    [Options]="[]"
+                    [OptionsUrl]="'/Identity/OrgLocationType/FindAll'"
+                    (DataValueChange)="CreateRoleCommand.orgLocationTypeGUIO=$event"
+                    [Data]="CreateRoleCommand.orgLocationTypeGUIO"
+                    [DataIdName]="'guid'"
+                    [OptionName]="'name'"
+                    [Submitted]="Form.submitted"
+                ></app-dropdown>
+            </div> -->
+        </div>
+       
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

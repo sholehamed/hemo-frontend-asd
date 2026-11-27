@@ -1,0 +1,53 @@
+<p-panel [header]="'ثبت زیر سیستم جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'عنوان'" [Placeholder]="'عنوان'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateSubSystemCommand.name" (DataValueChange)="CreateSubSystemCommand.name=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'آدرس سرویس'" [Placeholder]="'آدرس سرویس'" [ReadOnly]="false"
+                    [Required]="true" [Data]="CreateSubSystemCommand.host"
+                    (DataValueChange)="CreateSubSystemCommand.host=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'پورت سرویس'" [Placeholder]="'پورت سرویس'" [ReadOnly]="false"
+                    [Required]="true" [useGrouping]="false" [Data]="CreateSubSystemCommand.port"
+                    (DataValueChange)="CreateSubSystemCommand.port=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-time [Label]="'ساعت شروع فعالیت سیستم'" [Placeholder]="'ساعت شروع فعالیت سیستم'"
+                    [ReadOnly]="false" [Required]="false" [Data]="CreateSubSystemCommand.startTime"
+                    (DataValueChange)="CreateSubSystemCommand.startTime=$event"
+                    [Submitted]="Form.submitted"></app-input-time>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-time [Label]="'ساعت پایان فعالیت سیستم'" [Placeholder]="'ساعت پایان فعالیت سیستم'"
+                    [ReadOnly]="false" [Required]="false" [Data]="CreateSubSystemCommand.endTime"
+                    (DataValueChange)="CreateSubSystemCommand.endTime=$event"
+                    [Submitted]="Form.submitted"></app-input-time>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <br>
+                <app-checkbox [Label]="'بروز رسانی خودکار سرویس ها'" [Data]="CreateSubSystemCommand.autoRead"
+                    (DataValueChange)="CreateSubSystemCommand.autoRead=$event"></app-checkbox>
+            </div>
+
+
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

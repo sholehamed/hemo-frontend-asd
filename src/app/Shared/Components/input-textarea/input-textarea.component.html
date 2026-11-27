@@ -1,0 +1,10 @@
+<div class="flex flex-col gap-2">
+    <label [class]="(Submitted&&Input.invalid)?'error':''">{{Label}} <span *ngIf="Required==true" class="RequiredStar">*</span></label>
+    <textarea [readOnly]="ReadOnly" [dir]="Direction" [id]="Name" [name]="Name" [rows]="Rows"   #Input="ngModel" ngModel pTextarea [required]="Required" [class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''"   (ngModelChange)="OnDataValueChange($event)"
+              [(ngModel)]="Data" ></textarea>
+
+    <span class="error" *ngIf="Submitted==true&&Input.invalid &&Input.errors!['required']">{{Label}} اجباری می باشد.</span>
+
+</div>
+
+

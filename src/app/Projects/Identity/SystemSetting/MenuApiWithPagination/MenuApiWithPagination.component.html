@@ -1,0 +1,14 @@
+
+<app-base
+    [Name]="'مدیریت لیست سرویس های منو ها'"
+    [DataUrl]="'Identity/MenuApi/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td><p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" /></td>
+    </ng-template>
+</app-base>
+
+

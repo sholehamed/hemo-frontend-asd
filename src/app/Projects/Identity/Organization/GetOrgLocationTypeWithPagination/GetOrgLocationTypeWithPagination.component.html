@@ -1,0 +1,19 @@
+
+<app-base
+    [Name]="'مدیریت لیست نوع شرکت ها'" 
+    [DataUrl]="'Identity/OrgLocationType/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/Organization/OrgLocationType/CreateOrgLocationType']" label="ثبت جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+           <p-button [routerLink]="['/Identity/Organization/OrgLocationType/ChangeOrgLocationType/'+Item.guid]" pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+           <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+        </td>
+
+    </ng-template>
+</app-base>
+
+

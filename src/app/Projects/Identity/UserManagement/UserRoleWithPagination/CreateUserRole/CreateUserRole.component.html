@@ -1,0 +1,68 @@
+<p-panel [header]="'ثبت نقش کاربر جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-tree-select [Label]="'نقش'" [ReadOnly]="false" [Required]="true" [Options]="[]"
+                    [OptionsUrl]="'Identity/role/RoleFindAllTree'" (DataValueChange)="CreateUserRoleCommand.roleGUID=$event"
+                    [Data]="CreateUserRoleCommand.roleGUID" [DataIdName]="'guid'" [OptionName]="'name'"
+                    [Submitted]="Form.submitted"></app-input-tree-select>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-date-input [Label]="'تاریخ انقضا'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateUserRoleCommand.expireDate"
+                    (DataValueChange)="CreateUserRoleCommand.expireDate=$event"
+                    [Submitted]="Form.submitted"></app-date-input>
+            </div>
+
+
+             <div class="col-span-12 md:col-span-6 lg:col-span-6 xl:col-span-6">
+                <label>محل سازمان</label>
+                <div class="flex align-items-center gap-2 mt-2">
+                    <p-inputgroup>
+                        <input pInputText placeholder="محل سازمان" readonly name="blackListOrganization" [(ngModel)]="OrgLocationName"
+                            id="blackListOrganization" />
+                        <p-inputgroup-addon>
+                            <p-button label="انتخاب" severity="secondary" (onClick)="OpenOrgLocationSelectModal()" />
+                        </p-inputgroup-addon>
+                        <p-inputgroup-addon>
+                            <p-button pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="secondary" #Input
+                                (onClick)="DeleteOrgLocation()" />
+                        </p-inputgroup-addon>
+                    </p-inputgroup>
+                </div>
+            </div>
+            <!-- <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-tree-select
+                    [Label]="'محل سازمان'"
+                    [ReadOnly]="false"
+                    [Required]="true"
+                    [Options]="[]"
+                    [OptionsUrl]="'Identity/OrgLocation/OrglocationTree'"
+                    (DataValueChange)="CreateUserRoleCommand.orgLocationGUID=$event"
+                    [Data]="CreateUserRoleCommand.orgLocationGUID"
+                    [DataIdName]="'guid'"
+                    [OptionName]="'name'"
+                    [Submitted]="Form.submitted"
+                ></app-input-tree-select>
+            </div> -->
+
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>
+
+<p-dialog *ngIf="OrgLocationSelectVisible==true" [header]="''" [modal]="true"
+    [(visible)]="OrgLocationSelectVisible" [style]="{ width: '80rem' }">
+    <SelectOrgLocationModal (onSelect)="CloseModal($event)"></SelectOrgLocationModal>
+</p-dialog>

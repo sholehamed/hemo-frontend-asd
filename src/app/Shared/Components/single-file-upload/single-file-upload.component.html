@@ -1,0 +1,35 @@
+<label [class]="(Submitted&&Input.invalid)?'error':''">{{Label}} <span *ngIf="Required==true&&ReadOnly==false"
+        class="RequiredStar">*</span></label>
+
+        <br>
+
+<div class="bodyfile" [dir]="'ltr'">
+    <p-inputGroup>
+
+        <button *ngIf="ReadOnly!=true" type="button" pTooltip="انتخاب فایل" (click)="choose()" pButton icon="pi pi-plus"
+            class="p-button-success"></button>
+        <button [disabled]="DownloadLink==null||DownloadLink==''" *ngIf="ShowDonlowd==true" pTooltip="دانلود فایل" type="button"
+            (click)="downloadFile()" pButton icon="pi pi-cloud-download" class="p-button-help"></button>
+
+
+        <input [dir]="'rtl'" [placeholder]="Placeholder" [disabled]="ReadOnly" [id]="Name" [name]="Name"
+            #Input="ngModel" ngModel pInputText [required]="File!=null|| Required" [readOnly]="true"
+            [placeholder]="(File==null)?'فایل مورد نظر را انتخاب نمایید':File.name"
+            [class]="(Submitted==true&&Input.invalid)?'ng-invalid ng-dirty':''"
+            (ngModelChange)="OnDataValueChange($event)" [(ngModel)]="Data">
+
+        <input #advancedfileinput type="file" (change)="onFileSelect($event)" [style.display]="'none'" />
+
+
+    </p-inputGroup>
+</div>
+<br>
+<p-progressBar *ngIf="downloading" [value]="downloadProgress"></p-progressBar>
+<p-progressBar *ngIf="uploading" [value]="progress"></p-progressBar>
+<span class="error" *ngIf="Submitted==true&&File!=null&&Input.invalid &&Input.errors!['required']">فایل انتخاب شده در
+    سرور آپلود نشده است</span>
+<span class="error" *ngIf="Submitted==true&&File==null&&Input.invalid &&Input.errors!['required']">{{Label}} اجباری می
+    باشد.</span>
+
+
+

@@ -1,0 +1,21 @@
+<app-base [Name]="'مدیریت لیست سرویس ها'" [DataUrl]="'Identity/Api/BindPaging'" [TableConfig]="TableConfig">
+        <ng-template #Actions>
+                <p-button (onClick)="UpateApiList()" label="بروز رسانی لیست" [raised]="true" severity="success" />
+        </ng-template>
+        <ng-template #RowActions let-Item>
+                <td><i class="pi"
+                                [ngClass]="{'text-green-500 pi-check-circle': Item.isPublic,'text-red-500 pi-times-circle': !Item.isPublic}"></i>
+                </td>
+
+                <td>
+
+                        <p-button (onClick)="OpenModal(Item)" pTooltip="ویرایش اعتبار پکیج" icon="pi pi-pencil"
+                                [rounded]="true" severity="warn" />
+                </td>
+        </ng-template>
+</app-base>
+
+<p-dialog *ngIf="Visible==true" [header]="'ویرایش  سرویس '" [modal]="true" [(visible)]="Visible"
+        [style]="{ width: '100rem' }">
+<UpdateApi (OnDone)="Refresh()" [GUID]="SelectedItem.guid"></UpdateApi>
+</p-dialog>

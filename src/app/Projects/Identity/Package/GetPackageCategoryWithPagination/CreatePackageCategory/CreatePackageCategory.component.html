@@ -1,0 +1,42 @@
+<p-panel [header]="'ثبت دسته بندی پکیج جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'عنوان'" [Placeholder]="'عنوان'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreatePackageCategoryCommand.name"
+                    (DataValueChange)="CreatePackageCategoryCommand.name=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-single-file-upload [Label]="'آیکون'" [Placeholder]="'فایل'" [ReadOnly]="false" [Required]="true"
+                    [PublicFile]="true" [DownloadLink]="CreatePackageCategoryCommand.icon"
+                    (DataValueChange)="CreatePackageCategoryCommand.icon=$event"
+                    [Data]="CreatePackageCategoryCommand.icon" [ShowDonlowd]="true"
+                    [Submitted]="Form.submitted"></app-single-file-upload>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'ترتیب نمایش'" [Placeholder]="'ترتیب نمایش'" [ReadOnly]="false"
+                    [Required]="true" [Data]="CreatePackageCategoryCommand.gorder"
+                    (DataValueChange)="CreatePackageCategoryCommand.gorder=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12">
+                <app-input-textarea [Label]="'توضیحات'" [Rows]="3" [ReadOnly]="false" [Required]="false"
+                    [Data]="CreatePackageCategoryCommand.description"
+                    (DataValueChange)="CreatePackageCategoryCommand.description=$event"
+                    [Submitted]="Form.submitted"></app-input-textarea>
+            </div>
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

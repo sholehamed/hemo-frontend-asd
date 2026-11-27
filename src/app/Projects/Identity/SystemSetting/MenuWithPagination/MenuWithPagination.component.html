@@ -1,0 +1,28 @@
+<app-tree-base [sortBy]="'gorder'" [Name]="'مدیریت منو ها'" [TableConfig]="TableConfig"
+    [DataUrl]="'Identity/Menu/BindPaging'" (OnDragDrop)="OnDragDrop($event)">
+    <ng-template #Actions>
+        <p-button [routerLink]="['/Identity/SystemSetting/Menu/CreateMenu/1']" label="ثبت سرشاخه جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+
+    <ng-template #RowActions let-Item>
+
+        <td>
+            <p-button [routerLink]="['/Identity/SystemSetting/Menu/CreateMenu/'+Item.node.data.guid]" pTooltip="ثبت سرشاخه"
+                icon="pi pi-plus" [rounded]="true" severity="success" />
+            <p-button [routerLink]="['/Identity/SystemSetting/Menu/ChangeMenu/'+Item.node.data.guid]" pTooltip="ویرایش"
+                icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+
+            <p-button (click)="updateVisibility(Item)" pTooltip="نمایش در منو"
+                [icon]="Item.node.data.showInMenu?'pi pi-times-circle':'pi pi-check-circle'" [rounded]="true"
+                [severity]="Item.node.data.showInMenu?'success':'danger'" [outlined]="true" />
+
+            <p-button (click)="updateMenuIsPublic(Item)" [pTooltip]="Item.node.data.isPublic?'منو برای همه قابل مشاهده می باشد':'منو فقط با سطح دسترسی دیده می شود'"
+                [icon]="Item.node.data.isPublic?'pi pi-eye':'pi pi-eye-slash'" [rounded]="true"
+                [severity]="Item.node.data.showInMenu?'success':'danger'" [outlined]="true" />
+
+        </td>
+
+    </ng-template>
+</app-tree-base>

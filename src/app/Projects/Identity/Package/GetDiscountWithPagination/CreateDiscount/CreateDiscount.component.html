@@ -1,0 +1,76 @@
+<p-panel [header]="'ثبت کد تخفیف جدید'">
+    <form #Form="ngForm">
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-string [Label]="'کد'" [Placeholder]="'کد'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateDiscountCommand.code" (DataValueChange)="CreateDiscountCommand.code=$event"
+                    [Submitted]="Form.submitted"></app-input-string>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'مقدار'" [Placeholder]="'مقدار'" [ReadOnly]="false" [Required]="true"
+                    [useGrouping]="false" [Data]="CreateDiscountCommand.value"
+                    (DataValueChange)="CreateDiscountCommand.value=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [useGrouping]="true" [Label]="'حداکثر مبلغ تخفیف'" [Placeholder]="'حداکثر مبلغ تخفیف'" [ReadOnly]="false"
+                    [Required]="false"  [Data]="CreateDiscountCommand.maxDiscountAmount"
+                    (DataValueChange)="CreateDiscountCommand.maxDiscountAmount=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [useGrouping]="true" [Label]="'حداقل مبلغ فاکتور'" [Placeholder]="'حداقل مبلغ فاکتور'" [ReadOnly]="false"
+                    [Required]="true"  [Data]="CreateDiscountCommand.minimumOrderAmount"
+                    (DataValueChange)="CreateDiscountCommand.minimumOrderAmount=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-date-input [Label]="'از تاریخ'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateDiscountCommand.startDate" (DataValueChange)="CreateDiscountCommand.startDate=$event"
+                    [Submitted]="Form.submitted"></app-date-input>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-date-input [Label]="'تا تاریخ'" [ReadOnly]="false" [Required]="true"
+                    [Data]="CreateDiscountCommand.endDate" (DataValueChange)="CreateDiscountCommand.endDate=$event"
+                    [Submitted]="Form.submitted"></app-date-input>
+            </div>
+
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'تعداد کد تخفیف'" [Placeholder]="'تعداد کد تخفیف'" [ReadOnly]="false"
+                    [Required]="true" [useGrouping]="false" [Data]="CreateDiscountCommand.usageLimit"
+                    (DataValueChange)="CreateDiscountCommand.usageLimit=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+           
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <app-input-number [Label]="'حداکثر استفاده برای هر کاربر'"
+                    [Placeholder]="'حداکثر استفاده برای هر کاربر'" [ReadOnly]="false" [Required]="true"
+                    [useGrouping]="false" [Data]="CreateDiscountCommand.usageLimitPerUser"
+                    (DataValueChange)="CreateDiscountCommand.usageLimitPerUser=$event"
+                    [Submitted]="Form.submitted"></app-input-number>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <br>
+                <app-checkbox [Label]="'کد تخفیف از نوع درصدی می باشد'" [Data]="CreateDiscountCommand.percentage"
+                    (DataValueChange)="CreateDiscountCommand.percentage=$event"></app-checkbox>
+            </div>
+            <div class="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3">
+                <br>
+                <app-checkbox [Label]="'کد تخفیف فعال می باشد'" [Data]="CreateDiscountCommand.isActive"
+                    (DataValueChange)="CreateDiscountCommand.isActive=$event"></app-checkbox>
+            </div>
+        </div>
+        <hr>
+        <div class="grid grid-cols-12 gap-8">
+            <div class="col-span-6 text-center">
+                <p-button type="Submit" (onClick)="Form.valid && (ChangePage?Update():Insert()) " label="ذخیره"
+                    severity="success" />
+            </div>
+            <div class="col-span-6 text-center">
+                <p-button type="button" (onClick)="Back()" routerLinkActive="router-link-active" label="برگشت"
+                    severity="danger" />
+            </div>
+        </div>
+    </form>
+</p-panel>

@@ -1,0 +1,17 @@
+
+<app-base
+*ngIf="RoleGUID!=''"
+    [Name]="'مدیریت لیست دسترسی نقش ها'"
+    [DataUrl]="'Identity/RoleAccess/BindPaging'"
+    [Params]="{RoleGUID:RoleGUID}"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions let-Item>
+        <p-button [routerLink]="['/Identity/UserManagement/Role/RoleAccess/CreateRoleAccess/'+RoleGUID]" label="ثبت جدید" [raised]="true"
+            severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td><p-button (onClick)="Delete(Item)" pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" /></td>
+    </ng-template>
+</app-base>
+
+

@@ -1,0 +1,51 @@
+<p-panel [header]="Name">
+    <p-treetable #treeTable [value]="Data" showGridlines [paginator]="true" [rows]="10" [lazy]="true"
+        [reorderableColumns]="true" [totalRecords]="PaginatedList.totalCount"  (onPage)="onPage($event)" [loading]="loading" (onNodeExpand)="onNodeExpand($event)"
+        [scrollable]="true" [tableStyle]="{ 'min-width': '50rem' }">
+        <ng-template #caption>
+            <div class="flex">
+                <ng-container *ngTemplateOutlet="Actions"></ng-container>
+                <p-button *ngIf="filters.length>0" (onClick)="LoadData()" label="اعمال فیلتر" [raised]="true"
+                    severity="info" />
+                <p-button *ngIf="filters.length>0" (onClick)="filters=[];FilterData={};LoadData()" label="حذف فیلتر"
+                    [raised]="true" severity="warn" />
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th *ngFor="let col of TableConfig" [ttSortableColumn]="col.Name" ttReorderableColumn>
+                    {{ col.PersianName }}
+
+                </th>
+            </tr>
+            <tr>
+                <th *ngFor="let col of TableConfig" class="tree-filter">
+                    <input *ngIf="col.Name!=''" [(ngModel)]="FilterData[col.FilterTypeBy]" pInputText type="text"
+                        (input)="onGlobalSearch(FilterData[col.FilterTypeBy],col.FilterTypeBy)" />
+                </th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr [ttRow]="rowNode" pDraggable pDroppable (onDragStart)="dragStart(rowNode)" (onDragEnd)="dragEnd()"
+                (onDrop)="drop(rowNode)">
+                <ng-container *ngFor="let col of TableConfig; let i = index">
+                    <td *ngIf="col.Name!=''">
+                        <span [style]="'margin-right:'+ rowNode.level * 16 + 'px'">
+                            <p-treeTableToggler [rowNode]="rowNode" *ngIf="i === 0" />
+                        </span>
+
+                        <span dir="ltr">
+                            {{ rowData[col.Name] }}
+                        </span>
+                    </td>
+                </ng-container>
+                <ng-container *ngTemplateOutlet="RowActions ; context:{ $implicit: rowNode }">
+
+                </ng-container>
+
+            </tr>
+
+        </ng-template>
+
+    </p-treetable>
+</p-panel>

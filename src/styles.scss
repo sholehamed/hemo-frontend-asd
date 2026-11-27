@@ -1,0 +1,234 @@
+/* You can add global styles to this file, and also import other style files */
+@use './tailwind.css';
+
+@use './assets/layout/layout.scss';
+@use 'primeicons/primeicons.css';
+@use './assets/demo/demo.scss';
+
+
+@font-face {
+    font-family: 'Vazir';
+    src: url('./assets/fonts/IRANSansXFaNum-Light.ttf') format('truetype');
+    /* مسیر فایل فونت و نوع فایل را تغییر دهید */
+}
+.p-tablist-active-bar{
+    display: none !important;
+}
+.mat-datepicker-popup {
+    z-index: 99999999 !important; /* set value you need */
+}
+.p-dialog-mask{
+     z-index: 1000 !important; 
+}
+.p-multiselect-list-container{
+    direction: rtl;
+}
+.p-multiselect-option {
+    direction: rtl;
+}
+.p-select-option {
+    direction: rtl;
+}
+.p-multiselect-header{
+    direction: rtl;
+}
+.p-dialog-header{
+    direction: rtl;
+}
+.p-dialog-content{
+    direction: rtl; 
+}
+
+.p-step-title {
+    font-weight: bold !important;
+}
+
+.disabled-all button,
+.disabled-all p-button {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.disable-all i {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.TopProgress {
+    z-index: 9999 !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+div,
+p,
+label,
+button,
+small {
+    font-family: 'Vazir' !important;
+}
+
+label {
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.p-button-label {
+    font-family: 'Vazir' !important;
+    font-weight: bold !important;
+}
+
+span {
+    font-family: 'Vazir'
+}
+
+.logo-image {
+    max-height: 100px;
+}
+
+.notfound-image {
+    max-width: 350px;
+    height: auto;
+    margin-bottom: 30px;
+}
+
+.p-panel-header {
+    margin-bottom: 10px;
+}
+
+.error {
+    color: red !important;
+}
+
+.RequiredStar {
+    color: red !important;
+}
+
+
+.p-password-input,
+.p-password {
+    display: block !important;
+    width: 100% !important;
+}
+
+.p-datepicker-input,
+.p-datepicker {
+    display: block !important;
+    width: 100% !important;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.p-datatable {
+    display: flex;
+    flex-direction: column;
+    /* تغییر جهت چیدمان به صورت عمودی */
+}
+
+.p-datatable-column-resizer {
+
+    right: 0 !important;
+    inset-inline-start: 0 !important;
+    inset-inline-end: unset !important;
+
+}
+
+.p-datatable-table th {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+.p-datatable-table td {
+    text-align: center !important;
+    justify-content: center !important;
+}
+
+.tree-filter input {
+    max-width: 100% !important;
+}
+
+button {
+    margin: 2px;
+}
+
+.p-treetable-toggler {
+    transform: scaleX(-1);
+    margin-left: unset !important;
+
+    ;
+}
+
+input {
+    width: 100%;
+}
+
+:root {
+    --p-primary-color: #11457f !important;
+    --bg-dark: #f7f8fc;
+    --card-bg: #c6c8cf;
+    --card-border: rgba(255, 255, 255, 0.08);
+    --primary: #3b82f6;
+    --primary-glow: rgba(59, 130, 246, 0.5);
+    --success: #10b981;
+    --danger: #ef4444;
+    --warning: #f59e0b;
+    --text-main: #010d25;
+    --text-muted: #010d25;
+    --glass-blur: blur(12px);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+
+
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --bg-color: #f0f2f5;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-card: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+
+    /* رنگ‌های وضعیت */
+    --status-success-bg: rgba(16, 185, 129, 0.1);
+    --status-success-txt: #10b981;
+    --status-pending-bg: rgba(245, 158, 11, 0.1);
+    --status-pending-txt: #f59e0b;
+    --status-closed-bg: rgba(100, 116, 139, 0.1);
+    --status-closed-txt: #64748b;
+    --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    --bg-color: #f0f2f5;
+    --glass-bg: rgba(255, 255, 255, 0.65);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    --text-main: #0f172a;
+    --text-muted: #64748b;
+    --msg-user: var(--primary-gradient);
+    --msg-support: rgba(255, 255, 255, 0.9);
+    --shadow-soft: 0 20px 40px -15px rgba(0, 0, 0, 0.05);
+  
+    --primary-color: #6366f1;
+
+
+
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --accent-glow: rgba(99, 102, 241, 0.2);
+    --danger-color: #ef4444;
+
+}

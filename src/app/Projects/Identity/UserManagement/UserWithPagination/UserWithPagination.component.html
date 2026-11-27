@@ -1,0 +1,18 @@
+<app-base [Name]="'مدیریت لیست کاربر ها'" [DataUrl]="'Identity/User/BindPaging'" [TableConfig]="TableConfig">
+    <ng-template #Actions>
+        <p-button *ngIf="AdminPage==true" [routerLink]="['/Identity/UserManagement/User/CreateUser']" label="ثبت جدید" [raised]="true" severity="success" />
+    </ng-template>
+    <ng-template #RowActions let-Item>
+          <td><i (click)="BlockUser(Item)" class="pi"
+                [ngClass]="{'text-green-500 pi-check-circle': Item.blocked,'text-red-500 pi-times-circle': !Item.blocked}"></i>
+        </td>
+        <td><i (click)="LockUser(Item)" class="pi"
+                [ngClass]="{'text-green-500 pi-check-circle': Item.locked,'text-red-500 pi-times-circle': !Item.locked}"></i>
+        </td>
+        <td>
+            <p-button *ngIf="AdminPage==true" [routerLink]="['/Identity/UserManagement/User/ChangeUser/'+Item.guid]" pTooltip="ویرایش" icon="pi pi-pencil" [rounded]="true" severity="warn" />
+            <p-button *ngIf="AdminPage==true" (onClick)="Delete(Item)"  pTooltip="حذف" icon="pi pi-trash" [rounded]="true" severity="danger" />
+            <p-button [routerLink]="[('/Identity/UserManagement/UserRole/')+Item.guid]" pTooltip="مدیریت دسترسی ها" icon="pi pi-pencil" [rounded]="true" severity="info" />
+        </td>
+    </ng-template>
+</app-base>

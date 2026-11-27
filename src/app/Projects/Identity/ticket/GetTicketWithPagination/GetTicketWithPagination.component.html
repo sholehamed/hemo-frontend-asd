@@ -1,0 +1,12 @@
+<app-base *ngIf="Pramas!=null" [Params]="Pramas" [Name]="'مدیریت لیست تیکت ها'" [DataUrl]="'Identity/Ticket/BindPaging'"
+    [TableConfig]="TableConfig">
+    <ng-template #Actions>
+
+    </ng-template>
+    <ng-template #RowActions let-Item>
+        <td>
+            <p-button [routerLink]="['/Identity/Ticket/Chat/'+Item.guid]" label="گفتگو" icon="pi pi-list" [rounded]="true" severity="info" />
+        </td>
+
+    </ng-template>
+</app-base>
