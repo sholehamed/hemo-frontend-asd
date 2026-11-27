@@ -75,7 +75,7 @@ export class HomeComponent implements OnInit{
   });
   if(a.bankCan('stats'))add('bank','موجودی بانک خون','وضعیت ثبت‌شده واحدها؛ بدون پیش‌بینی یا توصیه بالینی',links(go(true,'/hemo/bank/reports')),async()=>{
    const s=await this.bank.stats(),r=(status:string)=>go(a.bankCan('inventory'),'/hemo/bank/inventory',{status});
-   return [metric('آزاد',s.available,r('Available')),metric('رزروشده',s.reserved,r('Reserved')),metric('آماده بررسی تحویل',s.ready,r('Ready')),metric('نزدیک انقضا',s.expiringSoon,r('ExpiringSoon'),true),metric('منقضی',s.expired,r('Expired'),true),metric('نگرانی دما در ۲۴ ساعت',s.temperatureConcerns,go(a.bankCan('temperatureHistory'),'/hemo/bank/temperature'),true),metric('قرنطینه / انتظار بازرسی',s.hold,undefined,true),metric('مسدود فنی تجهیز',s.equipmentBlocked??0,undefined,true)];
+   return [metric('آزاد',s.available),metric('رزروشده',s.reserved),metric('آماده بررسی تحویل',s.ready),metric('نزدیک انقضا',s.expiringSoon,r('ExpiringSoon'),true),metric('منقضی',s.expired,r('Expired'),true),metric('نگرانی دما در ۲۴ ساعت',s.temperatureConcerns,undefined,true),metric('قرنطینه / انتظار بازرسی',s.hold,undefined,true),...(s.equipmentBlocked===undefined?[]:[metric('مسدود فنی تجهیز',s.equipmentBlocked,undefined,true)])];
   });
   if(a.transferCan('stats'))add('transfer','تحویل و تزریق','شمارش وضعیت حواله‌های قابل مشاهده؛ نه وظایف شخصی',links(go(true,'/hemo/transfusion')),async()=>{
    const s=await this.tx.stats(),r=(status:string)=>go(a.transferCan('list'),'/hemo/transfusion/tasks',{status});
@@ -91,7 +91,7 @@ export class HomeComponent implements OnInit{
   });
   if(a.qualityCan('stats'))add('quality','مدیریت کیفیت','۳۰ روز اخیر (UTC)؛ شمارش رویدادهای ثبت‌شده، نه نرخ انطباق',links(go(true,'/hemo/quality')),async()=>{
    const to=new Date(),from=new Date(to.getTime()-30*86400000),s=await this.quality.stats({from:from.toISOString(),to:to.toISOString()});
-   return [metric('کنترل کیفیت',s.qcRecords),metric('QC در انتظار بازبینی',s.qcAwaitingReview,go(a.qualityCan('qcList'),'/hemo/quality/qc'),true),metric('جلسه کمیته',s.committeeMeetings),metric('مصوبه باز',s.openResolutions,undefined,true),metric('مصوبه معوق',s.overdueResolutions,undefined,true),metric('ممیزی',s.audits),metric('دوره آموزش',s.trainingCourses),metric('پایان تزریق ثبت‌شده',s.products.reduce((n,p)=>n+p.completed,0))];
+   return [metric('کنترل کیفیت',s.qcRecords),metric('QC در انتظار بازبینی',s.qcAwaitingReview,undefined,true),metric('جلسه کمیته',s.committeeMeetings),metric('مصوبه باز',s.openResolutions,undefined,true),metric('مصوبه معوق',s.overdueResolutions,undefined,true),metric('ممیزی',s.audits),metric('دوره آموزش',s.trainingCourses),metric('پایان تزریق ثبت‌شده',s.products.reduce((n,p)=>n+p.completed,0))];
   });
   try{this.sections.set(await Promise.all(tasks));this.updated.set(new Date());}finally{this.busy.set(false);}
  }
