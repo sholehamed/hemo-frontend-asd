@@ -1,10 +1,10 @@
 import { Injectable,inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HemoCompanyHttp } from './hemo-company-http';
 import { firstValueFrom } from 'rxjs';
 import { RequestInput,RequestDetail,RequestPage,RequestFilters,RequestStats,RequestCapabilities,DecisionInput } from '../../features/blood-requests/blood-request-model';
 @Injectable({providedIn:'root'})
 export class BloodRequestsService {
- private http=inject(HttpClient);private url='/Identity/BloodRequest';
+ private http=inject(HemoCompanyHttp);private url='/Identity/BloodRequest';
  capabilities(){return firstValueFrom(this.http.get<RequestCapabilities>(this.url+'/Capabilities'));}
  list(filters:RequestFilters){return firstValueFrom(this.http.post<RequestPage>(this.url+'/BindPaging',filters));}
  bank(filters:RequestFilters){return firstValueFrom(this.http.post<RequestPage>(this.url+'/BankQueue',filters));}
