@@ -7,6 +7,7 @@
 @if(auth.requestCan('list')&&(approval||bank)){<a mat-stroked-button routerLink="/hemo/requests">همه درخواست‌ها</a>}
 </div>
 @if(stats();as s){<div class="metric-grid"><div class="metric"><span>کل درخواست‌ها</span><strong>{{fa(s.total)}}</strong></div><div class="metric warn"><span>در انتظار پزشک</span><strong>{{fa(s.awaitingDoctor)}}</strong></div><div class="metric good"><span>در صف بانک خون</span><strong>{{fa(s.awaitingBank)}}</strong></div><div class="metric"><span>پیش‌نویس / برگشتی</span><strong>{{fa(s.draft+s.returned)}}</strong></div><div class="metric danger"><span>رد / لغو</span><strong>{{fa(s.rejected+s.cancelled)}}</strong></div></div>}
+@if(patientFilter){<div class="notice info">فقط درخواست‌های پذیرش انتخاب‌شده نمایش داده می‌شود. <a routerLink="/hemo/requests">مشاهده همه درخواست‌ها</a></div>}
 <section class="panel no-print"><h2>جستجو و فیلتر</h2><form class="form-grid" (ngSubmit)="load(1)"><label>جستجو<input name="search" [(ngModel)]="search" placeholder="شماره درخواست، بیمار یا پرونده"></label>
 <label>اولویت<select name="priority" [(ngModel)]="priority"><option value="">همه</option>@for(p of priorityList;track p[0]){<option [value]="p[0]">{{p[1]}}</option>}</select></label>
 @if(!bank){<label>بخش<input name="ward" [(ngModel)]="ward"></label>@if(!approval){<label>وضعیت<select name="status" [(ngModel)]="status"><option value="">همه</option>@for(s of statuses;track s[0]){<option [value]="s[0]">{{s[1]}}</option>}</select></label>}<label class="actions"><input type="checkbox" name="mine" [(ngModel)]="mine"> فقط درخواست‌های من</label>}

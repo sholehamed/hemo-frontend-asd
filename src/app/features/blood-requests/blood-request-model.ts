@@ -62,6 +62,9 @@ export function blankClinical():ClinicalInput{return {diagnosis:null,clinicalInd
 export function submissionIssue(input:RequestInput):string|null{
  if(!input.patientAdmissionGuid)return 'پرونده بیمار را انتخاب کنید.';
  if(!validRequestLines(input.items)||!input.clinical.clinicalIndication?.trim())return 'اقلام و علت بالینی درخواست را تکمیل کنید.';
+ const codes=input.items.map(i=>i.productCode);
+ const match:Partial<Record<RequestForm,boolean>>={RBC:codes.some(c=>['RBC','LeukoreducedRBC','PediatricRBC'].includes(c)),WashedRBC:codes.every(c=>['WashedRBC','WashedLRRBC'].includes(c)),Irradiated:codes.every(c=>['IrradiatedRBC','IrradiatedLRRBC','IrradiatedPlatelet','IrradiatedApheresisPlatelet'].includes(c)),Platelet:codes.includes('Platelet'),Apheresis:codes.includes('ApheresisPlatelet'),FFP:codes.includes('FFP'),Autologous:codes.every(c=>c==='Autologous')};
+ if(match[input.formType]===false)return 'اقلام با نوع فرم اختصاصی مطابقت ندارد.';
  const d=input.clinical.formDetails;
  if(['WashedRBC','Irradiated','Apheresis','Emergency','Autologous'].includes(input.formType)&&!d.specialReason?.trim())return 'علت اختصاصی فرم را ثبت کنید.';
  if(input.formType==='Emergency'&&input.priority!=='Emergency')return 'اولویت فرم اورژانسی باید اورژانس باشد.';

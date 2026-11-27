@@ -53,5 +53,5 @@ export class AuthService {
     try{if(this.session())await firstValueFrom(this.http.get('/Identity/User/UserLogout'));}catch{/* clear local session regardless */}
     this.clear();
   }
-  clear(){this.session.set(null);this.roles.set([]);this.capabilities.set(null);this.allowed.set(false);sessionStorage.removeItem(KEY);}
+  clear(){this.session.set(null);this.roles.set([]);this.capabilities.set(null);this.requestCapabilities.set(null);this.allowed.set(false);sessionStorage.removeItem(KEY);}
 }

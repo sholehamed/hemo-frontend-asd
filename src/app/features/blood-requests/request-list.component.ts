@@ -17,11 +17,11 @@ export class RequestListComponent implements OnInit{
  readonly page=signal<RequestPage|null>(null);readonly stats=signal<RequestStats|null>(null);readonly busy=signal(false);readonly error=signal<string|null>(null);
  readonly statusLabels=REQUEST_STATUS_LABEL;readonly priorities=PRIORITIES;readonly formLabel=formLabel;readonly date=isoToJalali;readonly fa=fa;
  readonly statuses=Object.entries(REQUEST_STATUS_LABEL);readonly priorityList=Object.entries(PRIORITIES);
- search='';status='';priority='';ward='';mine=false;private applied:RequestFilters={};private seq=0;
+ search='';status='';priority='';ward='';mine=false;readonly patientFilter=this.route.snapshot.queryParamMap.get('admission');private applied:RequestFilters={};private seq=0;
  ngOnInit(){if(this.allowed())void this.load(1);}
  async load(pageNumber=1){
   if(!this.allowed())return;
-  if(pageNumber===1)this.applied={search:normalizeDigits(this.search.trim()),status:this.approval?'AwaitingDoctor':this.status,priority:this.priority,ward:this.ward,mine:this.mine};
+  if(pageNumber===1)this.applied={search:normalizeDigits(this.search.trim()),status:this.approval?'AwaitingDoctor':this.status,priority:this.priority,ward:this.ward,mine:this.mine,...(!this.bank&&this.patientFilter?{patientAdmissionGuid:this.patientFilter}:{})};
   const seq=++this.seq;this.busy.set(true);this.error.set(null);
   try{const filters={...this.applied,pageNumber,pageSize:20};const [page,stats]=await Promise.all([this.bank?this.api.bank(filters):this.api.list(filters),!this.bank&&this.auth.requestCan('stats')?this.api.stats(this.mine):Promise.resolve(null)]);if(seq===this.seq){this.page.set(page);this.stats.set(stats);}}
   catch(e){if(seq===this.seq){this.page.set(null);this.error.set(message(e));}}finally{if(seq===this.seq)this.busy.set(false);}
