@@ -21,14 +21,14 @@
 @if(kind==='Clearance'){
 <section class="panel"><h2>وضعیت بررسی پرونده</h2><div class="detail-grid"><div><small>تطبیق هویت</small>{{label(p.identityStatus)}}</div><div><small>بررسی سوابق</small>{{date(p.historyReviewedAt)||'ثبت نشده'}}</div><div><small>آخرین بررسی ترخیص</small>{{date(p.clearanceReviewedAt)||'ثبت نشده'}}</div></div><div class="notice warn">این مرحله فقط آمادگی مدارک برای بررسی ترخیص را ثبت می‌کند؛ ترخیص واقعی یا تصمیم بالینی توسط سامانه انجام نمی‌شود. اطلاعات خارج از سامانه باید به‌صورت مستند بررسی شود.</div></section>
 }
-<section class="panel"><h2>{{kind==='Identity'?'چک‌لیست صحه‌گذاری مچ‌بند':kind==='Clearance'?'چک‌لیست کنترل پرونده پیش از ترخیص':'ثبت بررسی مستند سوابق'}}</h2>
+@if(auth.can('review')){<section class="panel"><h2>{{kind==='Identity'?'چک‌لیست صحه‌گذاری مچ‌بند':kind==='Clearance'?'چک‌لیست کنترل پرونده پیش از ترخیص':'ثبت بررسی مستند سوابق'}}</h2>
 @if(kind!=='History'){<div class="checklist">@for(step of steps;track step;let i=$index){<label><input type="checkbox" [checked]="checks()[i]" (change)="checked(i,$any($event.target).checked)" [disabled]="saving()"><span>{{step}}</span></label>}</div>}
 <label style="display:grid;gap:6px;margin-top:16px">توضیحات و موارد پیگیری<textarea [(ngModel)]="notes" rows="4" maxlength="2000" placeholder="شرح مستند بررسی، مغایرت یا اقدامات لازم"></textarea></label>
 <div class="actions no-print">
 @if(kind==='Identity'){<button mat-flat-button class="primary-button" [disabled]="saving()||!complete()" (click)="save('Verified')">ثبت تأیید نهایی تطبیق هویت</button><button mat-stroked-button [disabled]="saving()||!notes.trim()" (click)="save('Mismatch')">گزارش عدم انطباق</button>}
 @if(kind==='History'){<button mat-flat-button class="primary-button" [disabled]="saving()||!notes.trim()" (click)="save('Reviewed')">ثبت تأییدیه بررسی سوابق</button>}
 @if(kind==='Clearance'){<button mat-stroked-button [disabled]="saving()" (click)="save('Draft')">ذخیره پیش‌نویس</button><button mat-flat-button class="primary-button" [disabled]="saving()||!complete()||p.identityStatus!=='Verified'||!p.historyReviewedAt" (click)="save('Ready')">ثبت بررسی و آماده‌سازی پرونده ترخیص</button>}
-</div></section>
+</div></section>}@else{<div class="notice info">نقش جاری فقط مجوز مشاهده دارد.</div>}
 <section class="panel"><h2>تاریخچه بررسی‌های پرونده</h2><div class="table-wrap"><table><thead><tr><th>زمان</th><th>نوع</th><th>نتیجه</th><th>شرح</th></tr></thead><tbody>@for(r of reviews();track $index){<tr><td>{{date(r.reviewedAt)}}</td><td>{{label(r.kind)}}</td><td>{{label(r.outcome)}}</td><td style="white-space:normal;min-width:180px">{{r.notes||'—'}}</td></tr>}@empty{<tr><td colspan="4">هنوز بررسی ثبت نشده است.</td></tr>}</tbody></table></div></section>
 </div>
 }

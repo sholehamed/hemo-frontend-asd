@@ -1,3 +1,4 @@
+import { AuthService } from '../../core/auth/auth.service';
 import { Component,inject,input,signal } from '@angular/core';
 import { FormBuilder,ReactiveFormsModule,Validators } from '@angular/forms';
 import { Router,RouterLink } from '@angular/router';
@@ -9,6 +10,7 @@ import { isoToJalali,jalaliToIso,normalizeDigits } from '../../shared/jalali-dat
 import { BLOOD_GROUPS,isNationalId,message } from '../../shared/admission-utils';
 @Component({selector:'app-admission-create',standalone:true,imports:[ReactiveFormsModule,RouterLink,MatButtonModule,MatCheckboxModule,RequestStateComponent],templateUrl:'./admission-create.component.html'})
 export class AdmissionCreateComponent{
+ readonly auth=inject(AuthService);
  readonly compact=input(false);
  private fb=inject(FormBuilder);private api=inject(AdmissionsService);private router=inject(Router);
  readonly bloodGroups=BLOOD_GROUPS;readonly busy=signal(false);readonly lookupBusy=signal(false);readonly error=signal<string|null>(null);readonly notice=signal<string|null>(null);
@@ -30,7 +32,7 @@ export class AdmissionCreateComponent{
    }catch(e){this.error.set(message(e));}finally{this.lookupBusy.set(false);}
  }
  async submit(){
-  if(this.busy())return;
+  if(!this.auth.can('create')||this.busy())return;
   this.error.set(null);this.notice.set(null);this.form.markAllAsTouched();
   if(this.form.invalid){this.error.set('فیلدهای الزامی و محدودیت طول را بررسی کنید.');return;}
   const v=this.form.getRawValue();const id=normalizeDigits(v.identificationNumber).trim();const birth=v.birthDate?jalaliToIso(v.birthDate):null;

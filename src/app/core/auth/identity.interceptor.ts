@@ -7,7 +7,7 @@ import { toApiFailure } from '../api/api-error';
 export const identityInterceptor:HttpInterceptorFn=(request,next)=>{
   const auth=inject(AuthService),router=inject(Router),token=auth.session();
   const isApi=request.url.startsWith('/Identity/');
-  const secured=isApi&&request.url!=='/Identity/User/Login'&&token;
+  const secured=isApi&&request.url!=='/Identity/User/Login'&&request.url!=='/Identity/HemoSession/Login'&&token;
   const req=secured?request.clone({setHeaders:{Authorization:'Bearer '+token.key,UserRole:String(token.userRole),'X-Page-Route':router.url.split('?')[0]}}):request;
   return next(req).pipe(catchError(e=>{
     if(e instanceof HttpErrorResponse){

@@ -1,3 +1,4 @@
+import { AuthService } from '../../core/auth/auth.service';
 import { Component,OnInit,inject,signal } from '@angular/core';
 import { ActivatedRoute,RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +12,7 @@ const IDENTITY=['نام، نام خانوادگی و تاریخ تولد از ب
 const CLEARANCE=['هویت با پرونده و مچ‌بند تطبیق داده شده است.','وضعیت مچ‌بند و هشدارهای ثبت‌شده بررسی شد.','سوابق فرآورده‌ها و موارد نیازمند پیگیری به‌صورت مستند بررسی شد.','در صورت گزارش واکنش، ارجاع و پیگیری بالینی بررسی شد.','مدارک، موارد ناقص و ارجاع‌های باز بررسی و ثبت شدند.'];
 @Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent,AdmissionPickerComponent],templateUrl:'./admission-review.component.html'})
 export class AdmissionReviewComponent implements OnInit{
+ readonly auth=inject(AuthService);
  private route=inject(ActivatedRoute);private api=inject(AdmissionsService);
  readonly kind=this.route.snapshot.data['kind'] as 'Identity'|'History'|'Clearance';
  readonly title=this.kind==='Identity'?'تطبیق دو شناسه هویتی و صحه‌گذاری مچ‌بند':this.kind==='History'?'استعلام سوابق ترانسفیوژن و واکنش‌های ناخواسته':'کنترل پیش‌نیازهای ترخیص بیمار';
@@ -28,7 +30,7 @@ export class AdmissionReviewComponent implements OnInit{
   }catch(e){if(seq===this.sequence)this.error.set(message(e));}finally{if(seq===this.sequence)this.busy.set(false);}
  }
  async save(outcome:string){
-  const p=this.patient();if(!p||this.saving())return;this.error.set(null);this.success.set(null);
+  const p=this.patient();if(!this.auth.can('review')||!p||this.saving())return;this.error.set(null);this.success.set(null);
   if((outcome==='Verified'||outcome==='Ready')&&!this.complete()){this.error.set('تمام موارد چک‌لیست را بررسی کنید.');return;}
   if((outcome==='Mismatch'||this.kind==='History')&&!this.notes.trim()){this.error.set('شرح بررسی یا مغایرت الزامی است.');return;}
   if(outcome==='Ready'&&(p.identityStatus!=='Verified'||!p.historyReviewedAt)){this.error.set('ابتدا تطبیق هویت و بررسی مستند سوابق را ثبت کنید.');return;}

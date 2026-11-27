@@ -6,7 +6,7 @@
     <div class="nav-caption">مدیریت پذیرش</div>
     @if(auth.allowed()){
       <nav aria-label="منوی پذیرش">
-        @for(item of nav;track item.path){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:item.exact}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}
+        @for(item of nav;track item.path){@if(visible(item.path)){<a [routerLink]="item.path" routerLinkActive="active" [routerLinkActiveOptions]="{exact:item.exact}" (click)="drawer.set(false)"><span aria-hidden="true">{{item.icon}}</span>{{item.label}}</a>}}
       </nav>
     }
     <div class="side-footer"><strong>{{auth.session()?.firstName}} {{auth.session()?.lastName}}</strong><span>حساب سازمانی</span><button mat-stroked-button (click)="logout()">خروج از سامانه</button></div>

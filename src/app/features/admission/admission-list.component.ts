@@ -1,3 +1,4 @@
+import { AuthService } from '../../core/auth/auth.service';
 import { Component,OnInit,inject,signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,13 +10,14 @@ import { BLOOD_GROUPS,downloadCsv,fa,label,message } from '../../shared/admissio
 import { isoToJalali,normalizeDigits } from '../../shared/jalali-date';
 @Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent,AdmissionTableComponent],template:`
 <section class="heading"><p class="eyebrow">پذیرش / پرونده‌ها</p><h1>فهرست بیماران بستری و رهگیری ایمنی خون</h1><p class="muted">جستجو و بررسی پرونده‌های مرکز جاری</p></section>
-<section class="panel"><div class="patient-title"><h2>فیلتر بیماران</h2><a mat-flat-button class="primary-button" routerLink="/admission/new">＋ پذیرش بیمار</a></div>
+<section class="panel"><div class="patient-title"><h2>فیلتر بیماران</h2>@if(auth.can('create')){<a mat-flat-button class="primary-button" routerLink="/admission/new">＋ پذیرش بیمار</a>}</div>
 <form class="form-grid" (ngSubmit)="load(1)"><label>جستجو بر اساس مشخصات<input name="search" [(ngModel)]="search" placeholder="نام، کد ملی، شماره پرونده یا بارکد"></label><label>بخش بستری<select name="ward" [(ngModel)]="ward"><option value="">همه بخش‌ها</option>@for(w of wards();track w){<option [value]="w">{{w}}</option>}</select></label><label>وضعیت هویت<select name="identity" [(ngModel)]="identity"><option value="">همه وضعیت‌ها</option><option value="Pending">در انتظار تطبیق</option><option value="Verified">تأیید شده</option><option value="Mismatch">عدم انطباق</option></select></label><label>گروه خونی<select name="blood" [(ngModel)]="blood"><option value="">همه گروه‌ها</option>@for(g of groups;track g){<option [value]="g">{{g}}</option>}</select></label><label>وضعیت بستری<select name="status" [(ngModel)]="status"><option value="">همه</option><option value="Active">بستری فعال</option><option value="ReadyForDischarge">آماده بررسی ترخیص</option></select></label><div class="actions"><button mat-flat-button class="primary-button" type="submit" [disabled]="busy()">جستجو</button><button mat-stroked-button type="button" (click)="reset()">بازنشانی</button></div></form></section>
 <section class="panel"><div class="patient-title"><h2>پرونده‌ها — {{fa(page()?.totalCount??0)}} مورد</h2><button mat-stroked-button [disabled]="exporting()||!page()?.totalCount" (click)="exportRows()">خروجی CSV سازگار با اکسل</button></div>
 <app-request-state [loading]="busy()||exporting()" [error]="error()"/>
 @if(!busy()&&page()){<app-admission-table [rows]="page()?.data??[]"/><div class="pagination"><button mat-stroked-button [disabled]="!page()?.hasPreviousPage" (click)="load((page()?.pageNumber??1)-1)">قبلی</button><span>صفحه {{fa(page()?.pageNumber??1)}} از {{fa(page()?.totalPages??0)}}</span><button mat-stroked-button [disabled]="!page()?.hasNextPage" (click)="load((page()?.pageNumber??1)+1)">بعدی</button></div>}
 </section>`})
 export class AdmissionListComponent implements OnInit{
+ readonly auth=inject(AuthService);
  private api=inject(AdmissionsService);readonly page=signal<AdmissionPage|null>(null);readonly wards=signal<string[]>([]);readonly busy=signal(false);readonly exporting=signal(false);readonly error=signal<string|null>(null);
  readonly groups=BLOOD_GROUPS;readonly fa=fa;search='';ward='';identity='';blood='';status='';
  private applied:AdmissionFilters={};private sequence=0;

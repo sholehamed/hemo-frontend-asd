@@ -9,6 +9,7 @@ test.beforeEach(async({page})=>{
  const req=route.request(),path=new URL(req.url()).pathname,method=req.method(),body=req.postDataJSON()??{};
  const respond=(obj,status=200)=>route.fulfill({status,contentType:'application/json',body:JSON.stringify(obj)});
  if(path.endsWith('/GetCurrentUserRoles'))return respond([{name:'پذیرش آزمایشی',gkey:1,orgLocationName:'مرکز آزمون',organizationName:'سازمان'}]);
+ if(path.endsWith('/Capabilities'))return respond({stats:true,list:true,detail:true,find:true,history:true,reviews:true,create:true,update:true,review:true,identity:true});
  if(path.endsWith('/Stats'))return respond({total:rows.length,active:rows.filter(a=>a.status==='Active').length,verified:rows.filter(a=>a.identityStatus==='Verified').length,mismatch:0,ready:rows.filter(a=>a.status==='ReadyForDischarge').length,wards:[{name:'بخش آزمون',count:rows.length}],bloodGroups:[{name:'Unknown',count:rows.length}]});
  if(path.endsWith('/BindPaging')){const data=body.search?rows.filter(a=>(a.firstName+' '+a.lastName+' '+a.hisNumber).includes(body.search)):rows;return respond({data,pageNumber:1,totalCount:data.length,totalPages:1,hasNextPage:false,hasPreviousPage:false});}
  if(path.endsWith('/FindPatient'))return respond(null);
@@ -63,4 +64,14 @@ test('identity, history, clearance, stats and unconfigured external integrations
  await page.goto('/admission/stats');await expect(page.getByRole('heading',{name:'توزیع پذیرش بر اساس بخش'})).toBeVisible();
  await page.goto('/admission/his');await expect(page.getByRole('button',{name:'اجرای همگام‌سازی'})).toBeDisabled();
  await expect(page.getByText('اتصال سرویس بیرونی تعریف نشده است',{exact:true})).toBeVisible();
+});
+
+test('read-only role hides write actions and rejects direct creation UI',async({page})=>{
+ await page.route('**/Identity/PatientAdmission/Capabilities',route=>route.fulfill({status:200,json:{stats:true,list:true,detail:true,find:true,history:true,reviews:true,create:false,update:false,review:false,identity:false}}));
+ await page.goto('/admission');await expect(page.getByRole('heading',{name:'داشبورد پذیرش بیمارستان'})).toBeVisible();
+ await expect(page.getByRole('link',{name:'پذیرش بیمار جدید',exact:true})).toHaveCount(0);
+ await page.goto('/admission/new');await expect(page.getByText('مجوز ثبت پذیرش ندارید.')).toBeVisible();
+ await page.goto('/admission/detail/'+guid);await expect(page.getByText('ویرایش اطلاعات بستری',{exact:true})).toHaveCount(0);
+ await page.goto('/admission/identity?guid='+guid);await expect(page.getByText('نقش جاری فقط مجوز مشاهده دارد.')).toBeVisible();
+ await expect(page.getByRole('button',{name:'ثبت تأیید نهایی تطبیق هویت'})).toHaveCount(0);
 });

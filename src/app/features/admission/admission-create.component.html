@@ -1,3 +1,4 @@
+@if(auth.can('create')){
 @if(!compact()){<section class="heading"><p class="eyebrow">پذیرش / تشکیل پرونده</p><h1>تشکیل پرونده و پذیرش بیمار جدید</h1><p class="muted">اطلاعات هویتی، بستری و هشدارهای مرتبط با سابقه انتقال خون را ثبت کنید.</p></section>}
 <form [formGroup]="form" (ngSubmit)="submit()">
 <section class="panel">
@@ -31,3 +32,5 @@
 <app-request-state [loading]="busy()||lookupBusy()" [error]="error()"/>
 <div class="actions"><button mat-flat-button class="primary-button" type="submit" [disabled]="busy()||lookupBusy()">ثبت نهایی پرونده و پذیرش</button><button mat-stroked-button type="button" (click)="preview.set(!preview())">پیش‌نمایش مچ‌بند</button><a mat-button routerLink="/admission">انصراف</a></div>
 </form>
+
+}@else{<section class="panel"><h2>مجوز ثبت پذیرش ندارید.</h2><a mat-button routerLink="/admission/list">مشاهده پرونده‌ها</a></section>}

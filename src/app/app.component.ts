@@ -7,6 +7,7 @@ import { RequestStateComponent } from './shared/components/request-state.compone
 export class AppComponent implements OnInit{
   readonly auth=inject(AuthService);private router=inject(Router);readonly drawer=signal(false);
   readonly nav=[{label:'داشبورد پذیرش',path:'/admission',icon:'▦',exact:true},{label:'پذیرش بیمار جدید',path:'/admission/new',icon:'＋',exact:false},{label:'فهرست بیماران بستری',path:'/admission/list',icon:'☷',exact:false},{label:'تطبیق هویت و مچ‌بند',path:'/admission/identity',icon:'✓',exact:false},{label:'سوابق انتقال خون',path:'/admission/history',icon:'◷',exact:false},{label:'کنترل ترخیص',path:'/admission/discharge',icon:'⇥',exact:false},{label:'همگام‌سازی HIS',path:'/admission/his',icon:'↔',exact:false},{label:'گزارش‌های پذیرش',path:'/admission/stats',icon:'▥',exact:false}];
+  visible(path:string){return path!=='/admission/new'||this.auth.can('create');}
   ngOnInit(){if(this.auth.loggedIn())void this.auth.refreshContext();}
   roleChange(event:Event){this.auth.selectRole(Number((event.target as HTMLSelectElement).value));}
   async logout(){await this.auth.logout();void this.router.navigateByUrl('/login');}
