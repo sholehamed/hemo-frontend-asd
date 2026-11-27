@@ -20,7 +20,8 @@ export interface QualityLine{guid:string;title:string;data:Record<string,any>;st
 export interface QualityEvent{action:string;previousStatus:string;newStatus:string;occurredAt:string;actorUserGuid:string;actorRoleGuid:string;notes:string;evidenceJson:string|null}
 export interface QualityDetail{record:QualityRow;header:Record<string,any>;lines:QualityLine[];events:QualityEvent[];reviewNotes:string|null;reviewedBy:string|null;auditScore:number|null;auditMaximum:number|null}
 export interface Owner{userGuid:string;name:string}
-export interface Facility{facilityName:string;accreditationCode:string|null;chair:string|null;secretary:string|null;officer:string|null;bloodCenter:string|null;bloodCenterCode:string|null;reportFooter:string|null;version:string|null}
+export interface FacilityEvent{occurredAt:string;actorUserGuid:string;notes:string;previousJson:string|null;currentJson:string}
+export interface Facility{facilityName:string;accreditationCode:string|null;chair:string|null;secretary:string|null;officer:string|null;bloodCenter:string|null;bloodCenterCode:string|null;reportFooter:string|null;version:string|null;history?:FacilityEvent[]|null}
 export interface QualityStats{qcRecords:number;qcAwaitingReview:number;committeeMeetings:number;openResolutions:number;overdueResolutions:number;audits:number;trainingCourses:number;attendanceRecords:number;present:number;equipmentIncidents:number;reactionCases:number;products:{productCode:string;received:number;started:number;completed:number;discarded:number}[];completedByWard:{key:string;count:number}[]}
 export const key=(kind:QualityKind,action:string)=>kind[0].toLowerCase()+kind.slice(1)+action;
 export function allowedRecordActions(r:QualityRow,c:QualityCapabilities|null):string[]{

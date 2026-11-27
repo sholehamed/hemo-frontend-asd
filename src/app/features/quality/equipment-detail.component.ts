@@ -10,7 +10,7 @@ import {bankDateTime,toUtc} from '../blood-bank/bank-time';
 import {measuredFields,measuredUtc} from '../transfusion/transfer-time';
 import {ASSESSMENTS} from '../blood-bank/bank-model';
 import {EquipmentDetail,Incident,CATEGORIES,EQUIPMENT_STATUS,SERVICE_KINDS,RESULTS,SHIFTS,URGENCIES,QUALITY_STATUS,equipmentActions,equipmentDue,statusColor} from './quality-model';
-const LABELS:Record<string,string>={Register:'ثبت شناسنامه',Edit:'اصلاح شناسنامه',Service:'ثبت سرویس / کالیبراسیون',Hold:'توقف فنی',Release:'تأیید مستقل بازگشت تجهیز',Archive:'آرشیو تجهیز',Temperature:'ثبت پایش دما',IncidentReport:'گزارش خرابی / حادثه',IncidentResolve:'ثبت رفع نقص'};
+const LABELS:Record<string,string>={Register:'ثبت شناسنامه',Edit:'اصلاح شناسنامه',Service:'ثبت سرویس / کالیبراسیون',Hold:'توقف فنی',Release:'تأیید مستقل بازگشت تجهیز',Archive:'آرشیو تجهیز',Temperature:'ثبت پایش دما',TemperatureHold:'توقف فنی ناشی از انحراف دما',IncidentReport:'گزارش خرابی / حادثه',IncidentResolve:'ثبت رفع نقص'};
 @Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./equipment-detail.component.html',styleUrl:'./quality-detail.css'})
 export class EquipmentDetailComponent implements OnInit{
  readonly auth=inject(AuthService);private api=inject(QualityService);private route=inject(ActivatedRoute);

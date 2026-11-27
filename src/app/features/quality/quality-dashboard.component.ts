@@ -1,6 +1,5 @@
 import {Component,OnInit,inject,signal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
-import {RouterLink} from '@angular/router';
 import {MatButtonModule} from '@angular/material/button';
 import {AuthService} from '../../core/auth/auth.service';
 import {QualityService} from '../../core/api/quality.service';
@@ -9,7 +8,7 @@ import {fa,message,downloadCsv} from '../../shared/admission-utils';
 import {localFields,toUtc} from '../blood-bank/bank-time';
 import {productLabel} from '../blood-requests/blood-request-model';
 import {QualityStats,Facility} from './quality-model';
-@Component({standalone:true,imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent],template:`
+@Component({standalone:true,imports:[FormsModule,MatButtonModule,RequestStateComponent],template:`
 <section class="heading"><p class="eyebrow">HEMO / گزارش مدیریت کیفیت</p><h1>داشبورد و گزارش عملیاتی مرکز</h1></section>
 @if(!auth.qualityCan('stats')){<section class="panel"><h2>مجوز آمار مدیریتی ندارید.</h2></section>}@else{
 <section class="panel no-print"><h2>بازه گزارش</h2><form class="form-grid" (ngSubmit)="load()"><label>از تاریخ شمسی *<input name="from" [(ngModel)]="fromDate" required dir="ltr"></label><label>تا تاریخ شمسی *<input name="to" [(ngModel)]="toDate" required dir="ltr"></label><label>بخش (اختیاری)<input name="ward" [(ngModel)]="ward"></label><button mat-flat-button class="primary-button" [disabled]="busy()">تولید گزارش</button></form></section><app-request-state [loading]="busy()" [error]="error()"/>
