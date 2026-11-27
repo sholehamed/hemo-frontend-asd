@@ -1,13 +1,15 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, catchError, from, mergeMap, throwError } from 'rxjs';
+import { Observable, catchError, defer, from, map, mergeMap, throwError } from 'rxjs';
 import { API_BASE_URL } from '../../Services/api-client';
+import { HemoPageScope } from '../hemo/hemo-page-scope';
 
 // HEMO-specific transport adapter. Reuse company HttpClient/Interceptor and
 // generated-client base URL. Company 400 handling expects Blob errors.
 @Injectable({ providedIn: 'root' })
 export class HemoCompanyHttp {
   private readonly http = inject(HttpClient);
+  private readonly scope = inject(HemoPageScope,{optional:true});
   private readonly base = inject(API_BASE_URL).replace(/\/+$/, '');
 
   get<T>(path: string, options: {params?: HttpParams} = {}): Observable<T> {
@@ -22,12 +24,19 @@ export class HemoCompanyHttp {
 
   private request<T>(method: string, path: string, body?: unknown, params?: HttpParams): Observable<T> {
     if (!path.startsWith('/Identity/')) return throwError(() => new Error('Invalid HEMO API path'));
-    return this.http.request(method, this.base + path, {
+    return defer(() => {
+      this.scope?.assertCurrent();
+      return this.http.request(method, this.base + path, {
       body, params, responseType: 'blob', headers: {Accept: 'application/json'}
     }).pipe(
       mergeMap(blob => from(this.decode<T>(blob))),
-      catchError(error => from(this.normalizeError(error)).pipe(mergeMap(e => throwError(() => e))))
+      map(value=>{this.scope?.assertCurrent();return value;}),
+      catchError(error => from(this.normalizeError(error)).pipe(mergeMap(e => {
+        this.scope?.assertCurrent();
+        return throwError(() => e);
+      })))
     );
+    });
   }
 
   private async decode<T>(blob: Blob | null): Promise<T> {

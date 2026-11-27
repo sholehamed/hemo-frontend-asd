@@ -24,7 +24,8 @@ describe('R02 admission pilot route', () => {
     return firstValueFrom(result as Observable<boolean>);
   }
   it('uses the original guard, with the exact seeded page pattern', async () => {
-    expect(hemoAdmissionPilotRoutes.length).toBe(1);
+    expect(hemoAdmissionPilotRoutes.map(r=>r.path)).toEqual(['admission/stats','admission/list','admission/his']);
+    expect(hemoAdmissionPilotRoutes.every(r=>r.canActivate?.[0]===authGuardGuard)).toBeTrue();
     expect(hemoAdmissionPilotRoutes[0].canActivate).toEqual([authGuardGuard]);
     expect(await guard()).toBeTrue();
     expect(auth.CheckPagePermission).toHaveBeenCalledOnceWith('/admission/stats');
