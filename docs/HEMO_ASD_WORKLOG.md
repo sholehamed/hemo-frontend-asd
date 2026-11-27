@@ -114,3 +114,5 @@ Open gaps:
 - افزودن Playwright fixture صدور سه واحد، دریافت، شاهد مستقل، ثبت پایش و پایان، مغایرت و مرجوعی/امحا، پزشک و توقف؛ در انتظار CI. Backend 84/84 در کامیت 69cb5358 سبز.
 
 - تکمیل فرم Raw با حجم تزریق‌شده ثبت‌شده، سرعت مشاهده‌شده، مراحل تکمیلی پایش و زمان واقعی واقعه. تست fixture چک‌لیست فقط پنج checkbox را انتخاب می‌کند. CI pending.
+
+- Run 46027240081: build/unit/regression passed, ST05 fixture failed to select the five checkboxes after changing selector to native name. Restored accessible role-based selection with exact count and dispatch diagnostic; added assertions for volume/rate payloads. Re-run final CI.

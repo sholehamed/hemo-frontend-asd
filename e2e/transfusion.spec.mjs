@@ -37,14 +37,14 @@ test('dispatch, distinct witness, observation, completion and return worklists',
   expect(body.version).toBe(d.transfer.version);
   const action=path.split('/').at(-1),before=d.transfer.status;
   if(action==='Vital'){
-   expect(role).toBe('nurse');expect(body.measuredAt).toBeTruthy();d.vitals.push({...body,guid:'vital-'+serial,recordedAt:now(),actorUserGuid:role});
+   expect(role).toBe('nurse');expect(body.measuredAt).toBeTruthy();expect(body.rateMlPerHour).toBe(10);d.vitals.push({...body,guid:'vital-'+serial,recordedAt:now(),actorUserGuid:role});
   }else{
    if(['Receive','Verify','Witness','Start'].includes(action)){expect(body.unitCode).toBe(d.transfer.unitCode);expect(body.wristbandCode).toBe(d.wristbandCode);expect(body.checks).toBe(31);}
    if(action==='Verify'){d.verifiedBy=role;d.witnessedBy=null;}
    if(action==='Witness'){expect(role).not.toBe(d.verifiedBy);d.witnessedBy=role;}
    if(action==='Start'){expect(role).toBe(d.verifiedBy);expect(d.witnessedBy).not.toBe(role);expect(d.vitals.some(x=>x.phase==='T0')).toBe(true);d.startedBy=role;d.transfer.startedAt=now();}
    if(action==='Receive'||action==='ReceiptHold')d.transfer.receivedAt=now();
-   if(action==='Complete'){expect(d.vitals.some(x=>x.phase==='End')).toBe(true);d.transfer.endedAt=now();d.transfer.volumeMl=body.volumeMl??null;d.canProceed=false;}
+   if(action==='Complete'){expect(body.volumeMl).toBe(100);expect(d.vitals.some(x=>x.phase==='End')).toBe(true);d.transfer.endedAt=now();d.transfer.volumeMl=body.volumeMl??null;d.canProceed=false;}
    if(action==='Stop'){d.transfer.endedAt=now();d.canProceed=false;}
    if(body.suspectedReaction)d.transfer.suspectedReaction=true;
    if(action==='Return')d.canProceed=false;
@@ -53,7 +53,7 @@ test('dispatch, distinct witness, observation, completion and return worklists',
   d.transfer.version=String(++serial);d.events.push({action,previousStatus:before,newStatus:d.transfer.status,occurredAt:now(),actorUserGuid:role,actorRoleGuid:role,notes:body.notes,evidenceJson:null});
   return action==='Vital'?ok('vital-'+serial):route.fulfill({status:204});
  });
- const fillChecks=async()=>{for(const box of await page.locator('input[name^=check]').all())await box.check();};
+ const fillChecks=async()=>{const boxes=page.getByRole('checkbox');await expect(boxes).toHaveCount(5);for(const box of await boxes.all())await box.check();};
  const dispatch=async(i)=>{
   await page.goto('/hemo/transfusion/dispatch');await page.getByRole('row').filter({hasText:'DEMO-UNIT-0'+i}).getByRole('button',{name:'انتخاب برای صدور'}).click();
   await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);
@@ -63,17 +63,18 @@ test('dispatch, distinct witness, observation, completion and return worklists',
   await page.getByLabel('نشانگر / مرجع ثبت شرایط حمل *').fill('Fixture only');await fillChecks();
   await page.getByLabel('شرح و مرجع بررسی *').fill('Synthetic exercise');
   await page.getByRole('button',{name:'ثبت صدور و ارسال',exact:true}).click();
-  await expect(page).toHaveURL(/\/hemo\/transfusion\/detail\//);await expect(page.getByRole('heading',{name:'حواله، تطبیق و فرم پایش تزریق'})).toBeVisible();return page.url();
+  try{await expect(page).toHaveURL(/\/hemo\/transfusion\/detail\//);}catch(error){console.log('ST05 dispatch diagnostic',await page.locator('body').innerText());throw error;}await expect(page.getByRole('heading',{name:'حواله، تطبیق و فرم پایش تزریق'})).toBeVisible();return page.url();
  };
  const action=async(name,i,opts={})=>{
   await page.getByRole('button',{name,exact:true}).click();
-  if(opts.codes){await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);await page.getByLabel('کد مشاهده‌شده مچ‌بند *',{exact:true}).fill('DEMO-WRIST-0'+i);for(const box of await page.locator('form').filter({has:page.getByRole('button',{name:'ثبت عملیات',exact:true})}).locator('input[name^=check]').all())await box.check();}
+  if(opts.codes){await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill('DEMO-UNIT-0'+i);await page.getByLabel('کد مشاهده‌شده مچ‌بند *',{exact:true}).fill('DEMO-WRIST-0'+i);for(const box of await page.locator('form').filter({has:page.getByRole('button',{name:'ثبت عملیات',exact:true})}).getByRole('checkbox').all())await box.check();}
   if(opts.unit)await page.getByLabel('کد مشاهده‌شده واحد *',{exact:true}).fill(opts.mismatch?'WRONG':'DEMO-UNIT-0'+i);
   if(opts.person)await page.getByLabel('نام فرد مرتبط / دریافت‌کننده *').fill('Fixture');
   if(opts.receive){await page.getByLabel('ارزیابی شرایط دریافت *',{exact:true}).selectOption('Acceptable');await page.getByLabel('دمای ثبت‌شده (°C) *',{exact:true}).fill('0');}
   if(opts.condition)await page.getByLabel('وضعیت مشاهده‌شده / علت مغایرت *').fill('Fixture condition');
   if(opts.temp)await page.getByLabel('دمای ثبت‌شده (°C) *',{exact:true}).fill('0');
   if(opts.start)await page.getByLabel('مشخصات وسیله مورد استفاده / مرجع مستند *').fill('Fixture device');
+  if(opts.volume!==undefined)await page.getByLabel('حجم تزریق‌شده ثبت‌شده (mL، در صورت وجود)').fill(String(opts.volume));
   if(opts.reaction)await page.getByLabel('نگرانی / واکنش مشکوک مشاهده‌شده ثبت شود').check();
   await page.getByLabel('شرح مستند عملیات *').fill('Synthetic exercise');
   await page.getByRole('button',{name:'ثبت عملیات',exact:true}).click();
@@ -81,12 +82,13 @@ test('dispatch, distinct witness, observation, completion and return worklists',
  };
  const vital=async phase=>{await page.getByLabel('نوبت پایش *',{exact:true}).selectOption(phase);
   for(const [label,value] of [['فشار سیستولیک (mmHg)','120'],['فشار دیاستولیک (mmHg)','80'],['نبض (bpm)','75'],['دمای بدن (°C)','37'],['SpO₂ (%)','98'],['تنفس (در دقیقه)','16']])await page.getByLabel(label,{exact:true}).fill(value);
+  await page.getByLabel('سرعت مشاهده‌شده (mL/h)',{exact:true}).fill('10');
   await page.getByRole('button',{name:'ثبت پایش',exact:true}).click();await expect(page.getByText('پایش علائم ثبت شد.',{exact:true})).toBeVisible();};
  const one=await dispatch(1),two=await dispatch(2),three=await dispatch(3);
  role='nurse';await page.goto(one);await action('تأیید دریافت بخش',1,{codes:true,person:true,receive:true});await action('ثبت تطبیق اول',1,{codes:true});
  await expect(page.getByRole('button',{name:'تأیید مستقل شاهد',exact:true})).toHaveCount(0);
  role='witness';await page.goto(one);await action('تأیید مستقل شاهد',1,{codes:true});await expect(page.getByRole('button',{name:'ثبت شروع تزریق',exact:true})).toHaveCount(0);
- role='nurse';await page.goto(one);await vital('T0');await action('ثبت شروع تزریق',1,{codes:true,start:true});await vital('T15');await vital('End');await action('ثبت پایان تزریق',1);await vital('Post1h');
+ role='nurse';await page.goto(one);await vital('T0');await action('ثبت شروع تزریق',1,{codes:true,start:true});await vital('T15');await vital('End');await action('ثبت پایان تزریق',1,{volume:100});await vital('Post1h');
  await expect(page.getByText('پایان ثبت‌شده',{exact:true}).first()).toBeVisible();
  await page.goto(two);await action('ثبت مغایرت دریافت',2,{unit:true,mismatch:true,person:true,condition:true});await expect(page.getByRole('button',{name:'ثبت تطبیق اول',exact:true})).toHaveCount(0);
  await action('ارسال مرجوعی',2,{unit:true,person:true,condition:true});
