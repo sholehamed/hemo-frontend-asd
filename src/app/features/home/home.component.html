@@ -1,27 +1,30 @@
+@if(scope.isCurrent()){
 <section class="dashboard-header">
- <div><p class="eyebrow">HEMO / میز کار نقش جاری</p><h1>داشبورد نقش سازمانی</h1><h2>{{currentRole()?.name}}</h2><p>{{currentRole()?.orgLocationName}} · {{currentRole()?.organizationName}}</p></div>
- <div class="dashboard-actions no-print"><button mat-flat-button class="primary-button" (click)="load()" [disabled]="busy()">به‌روزرسانی آمار</button><button mat-stroked-button (click)="export()" [disabled]="busy()||!sections().length">خروجی CSV</button></div>
+ <div><p class="eyebrow">HEMO / میز کار نقش جاری</p><h1>داشبورد نقش سازمانی</h1><p>محدوده نقش و مرکز انتخاب‌شده در سامانه شرکت</p></div>
+ <div class="dashboard-actions no-print"><button mat-flat-button class="primary-button" (click)="load()" [disabled]="busy()">به‌روزرسانی آمار</button><button mat-stroked-button (click)="export()" [disabled]="busy()||trendBusy()||!sections().length">خروجی CSV</button></div>
 </section>
 <p class="muted">داده‌ها بر اساس مجوز نقش جاری و محدوده تعیین‌شده در سرور دریافت می‌شوند. آمار عملیاتی جایگزین تصمیم یا ارزیابی بالینی نیست.</p>
 @if(updated();as stamp){<p class="muted updated">آخرین دریافت: {{stamp.toLocaleString('fa-IR')}}</p>}
-<app-request-state [loading]="busy()"/>
-@if(quickLinks();as actions){@if(actions.length){<section class="panel quick-panel no-print"><h2>اقدامات و کارتابل‌های در دسترس</h2><div class="quick-grid">@for(a of actions;track a.label){<a [routerLink]="a.path" [queryParams]="a.query??{}">{{a.label}} <span aria-hidden="true">←</span></a>}</div></section>}}
-@if(!busy()&&!sections().length){<section class="panel"><p>در این نقش مجوز مشاهده شاخص آماری وجود ندارد. از کارتابل‌های مجاز بالا استفاده کنید.</p></section>}
+<app-request-state [loading]="busy()" [error]="null"/>
+@for(name of auth.errors();track name){<p role="alert">دریافت مجوزهای {{name}} ممکن نشد؛ آمار و عملیات آن نمایش داده نمی‌شود.</p>}
+@if(!busy()&&(quickLinks().length||sections().length)){<div class="dashboard-actions no-print"><button mat-stroked-button (click)="checkLinks()" [disabled]="checkingLinks()">بررسی مسیرهای مجاز</button>@if(checkingLinks()){<span role="status">در حال بررسی دسترسی صفحات…</span>}@if(checkedLinks()){<span class="muted">فقط مسیرهای تأییدشده نمایش داده می‌شوند.</span>}</div>}
+@if(visibleQuickLinks();as actions){@if(actions.length){<section class="panel quick-panel no-print"><h2>اقدامات و کارتابل‌های در دسترس</h2><div class="quick-grid">@for(a of actions;track a.label){<a [routerLink]="a.path" [queryParams]="a.query??{}">{{a.label}} <span aria-hidden="true">←</span></a>}</div></section>}}
+@if(!busy()&&!sections().length){<section class="panel"><p>شاخص آماری مجاز دریافت نشد. در صورت وجود خطای دریافت مجوز، دوباره تلاش کنید.</p></section>}
 @for(s of sections();track s.id){
  <section class="panel module-panel" [attr.data-module]="s.id">
-  <div class="module-heading"><div><h2>{{s.title}}</h2><p class="muted">{{s.description}}</p></div><div class="dashboard-actions">@for(a of s.links;track a.path){<a mat-stroked-button [routerLink]="a.path" [queryParams]="a.query??{}">{{a.label}}</a>}</div></div>
+  <div class="module-heading"><div><h2>{{s.title}}</h2><p class="muted">{{s.description}}</p></div><div class="dashboard-actions">@for(a of s.links;track a.path){@if(canNavigate(a.path)){<a mat-stroked-button [routerLink]="a.path" [queryParams]="a.query??{}">{{a.label}}</a>}}</div></div>
   @if(s.error){<div class="notice danger" role="alert">{{s.error}}</div>}@else{
    <div class="dashboard-metrics">@for(m of s.metrics;track m.label){<div class="dashboard-metric" [class.attention]="m.alert&&m.value>0">
     <span>{{m.label}}</span><strong>{{fa(m.value)}}</strong>
     @if(m.alert&&m.value>0){<small>نیازمند بررسی</small>}
-    @if(m.link;as a){<a [routerLink]="a.path" [queryParams]="a.query??{}" [attr.aria-label]="m.label+'؛ مشاهده رکوردها'">مشاهده رکوردها ←</a>}
+    @if(m.link;as a){@if(canNavigate(a.path)){<a [routerLink]="a.path" [queryParams]="a.query??{}" [attr.aria-label]="m.label+'؛ مشاهده رکوردها'">مشاهده رکوردها ←</a>}}
    </div>}</div>
   }
  </section>
 }
 @if(canCompare()){
- <section class="panel trend-panel"><div class="module-heading"><div><h2>مقایسه دو هفته کامل اخیر</h2><p class="muted">دو بازه هفت‌روزه غیرهمپوشان، بدون روز جاری؛ مرز زمانی UTC. شاخص‌های هم‌نام از یک API مقایسه می‌شوند.</p></div><button mat-stroked-button (click)="compare()" [disabled]="trendBusy()">دریافت مقایسه</button></div>
- <app-request-state [loading]="trendBusy()"/>
+ <section class="panel trend-panel"><div class="module-heading"><div><h2>مقایسه دو هفته کامل اخیر</h2><p class="muted">دو بازه هفت‌روزه غیرهمپوشان، بدون روز جاری؛ مرز زمانی UTC. شاخص‌های هم‌نام از یک API مقایسه می‌شوند.</p></div><button mat-stroked-button (click)="compare()" [disabled]="busy()||trendBusy()">دریافت مقایسه</button></div>
+ <app-request-state [loading]="trendBusy()" [error]="null"/>
  @if(trendRange()){<p class="muted">{{trendRange()}}</p>}
  @for(name of trendErrors();track name){<p role="alert">مقایسه {{name}} در دسترس نیست.</p>}
  @if(trends().length){<div class="chart-legend"><span>● هفته اخیر کامل</span><span>● هفته قبل</span></div>
@@ -29,3 +32,5 @@
  <p class="muted">اختلاف تعداد، به معنی تغییر نرخ عوارض یا کیفیت بالینی نیست.</p>
  </section>
 }
+
+} @else {<p role="alert">نقش یا نشست تغییر کرده است؛ صفحه را دوباره باز کنید.</p>}

@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { hemoDashboardRoutes } from './app/core/hemo/hemo-dashboard.routes';
 import { MENU_ROLE_CONTEXT } from './app/Shared/layout/component/menu-role-context';
 import { HemoRoleLifecycle } from './app/core/hemo/hemo-role-lifecycle';
 import { hemoAdmissionPilotRoutes } from './app/core/hemo/hemo-admission-pilot.routes';
@@ -25,6 +26,7 @@ export const appRoutes: Routes = [
             ...hemoTransferReadRoutes,
             ...hemoHvReadRoutes,
             ...hemoQualityReadRoutes,
+            ...hemoDashboardRoutes,
             { path: '', component: Dashboard, canActivate: [authGuardGuard], },
             { path: 'Identity', loadChildren: () => import('./app/Projects/Identity/Identity.routes') },
             { path: 'pages', loadChildren: () => import('./app/Shared/pages/pages.routes') },
