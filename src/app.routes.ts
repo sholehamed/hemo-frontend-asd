@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { MENU_ROLE_CONTEXT } from './app/Shared/layout/component/menu-role-context';
+import { HemoRoleLifecycle } from './app/core/hemo/hemo-role-lifecycle';
 import { hemoAdmissionPilotRoutes } from './app/core/hemo/hemo-admission-pilot.routes';
 import { AppLayout } from './app/Shared/layout/component/app.layout';
 import { Dashboard } from './app/Shared/pages/dashboard/dashboard';
@@ -9,6 +11,7 @@ export const appRoutes: Routes = [
     {
         path: '',
         component: AppLayout,
+        providers: [{provide: MENU_ROLE_CONTEXT, useExisting: HemoRoleLifecycle}],
 
         children: [
             ...hemoAdmissionPilotRoutes,
