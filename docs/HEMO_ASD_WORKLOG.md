@@ -97,3 +97,5 @@ Open gaps:
 
 ### ST04 | آزمون مرورگر
 - سناریوی مرورگری fixture: ورود بانک، ثبت دما، دریافت، بازرسی مسئول، اتصال درخواست ST-03، آزمایش، رزرو، ذوب، آماده‌سازی، نگرانی دمایی و توقف، لغو رزرو، امحا و برگشت درخواست. چهار تست قواعد UI. نتیجه اجرای نهایی CI هنوز بررسی نشده است.
+
+- Frontend initial production compile failed on redundant closing block in inventory template; fixed and re-running CI.
