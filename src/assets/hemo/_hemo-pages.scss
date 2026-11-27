@@ -74,6 +74,16 @@
   --hemo-good: #98e8cd; --hemo-good-bg: #173b33;
   --hemo-warn: #ffdb98; --hemo-warn-bg: #44351d;
   .eyebrow, .section-no { color: #a3d0ff; }
+  // Dashboard had fixed light component colors: review of the real release screenshot exposed a white title on a pale header.
+  .dashboard-header { background: #182d33; border-color: #435d63; color: #e7eef7; }
+  .dashboard-header h1, .dashboard-header h2, .dashboard-header p:not(.eyebrow) { color: #e7eef7; }
+  .dashboard-metric { background: #18222f; color: #e7eef7; border-color: #435366; }
+  .dashboard-metric strong, .dashboard-metric a, .chart-legend { color: #98e8cd; }
+  .dashboard-metric.attention { background: #44351d; border-color: #a97d3c; }
+  .dashboard-metric.attention strong, .dashboard-metric.attention small { color: #ffdb98; }
+  .chart-legend span + span { color: #bac9db; }
+  .quick-grid a { background: #18222f; border-color: #435366; color: #a3d0ff; }
+  .dashboard-actions :is(button,a):not(.primary-button), .trend-panel button { color: #a3d0ff; }
 }
 @media (max-width: 580px) {
   .layout-main-container:has(.router-outlet.hemo-page) { padding-inline: 12px; }

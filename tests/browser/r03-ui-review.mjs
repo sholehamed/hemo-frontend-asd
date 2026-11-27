@@ -61,6 +61,11 @@ try{
   await manager.locator('.layout-config-menu > button').first().click();
   await manager.locator('html.app-dark').waitFor({state:'attached'});
   assert.equal(await manager.locator('.module-panel').first().evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(32, 43, 56)');
+  const header=manager.locator('.dashboard-header');
+  assert.equal(await header.evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(24, 45, 51)');
+  assert.equal(await header.locator('h1').evaluate(e=>getComputedStyle(e).color),'rgb(231, 238, 247)');
+  assert.equal(await manager.locator('.dashboard-metric:not(.attention)').first().evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(24, 34, 47)');
+  assert.equal(await manager.locator('.dashboard-metric:not(.attention) strong').first().evaluate(e=>getComputedStyle(e).color),'rgb(152, 232, 205)');
   await fits(manager);await shot(manager,'dashboard-desktop-dark');
   console.log('PASS desktop dark scoped theme');
   scenario='mobile-admission-form';
