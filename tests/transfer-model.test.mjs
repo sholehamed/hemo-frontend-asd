@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {allowedActions,allowedPhases,codeMatches} from '../src/app/features/transfusion/transfer-model.ts';
+const caps={receive:true,receiptHold:true,verify:true,witness:true,start:true,vital:true,complete:true,stop:true,return:true,acceptReturn:true,dispose:true,doctorNote:false,userGuid:'nurse'};
+const d={transfer:{status:'Dispatched',suspectedReaction:false},verifiedBy:'nurse',witnessedBy:null,canProceed:true};
+test('dispatch receipt and mismatch are distinct',()=>{assert.deepEqual(allowedActions(d,caps),['Receive','ReceiptHold','Return']);assert.deepEqual(allowedActions({...d,canProceed:false},caps),['ReceiptHold','Return']);});
+test('independent witness cannot use the verifier account',()=>{const x={...d,transfer:{status:'Verified'}};assert.ok(!allowedActions(x,caps).includes('Witness'));assert.ok(allowedActions(x,{...caps,userGuid:'second'}).includes('Witness'));});
+test('start only by verifier after witness and current approval',()=>{const x={...d,transfer:{status:'Witnessed',suspectedReaction:false},witnessedBy:'second'};assert.ok(allowedActions(x,caps).includes('Start'));assert.ok(!allowedActions(x,{...caps,userGuid:'second'}).includes('Start'));assert.ok(!allowedActions({...x,canProceed:false},caps).includes('Start'));});
+test('stop cannot restart; concern blocks completion',()=>{assert.deepEqual(allowedActions({...d,transfer:{status:'Stopped',suspectedReaction:true}},caps),['Return']);assert.deepEqual(allowedActions({...d,transfer:{status:'InProgress',suspectedReaction:true}},caps),['Stop']);});
+test('phase visibility and exact scanned codes',()=>{assert.deepEqual(allowedPhases('Witnessed'),['T0']);assert.deepEqual(allowedPhases('InProgress'),['T15','Mid','End']);assert.ok(codeMatches('UNIT','BAND','UNIT','BAND'));assert.ok(!codeMatches('wrong','BAND','UNIT','BAND'));});
