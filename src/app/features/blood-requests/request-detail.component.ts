@@ -1,3 +1,4 @@
+import { HemoRelatedLinksComponent,RelatedLink } from '../../shared/components/hemo-related-links.component';
 import { Component,OnInit,OnDestroy,inject,signal,computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute,RouterLink } from '@angular/router';
@@ -11,7 +12,7 @@ import { RequestStateComponent } from '../../shared/components/request-state.com
 import { message,label,fa } from '../../shared/admission-utils';
 import { isoToJalali } from '../../shared/jalali-date';
 import { RequestDetail,DecisionInput,PhysicianCompletion,REQUEST_STATUS_LABEL,PRIORITIES,SPECIAL_LABELS,productLabel,formLabel,canEditRequest } from './blood-request-model';
-@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,BloodRequestsService,RequestPageAccess],imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./request-detail.component.html'})
+@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,BloodRequestsService,RequestPageAccess],imports:[HemoRelatedLinksComponent,FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./request-detail.component.html'})
 export class RequestDetailComponent implements OnInit,OnDestroy{
  readonly scope=inject(HemoPageScope);readonly auth=inject(RequestPageAccess);private api=inject(BloodRequestsService);private route=inject(ActivatedRoute);
  readonly bank=this.route.snapshot.data['bank']===true;readonly allowed=computed(()=>this.bank?this.auth.requestCan('bankDetail'):this.auth.requestCan('detail'));
@@ -64,4 +65,19 @@ export class RequestDetailComponent implements OnInit,OnDestroy{
    finally{if(this.current(seq))this.busy.set(false);}
  }
  print(){if(this.allowed()&&this.detail()&&!this.busy()&&this.scope.isCurrent())window.print();}
+
+ readonly relatedLinks=computed(()=>{const item=this.detail();return item?this.related(item):[];});
+ related(d:RequestDetail):RelatedLink[]{
+   const query={request:d.request.guid};
+   const links:RelatedLink[]=[
+     {label:'پرونده پذیرش',pattern:'/admission/detail/:guid',commands:['/admission/detail',d.request.patientAdmissionGuid]},
+     {label:'سوابق حواله‌های درخواست',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query},
+     {label:'تاریخچه آزمایش‌های درخواست',pattern:'/hemo/bank/lab-history',commands:['/hemo/bank/lab-history'],query}
+   ];
+   if(d.request.status==='AwaitingBank')links.push(
+     {label:'کارتابل Crossmatch',pattern:'/hemo/bank/crossmatch',commands:['/hemo/bank/crossmatch'],query},
+     {label:'صف ذوب',pattern:'/hemo/bank/thaw',commands:['/hemo/bank/thaw'],query},
+     {label:'صف بررسی صدور',pattern:'/hemo/transfusion/dispatch',commands:['/hemo/transfusion/dispatch'],query});
+   return links;
+ }
 }

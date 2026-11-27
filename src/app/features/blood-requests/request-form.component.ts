@@ -6,7 +6,7 @@ import { HemoPageScope } from '../../core/hemo/hemo-page-scope';
 import { HemoCompanyHttp } from '../../core/api/hemo-company-http';
 import { RequestPageAccess } from './request-page-access';
 import { AdmissionPageAccess } from '../admission/admission-page-access';
-import { Subscription } from 'rxjs';
+import { combineLatest,distinctUntilChanged,map,Subscription } from 'rxjs';
 import { AdmissionsService,AdmissionView } from '../../core/api/admissions.service';
 import { BloodRequestsService } from '../../core/api/blood-requests.service';
 import { AdmissionPickerComponent } from '../admission/admission-picker.component';
@@ -41,14 +41,17 @@ export class RequestFormComponent implements OnInit,OnDestroy{
  }
  async ngOnInit(){
    await Promise.all([this.auth.load(),this.admissionAccess.load()]);if(!this.scope.isCurrent())return;
-   this.params=this.route.paramMap.subscribe(p=>{
-     ++this.seq;this.resetDraft();this.editGuid=p.get('guid');this.editMode.set(!!this.editGuid);
+   this.params=combineLatest([this.route.paramMap,this.route.queryParamMap]).pipe(
+     map(([p,q])=>({guid:p.get('guid'),admission:p.get('guid')?null:q.get('admission')})),
+     distinctUntilChanged((a,b)=>a.guid===b.guid&&a.admission===b.admission)
+   ).subscribe(p=>{
+     ++this.seq;this.resetDraft();this.editGuid=p.guid;this.editMode.set(!!this.editGuid);
      this.source.set(this.route.snapshot.data['source']==='Doctor'?'Doctor':'Nurse');
      if(!this.allowed())return;
      if(this.editGuid)void this.loadEdit(this.editGuid);
      else{
        this.draft.clientRequestId=this.newClientRequestId();this.ready.set(true);
-       const patient=this.route.snapshot.queryParamMap.get('admission');if(patient)void this.selectPatient(patient);
+       if(p.admission)void this.selectPatient(p.admission);
      }
    });
  }

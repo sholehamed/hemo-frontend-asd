@@ -1,3 +1,4 @@
+import { HemoRelatedLinksComponent,RelatedLink } from '../../shared/components/hemo-related-links.component';
 import { Component,OnInit,OnDestroy,inject,signal,computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute,RouterLink } from '@angular/router';
@@ -15,7 +16,7 @@ import { productLabel,RequestDetail,RequestPage } from '../blood-requests/blood-
 import { UnitDetail,BankAction,BANK_ACTION,UNIT_STATUS,LAB_RESULTS,ASSESSMENTS,CONCLUSIONS,SECOND_SAMPLE,availableActions,statusLabel,LabInput } from './bank-model';
 import { bankDateTime,toUtc } from './bank-time';
 const emptyLab=()=>({sampleReference:'',secondSample:'',labelGroup:'',method:'',immediateSpin:'',phase37:'',ahg:'',dat:'',antibodyScreen:'',reportReference:'',conclusion:'',notes:''});
-@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,BloodBankService,BloodRequestsService,BankPageAccess,RequestPageAccess],imports:[FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./bank-unit.component.html',styleUrl:'./bank-unit.component.css'})
+@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,BloodBankService,BloodRequestsService,BankPageAccess,RequestPageAccess],imports:[HemoRelatedLinksComponent,FormsModule,RouterLink,MatButtonModule,RequestStateComponent],templateUrl:'./bank-unit.component.html',styleUrl:'./bank-unit.component.css'})
 export class BankUnitComponent implements OnInit,OnDestroy{
  readonly scope=inject(HemoPageScope);readonly auth=inject(BankPageAccess);readonly requestAccess=inject(RequestPageAccess);private api=inject(BloodBankService);private requests=inject(BloodRequestsService);private route=inject(ActivatedRoute);
  private guid='';
@@ -88,4 +89,18 @@ export class BankUnitComponent implements OnInit,OnDestroy{
  }
  export(){const d=this.detail();if(d&&this.auth.bankCan('unit')&&!this.busy())downloadCsv('hemo-bank-unit-'+d.unit.unitCode+'.csv',[['واحد','عملیات','وضعیت','زمان','شرح'],...d.events.map(e=>[d.unit.unitCode,BANK_ACTION[e.action]??e.action,UNIT_STATUS[e.newStatus],bankDateTime(e.occurredAt),e.reason])]);}
  print(){if(this.auth.bankCan('unit')&&this.detail()&&!this.busy())window.print();}
+
+ readonly relatedLinks=computed(()=>{const item=this.detail();return item?this.related(item):[];});
+ related(d:UnitDetail):RelatedLink[]{
+   const id=d.unit.requestGuid;
+   if(!id)return [];
+   const query={request:id};
+   const links:RelatedLink[]=[
+     {label:'درخواست مرتبط در بانک خون',pattern:'/hemo/requests/bank/:guid',commands:['/hemo/requests/bank',id]},
+     {label:'حواله‌های مرتبط با درخواست',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query}
+   ];
+   if(d.unit.status==='Ready'&&!d.unit.expired&&!d.unit.equipmentBlocked)links.push(
+     {label:'صف بررسی صدور درخواست',pattern:'/hemo/transfusion/dispatch',commands:['/hemo/transfusion/dispatch'],query});
+   return links;
+ }
 }

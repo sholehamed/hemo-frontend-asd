@@ -1,8 +1,9 @@
+import { HemoRelatedLinksComponent,RelatedLink } from '../../shared/components/hemo-related-links.component';
 import { HemoPageScope } from '../../core/hemo/hemo-page-scope';
 import { HemoCompanyHttp } from '../../core/api/hemo-company-http';
 import { AdmissionPageAccess } from './admission-page-access';
 import { Subscription } from 'rxjs';
-import { Component,OnInit,OnDestroy,inject,signal } from '@angular/core';
+import { Component,OnInit,OnDestroy,inject,signal,computed } from '@angular/core';
 import { ActivatedRoute,RouterLink } from '@angular/router';
 import { FormBuilder,ReactiveFormsModule,Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,7 +13,7 @@ import { PatientIdentityEditComponent } from './patient-identity-edit.component'
 import { WristbandComponent } from './wristband.component';
 import { label,message } from '../../shared/admission-utils';
 import { isoToJalali } from '../../shared/jalali-date';
-@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,AdmissionsService,AdmissionPageAccess],imports:[RouterLink,ReactiveFormsModule,MatButtonModule,RequestStateComponent,WristbandComponent,PatientIdentityEditComponent],template:`
+@Component({standalone:true,providers:[HemoPageScope,HemoCompanyHttp,AdmissionsService,AdmissionPageAccess],imports:[HemoRelatedLinksComponent,RouterLink,ReactiveFormsModule,MatButtonModule,RequestStateComponent,WristbandComponent,PatientIdentityEditComponent],template:`
 @if(scope.isCurrent()){
 <section class="heading"><p class="eyebrow">پذیرش / جزئیات</p><h1>پرونده پذیرش و مچ‌بند</h1>@if(auth.can('list')){<a mat-button routerLink="/admission/list">بازگشت به فهرست</a>}@else{<a mat-button routerLink="/">بازگشت به صفحه اصلی</a>}</section>
 <app-request-state [loading]="busy()" [error]="error()"/>
@@ -26,7 +27,7 @@ import { isoToJalali } from '../../shared/jalali-date';
 @if(auth.can('history')){<a mat-stroked-button routerLink="/admission/history" [queryParams]="{guid:p.guid}">بررسی سوابق</a>}
 <a mat-stroked-button routerLink="/admission/discharge" [queryParams]="{guid:p.guid}">کنترل ترخیص</a></div>
 }
-<!-- Other module destinations remain dormant until their routes are connected. -->
+<app-hemo-related-links [links]="relatedLinks()"/>
 </section>
 <app-wristband [patient]="p"/>
 @if(auth.can('identity')){<app-patient-identity-edit [patient]="p" (saved)="identitySaved()"/>}
@@ -82,5 +83,18 @@ export class AdmissionDetailComponent implements OnInit,OnDestroy{
      this.success.set('تغییرات ثبت شد.');await this.load();
    }catch(e){if(this.current(guid,seq))this.error.set(message(e));}
    finally{if(this.current(guid,seq))this.busy.set(false);}
+ }
+
+ readonly relatedLinks=computed(()=>{const item=this.patient();return item?this.related(item):[];});
+ related(p:AdmissionView):RelatedLink[]{
+   const query={admission:p.guid};
+   const links:RelatedLink[]=[
+     {label:'درخواست‌های خون پرونده',pattern:'/hemo/requests',commands:['/hemo/requests'],query},
+     {label:'سوابق تحویل و تزریق',pattern:'/hemo/transfusion/records',commands:['/hemo/transfusion/records'],query}
+   ];
+   if(p.status==='Active')links.unshift(
+     {label:'ثبت درخواست پرستار',pattern:'/hemo/requests/new',commands:['/hemo/requests/new'],query},
+     {label:'ثبت درخواست پزشک',pattern:'/hemo/requests/orders',commands:['/hemo/requests/orders'],query});
+   return links;
  }
 }
