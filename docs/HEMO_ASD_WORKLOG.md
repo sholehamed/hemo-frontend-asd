@@ -101,3 +101,5 @@ Open gaps:
 - Frontend initial production compile failed on redundant closing block in inventory template; fixed and re-running CI.
 
 - ماتریس واقعی موجودی، تاریخچه آزمایش با فیلتر و خروجی، صف رزروهای نیازمند ذوب و تست مرورگر گزارش تکمیل شد. منتظر CI نهایی.
+
+- Browser run 46023312020: 16 unit tests and build passed; four regression browser tests passed, bank scenario timed out at the temperature assessment select accessible name. Added explicit accessible names to new select controls including dynamic laboratory phases; retain all workflow assertions, re-run.

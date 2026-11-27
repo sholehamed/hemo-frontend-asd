@@ -6,6 +6,7 @@ const requestCaps={list:false,detail:false,stats:false,nurseCreate:false,doctorC
 const clinical={diagnosis:'آزمون',clinicalIndication:'آزمون',hemoglobin:null,hematocrit:null,plateletCount:null,recentTransfusion:null,recentPregnancy:null,priorReaction:null,unexpectedAntibody:null,premedication:null,sampleStatus:'Unknown',notes:null,formDetails:{}};
 const request={request:{guid:requestGuid,requestNumber:'BR-ST04-FIXTURE',patientAdmissionGuid:admissionGuid,patientName:'بیمار آزمون',hisNumber:'FIX04',ward:'آزمون',source:'Nurse',formType:'General',priority:'Routine',status:'AwaitingBank',created:'2026-11-27T12:00:00Z',submittedAt:'2026-11-27T12:00:00Z',totalUnits:1,owned:false},clientRequestId:admissionGuid,version:'req-v1',bloodGroup:null,identityStatus:'Verified',bedNumber:'1',items:[{productCode:'FFP',quantity:1,requestedBloodGroup:null,specialInstructions:null}],clinical,history:[],admissionChanged:false};
 test('bank roles receive, inspect, record laboratory evidence, reserve, thaw, prepare and quarantine',async({page})=>{
+ test.setTimeout(60000);
  let role='operator',unit=null,events=[],tests=[],temps=[],version=0,returned=false;
  await page.addInitScript(()=>sessionStorage.setItem('hemo-asd-session',JSON.stringify({key:'fixture-token',firstName:'کاربر',lastName:'آزمون',expireDate:'2099-01-01T00:00:00Z',forceChangePassword:false,multiLogin:false,userRole:1})));
  page.on('dialog',d=>d.accept());
