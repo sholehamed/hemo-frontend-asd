@@ -18,7 +18,7 @@ export class RequestListComponent implements OnInit{
  readonly statusLabels=REQUEST_STATUS_LABEL;readonly priorities=PRIORITIES;readonly formLabel=formLabel;readonly date=isoToJalali;readonly fa=fa;
  readonly statuses=Object.entries(REQUEST_STATUS_LABEL);readonly priorityList=Object.entries(PRIORITIES);
  search='';status='';priority='';ward='';mine=false;readonly patientFilter=this.route.snapshot.queryParamMap.get('admission');private applied:RequestFilters={};private seq=0;
- ngOnInit(){if(this.allowed())void this.load(1);}
+ ngOnInit(){const q=this.route.snapshot.queryParamMap;const status=q.get('status')??'';if(Object.keys(REQUEST_STATUS_LABEL).includes(status))this.status=status;this.mine=q.get('mine')==='true';if(this.allowed())void this.load(1);}
  async load(pageNumber=1){
   if(!this.allowed())return;
   if(pageNumber===1)this.applied={search:normalizeDigits(this.search.trim()),status:this.approval?'AwaitingDoctor':this.status,priority:this.priority,ward:this.ward,mine:this.mine,...(!this.bank&&this.patientFilter?{patientAdmissionGuid:this.patientFilter}:{})};
