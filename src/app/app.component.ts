@@ -37,6 +37,19 @@ export class AppComponent implements OnInit{
     {label:'پیگیری اقدامات CAPA',path:'/hemo/hv/capa',icon:'↔',cap:'list'},
     {label:'گزارش و آرشیو',path:'/hemo/hv/reports',icon:'▥',cap:'reports'}
   ];
+  readonly qualityNav=[
+    {label:'داشبورد تجهیزات',path:'/hemo/quality/equipment-dashboard',icon:'▦',cap:'equipmentStats'},
+    {label:'شناسنامه تجهیزات',path:'/hemo/quality/equipment',icon:'☷',cap:'equipmentList'},
+    {label:'سرویس و کالیبراسیون',path:'/hemo/quality/maintenance',icon:'◷',cap:'equipmentList'},
+    {label:'پایش دما و زنجیره سرما',path:'/hemo/quality/temperature',icon:'↔',cap:'equipmentList'},
+    {label:'حوادث تجهیزات',path:'/hemo/quality/incidents',icon:'!',cap:'incidents'},
+    {label:'کنترل کیفیت روزانه',path:'/hemo/quality/qc',icon:'✓',cap:'qcList'},
+    {label:'کمیته و مصوبات',path:'/hemo/quality/committee',icon:'☷',cap:'committeeList'},
+    {label:'ممیزی و بازرسی',path:'/hemo/quality/audit',icon:'✓',cap:'auditList'},
+    {label:'دوره‌ها و آموزش',path:'/hemo/quality/training',icon:'▦',cap:'trainingList'},
+    {label:'اطلاعات پایه مرکز',path:'/hemo/quality/settings',icon:'⚙',cap:'facility'},
+    {label:'گزارش مدیریتی کیفیت',path:'/hemo/quality',icon:'▥',cap:'stats'}
+  ];
   visible(path:string){
     if(path==='/admission')return this.auth.can('stats')&&this.auth.can('list');
     if(path==='/admission/new')return this.auth.can('create');
