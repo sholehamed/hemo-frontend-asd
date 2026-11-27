@@ -1,7 +1,7 @@
 name: HEMO admission CI
 on:
   push:
-    branches: [feature/st-01-st-02-admission, feature/st-03-blood-requests]
+    branches: [feature/st-01-st-02-admission, feature/st-03-blood-requests, feature/st-04-blood-bank]
   pull_request:
     branches: [main]
 permissions:

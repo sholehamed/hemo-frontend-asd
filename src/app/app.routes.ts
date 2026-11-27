@@ -20,6 +20,14 @@ export const routes:Routes=[
  {path:'hemo/requests/approval',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
  {path:'hemo/requests/doctor',canActivate:[authGuard],data:{mode:'approval'},loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
  {path:'hemo/requests',canActivate:[authGuard],pathMatch:'full',loadComponent:()=>import('./features/blood-requests/request-list.component').then(m=>m.RequestListComponent)},
+ {path:'hemo/bank/inventory',canActivate:[authGuard],data:{mode:'inventory'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
+ {path:'hemo/bank/crossmatch',canActivate:[authGuard],data:{mode:'lab'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
+ {path:'hemo/bank/thaw',canActivate:[authGuard],data:{mode:'thaw'},loadComponent:()=>import('./features/blood-bank/bank-inventory.component').then(m=>m.BankInventoryComponent)},
+ {path:'hemo/bank/unit/:guid',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-unit.component').then(m=>m.BankUnitComponent)},
+ {path:'hemo/bank/receive',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-receive.component').then(m=>m.BankReceiveComponent)},
+ {path:'hemo/bank/temperature',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-temperature.component').then(m=>m.BankTemperatureComponent)},
+ {path:'hemo/bank/reports',canActivate:[authGuard],data:{report:true},loadComponent:()=>import('./features/blood-bank/bank-dashboard.component').then(m=>m.BankDashboardComponent)},
+ {path:'hemo/bank',pathMatch:'full',canActivate:[authGuard],loadComponent:()=>import('./features/blood-bank/bank-dashboard.component').then(m=>m.BankDashboardComponent)},
  {path:'home',canActivate:[authGuard],loadComponent:()=>import('./features/home/home.component').then(m=>m.HomeComponent)},
  {path:'',pathMatch:'full',redirectTo:'home'},{path:'**',redirectTo:'home'}
 ];

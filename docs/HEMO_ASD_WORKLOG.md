@@ -88,3 +88,6 @@ Open gaps:
 
 ### ST-03 | final review
 - Run 46020137756: production build PASS, 12/12 unit tests PASS, 3/4 Playwright PASS; new request lifecycle timed out at the admission picker on a direct deep link. Removed shell-level default navigation during asynchronous bootstrap; explicit home route resolves the permitted landing page after capabilities are known. Role changes use /home. Added direct URL assertion, root bank landing assertion and diagnostic output. Rechecking all tests; no merge yet.
+
+## ST-04 | رابط بانک خون
+- مدل تایپ‌شده API، قابلیت‌های نقش، داشبورد و گزارش، موجودی و فیلتر درخواست/فرآورده، دریافت مستقل واحد، تاریخ/ساعت شمسی محلی و پایش دما. صفحه جزئیات و گردش واحد در کامیت بعد تکمیل می‌شود. CI هنوز بررسی نشده.
