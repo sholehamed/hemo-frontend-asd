@@ -144,3 +144,6 @@ Open gaps:
 - ST07 baseline merged. Branch feature/st-08-delivery. Corrected outdated admission history notice to refer to transfusion and hemovigilance, clarified administrative clearance gate. No new roles/routes or change to existing infrastructure.
 - Added Playwright fixture rejection scenario: verified identity/history, complete checklist, server rejects open flow, error visible and no success. This is contract UI coverage, not live backend test. Full frontend regression triggered, result NOT RUN/NOT OBSERVED at writing.
 - Consolidated guide docs/delivery/USER_GUIDE_FA.md with roles, scenario IDs, setup, end-to-end manual checks and error handling. Backend docs/delivery holds all 14 existing accounts and unified Seed instructions, developer/deployment guide. Live multi-role browser E2E and final delivery gate remain open.
+
+### ST08 | CI verification and browser fix
+- GitHub-hosted run 46036610600 on 2e53274c: build PASS, 30/30 unit PASS, 8/9 browser PASS. New ST08 fixture timed out before clicking disabled identity confirmation: locator.all() did not wait for asynchronously rendered five checkboxes. Added explicit count assertion before enumeration, validated outgoing clearance payload and unchanged Active status on rejection. Re-run all browser tests; new result not yet observed. PR #8.
