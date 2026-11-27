@@ -24,10 +24,17 @@ describe('R02 admission read pages in current Angular app',()=>{
   afterEach(()=>http.verify());
   it('renders actual list and hides not-yet-active clinical links, without requesting denied stats',async()=>{
     const fixture=TestBed.createComponent(AdmissionListComponent);
+    const load=spyOn(fixture.componentInstance,'load').and.callThrough();
+    const wards=spyOn<any>(fixture.componentInstance,'loadWards').and.callThrough();
     fixture.detectChanges();
+    expect(load).toHaveBeenCalledOnceWith(1);
+    expect(wards).toHaveBeenCalledTimes(1);
     http.expectOne(base+'/BindPaging').flush(blob(page));
     http.expectOne(base+'/Capabilities').flush(blob({stats:false,list:true}));
+    // Blob.text() is native async work; whenStable alone can resolve before decoding.
+    await Promise.all([load.calls.mostRecent().returnValue,wards.calls.mostRecent().returnValue]);
     await fixture.whenStable();fixture.detectChanges();
+    expect(fixture.componentInstance.busy()).toBeFalse();
     expect(fixture.nativeElement.textContent).toContain('FixturePatient');
     expect(fixture.nativeElement.querySelector('a[href*="/admission/detail"]')).toBeNull();
     expect(fixture.nativeElement.querySelector('a[href*="/admission/new"]')).toBeNull();
@@ -40,9 +47,13 @@ describe('R02 admission read pages in current Angular app',()=>{
   });
   it('renders HIS records without claiming external connectivity, then rejects stale response',async()=>{
     const fixture=TestBed.createComponent(AdmissionHisComponent);
+    const load=spyOn(fixture.componentInstance,'load').and.callThrough();
     fixture.detectChanges();
+    expect(load).toHaveBeenCalledTimes(1);
     http.expectOne(base+'/BindPaging').flush(blob(page));
+    await load.calls.mostRecent().returnValue;
     await fixture.whenStable();fixture.detectChanges();
+    expect(fixture.componentInstance.busy()).toBeFalse();
     expect(fixture.nativeElement.textContent).toContain('FixturePatient');
     expect(fixture.nativeElement.textContent).toContain('پیکربندی نشده');
     const pending=fixture.componentInstance.load();

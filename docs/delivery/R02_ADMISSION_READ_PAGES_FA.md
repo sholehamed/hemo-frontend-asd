@@ -6,3 +6,6 @@
 - تست‌ها: سه قرارداد scope/HTTP و دو آزمون رندر واقعی کامپوننت‌ها (mock HTTP)، به‌علاوه تطبیق مسیر Guard. CI در زمان ثبت هنوز تأیید نشده. تست واقعی backend و role switching مرورگر باقی است.
 - صفحات create/detail/review/dashboard هنوز فعال نیستند. علت مهم wristband: JsBarcode سراسری در Angular22 قبلی وجود داشت ولی Angular19 فعلی ندارد؛ باید وابستگی با lock معتبر و آزمون چاپ/خوانایی بازگردد. لینک‌های عملیاتی بعد از فعال شدن مقصد بازگردانده شوند. اتصال سایر ماژول‌ها، Package/SSO و پایان R02 همچنان باقی است.
 - هیچ حساب یا migration جدید، تغییر AuthService/AuthInterceptor یا backend و هیچ ادغام main frontend انجام نشده است.
+
+## اصلاح CI 46060341794
+Build و Node موفق، Karma: 50 موفق و 2 ناموفق. هر دو assertion رندر قبل از پایان decode Blob اجرا شده بودند (DOM هنوز loading). تست‌های واقعی کامپوننت با spy callThrough، Promise همان load و loadWards را صریح await می‌کنند و سپس DOM و busy را بررسی می‌کنند. هیچ assertion قبلی، HTTP fixture، تست امنیتی یا کد تولید تغییر/حذف نشده است. نتیجه اجرای اصلاح‌شده هنوز باید تأیید شود.
