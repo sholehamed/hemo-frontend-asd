@@ -2,7 +2,13 @@ import {Routes} from '@angular/router';
 import {authGuardGuard} from '../../Shared/AuthGuard/auth-guard.guard';
 const equipment=()=>import('../../features/quality/equipment-list.component').then(m=>m.EquipmentListComponent);
 const records=()=>import('../../features/quality/quality-list.component').then(m=>m.QualityListComponent);
+const detail=()=>import('../../features/quality/quality-detail.component').then(m=>m.QualityDetailComponent);
 export const hemoQualityReadRoutes:Routes=[
+ {path:'hemo/quality/qc/:guid',canActivate:[authGuardGuard],data:{kind:'Qc'},loadComponent:detail},
+ {path:'hemo/quality/committee/:guid',canActivate:[authGuardGuard],data:{kind:'Committee'},loadComponent:detail},
+ {path:'hemo/quality/audit/:guid',canActivate:[authGuardGuard],data:{kind:'Audit'},loadComponent:detail},
+ {path:'hemo/quality/training/:guid',canActivate:[authGuardGuard],data:{kind:'Training'},loadComponent:detail},
+ {path:'hemo/quality/facility',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/quality/facility.component').then(m=>m.FacilityComponent)},
  {path:'hemo/quality/equipment/:guid',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/quality/equipment-detail.component').then(m=>m.EquipmentDetailComponent)},
  {path:'hemo/quality/equipment-dashboard',canActivate:[authGuardGuard],loadComponent:()=>import('../../features/quality/equipment-dashboard.component').then(m=>m.EquipmentDashboardComponent)},
  {path:'hemo/quality/equipment',canActivate:[authGuardGuard],data:{mode:'equipment'},loadComponent:equipment},

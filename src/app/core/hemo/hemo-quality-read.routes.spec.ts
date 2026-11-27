@@ -19,8 +19,8 @@ describe('R02 guarded quality read routes',()=>{
     const snap={routeConfig:config,parent:{routeConfig:{path:''},parent:null}} as unknown as ActivatedRouteSnapshot;
     return firstValueFrom(TestBed.runInInjectionContext(()=>authGuardGuard(snap,{} as RouterStateSnapshot)) as Observable<boolean>);
   }
-  it('uses the company guard and exact page patterns for all eleven quality routes',async()=>{
-    expect(hemoQualityReadRoutes.map(r=>r.path)).toEqual(['hemo/quality/equipment/:guid','hemo/quality/equipment-dashboard','hemo/quality/equipment','hemo/quality/maintenance','hemo/quality/temperature','hemo/quality/incidents','hemo/quality/qc','hemo/quality/committee','hemo/quality/audit','hemo/quality/training','hemo/quality']);
+  it('uses the company guard and exact page patterns for all sixteen quality routes',async()=>{
+    expect(hemoQualityReadRoutes.map(r=>r.path)).toEqual(['hemo/quality/qc/:guid','hemo/quality/committee/:guid','hemo/quality/audit/:guid','hemo/quality/training/:guid','hemo/quality/facility','hemo/quality/equipment/:guid','hemo/quality/equipment-dashboard','hemo/quality/equipment','hemo/quality/maintenance','hemo/quality/temperature','hemo/quality/incidents','hemo/quality/qc','hemo/quality/committee','hemo/quality/audit','hemo/quality/training','hemo/quality']);
     for(const r of hemoQualityReadRoutes){
       expect(r.canActivate).toEqual([authGuardGuard]);expect(await check(r.path!)).toBeTrue();
       expect(auth.CheckPagePermission).toHaveBeenCalledWith('/'+r.path);
