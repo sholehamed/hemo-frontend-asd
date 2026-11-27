@@ -25,6 +25,7 @@ export const appRoutes: Routes = [
             ...hemoTransferReadRoutes,
             ...hemoHvReadRoutes,
             ...hemoQualityReadRoutes,
+            {path:'hemo/dashboard',canActivate:[authGuardGuard],loadComponent:()=>import('./app/features/home/home.component').then(m=>m.HomeComponent)},
             { path: '', component: Dashboard, canActivate: [authGuardGuard], },
             { path: 'Identity', loadChildren: () => import('./app/Projects/Identity/Identity.routes') },
             { path: 'pages', loadChildren: () => import('./app/Shared/pages/pages.routes') },
